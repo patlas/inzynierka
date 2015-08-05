@@ -30,3 +30,7 @@
 
 # Debug files
 *.dSYM/
+
+#java bin
+bin/*
+jar/*
