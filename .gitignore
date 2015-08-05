@@ -32,5 +32,5 @@
 *.dSYM/
 
 #java bin
-bin/*
-jar/*
+java/vlc/bin/*
+java/vlc/jar/*
