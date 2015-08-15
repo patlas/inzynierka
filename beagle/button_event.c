@@ -3,13 +3,18 @@
 #include <string.h>
 
 
-#define arrowUp "ctrl+Tab"
+#define arrowUp "Ctrl+n"
 #define arrowDown
 #define fullScreen
 
 
 #define SHELL(PID,key) "windowID=`xdotool search --pid " #PID " | tail -1`\n \
 						xdotool windowfocus --sync $windowID key " key " \n"
+
+
+#define SHELL2(PID,key) "windowID=`xdotool search --pid " #PID " | tail -1`\n \
+						xdotool windowfocus --sync $windowID key " key " \n"
+
 
 void execute_button(char *button)
 {
@@ -20,9 +25,14 @@ void execute_button(char *button)
 }
 
 
-int main(void){
+int main(char *argc[], int argv){
+int a = 859;
+char key[10] = {"Ctrl+n"};
 
-	system(SHELL(1420,arrowUp));
+	char buf[500];
+sprintf(buf,"PID=`pidof gedit`\n windowID=`xdotool search --pid $PID | tail -1`\n xdotool windowfocus --sync $windowID key %s \n",key);
+
+	system(buf);
 	//printf(SHELL(1340,ctrl+Tab));
 	printf("DONE");
 
