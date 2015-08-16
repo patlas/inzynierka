@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include "commands.h"
+
 
 #define IN_ADDR		INADDR_ANY
 #define IN_PORT		12345
@@ -33,6 +35,8 @@ char file_name[20] = {"git.ppt"};
 
 char xdo_buff[500];
 
+file_t received_file_type = PPT;
+char *current_cmd;
 //char mesg[1000];
 
 int main(void)
@@ -64,7 +68,7 @@ int main(void)
 	}
 	else printf("Listening...\n");
 	
-	char mesg[1000] ;//= "Testowy napis\n";
+	char mesg[5] ;//= "Testowy napis\n";
 	int n;
 	socklen_t clilen;
 	while ( (socket_cli = accept(socket_desc, (struct sockaddr *)&addr_cli, &addrlen)) < 0) 
@@ -95,27 +99,50 @@ rcv_cmd:
 			goto rcv_cmd;
 			break;		
 	}
+	
+	
+	
+	
+	
 
 start:	
 	//if( memcmp(
 	// dopisywac porownywanie komendy i reakcja. -> napisac tablice z komenndami!!!
 	
 	PID = vfork();
-	
+	//wątek obsługujący programy otwierające pliki
 	if( PID == 0 ){
-		execl(SOFFICE_PATH, "soffice", "--show", file_name, NULL);
+		
+		switch(received_file_type){
+			case PPT:
+				execl(SOFFICE_PATH, "soffice", "--show", PPT_FILE, NULL);
+				break;
+			case PDF:
+			break;
+			
+			case MOVIE:
+			break;
+		}
 	}
 	
+	//wątek podstawowoy odpowiedzialny za komunikacje i utrzymanie serwera
 	for(;;){
 	
-	n = recvfrom(socket_cli,mesg,1000,0,(struct sockaddr *)&addr_cli,&clilen);
-            sendto(socket_cli,"OKI\n",4,0,(struct sockaddr *)&addr_cli,sizeof(addr_cli));
+	n = recvfrom(socket_cli,mesg,5,0,(struct sockaddr *)&addr_cli,&clilen);
+        sendto(socket_cli,"OKI\n",4,0,(struct sockaddr *)&addr_cli,sizeof(addr_cli));
 	printf("%.*s\n",n,mesg);
+	
+	current_cmd=get_command(received_file_type,(command_t)atoi(mesg));
+	//printf("%s",current_cmd);
+	//wątek dodatkowy do obsługi xdotool
 	if(vfork()==0){
 	//ewentualnie zrobic kolejke  skoro dane system zeby nie tworzyc nowego procesu za kazdym razem
-		SHELL("Down");
+		SHELL(current_cmd);
+		printf("%s",current_cmd);
 		printf(xdo_buff);
 		system(xdo_buff);
+		
+		exit(1);
 		
 	}
 	
