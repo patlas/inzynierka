@@ -1,10 +1,20 @@
 package tcp.stream;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import exceptions.ErrorException;
 
@@ -57,7 +67,55 @@ public class FileStreamer {
 	}
 
 	
-	public boolean streamFile(File fd){
+	public boolean streamFile(String fileName){
+		BufferedOutputStream outBufferedStream = null;
+		 
+		try {
+			outBufferedStream = new BufferedOutputStream(streamSocket.getOutputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		if(outBufferedStream != null){
+			
+			File fd = new File(fileName);
+			byte[] fileByteArray = new byte[(int) fd.length()];
+			
+			//send info that file will be streamed
+			tcpcomm.sendCommand(ControllCommands.START_FILE_STREAM);
+			tcpcomm.sendCommand((int)fd.length());
+			tcpcomm.sendCommand(getHash(fileName));
+			return true;
+			
+			/*
+			FileInputStream fileStream = null;
+			
+			try {
+				fileStream = new FileInputStream(fd);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			BufferedInputStream fileBufferedStream = new BufferedInputStream(fileStream);
+			
+			try {
+				fileBufferedStream.read(fileByteArray, 0, fileByteArray.length);
+				outBufferedStream.write(fileByteArray, 0, fileByteArray.length);
+				outBufferedStream.flush();
+				outBufferedStream.close();
+                //connectionSocket.close();
+            
+            } catch (IOException ex) {
+                // Do exception handling
+            	return false;
+            }*/
+			
+		}
+		 
 
 		//outStream.println("TEST");
 		/* 
@@ -65,6 +123,9 @@ public class FileStreamer {
 		 * 2) wysłać komende o końcu streamu -> jego crc?
 		 * 3) oczekiwać komendy potwierdzającej poprawne odebranie pliku -> zrobione
 		 */
+		
+		//outStream.wr
+		
 		System.out.println(isTransferSuccesfull());
 		return true;
 	}
@@ -83,6 +144,48 @@ public class FileStreamer {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	private static String convertByteArrayToHexString(byte[] arrayBytes) {
+	    StringBuffer stringBuffer = new StringBuffer();
+	    for (int i = 0; i < arrayBytes.length; i++) {
+	        stringBuffer.append(Integer.toString((arrayBytes[i] & 0xff) + 0x100, 16)
+	                .substring(1));
+	    }
+	    return stringBuffer.toString();
+	}
+	
+	
+	public static String getHash(String fileName){
+		
+		MessageDigest digest = null;
+		try (FileInputStream inputStream = new FileInputStream(fileName)) {
+	        
+			try {
+				digest = MessageDigest.getInstance("MD5");
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+	 
+	        byte[] bytesBuffer = new byte[1024];
+	        int bytesRead = -1;
+	 
+	        try {
+				while ((bytesRead = inputStream.read(bytesBuffer)) != -1) {
+				    digest.update(bytesBuffer, 0, bytesRead);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	   
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		byte[] hashedBytes = digest.digest();
+		return convertByteArrayToHexString(hashedBytes);
 	}
 	
 }

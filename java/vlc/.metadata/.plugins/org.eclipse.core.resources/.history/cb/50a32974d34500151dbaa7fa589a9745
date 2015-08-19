@@ -1,0 +1,26 @@
+package main.window;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+
+import tcp.stream.FileStreamer;
+
+public class MainClass {
+
+	public static void main(String[] args) {
+		
+		try {
+			FileStreamer fs = new FileStreamer("127.0.0.1", 12345);
+			fs.streamFile(null);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+	}
+
+}

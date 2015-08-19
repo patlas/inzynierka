@@ -1,0 +1,16 @@
+package tcp.stream;
+
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class TCPCommunication {
+	
+	int portNumber;
+	String hostName = null;
+	Socket streamSocket = null;
+	PrintWriter outStream = null;
+
+	
+	
+	
+}

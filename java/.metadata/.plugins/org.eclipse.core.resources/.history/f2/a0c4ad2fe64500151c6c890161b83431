@@ -1,0 +1,34 @@
+package tcp.stream;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+public class TCPCommunication {
+	
+	int portNumber;
+	String hostName = null;
+	Socket streamSocket = null;
+	PrintWriter outStream = null;
+	BufferedReader inStream = null;
+
+	public TCPCommunication(String hn, int pn) throws UnknownHostException, IOException{
+		hostName = hn;
+		portNumber = pn;
+		streamSocket = new Socket(hostName, portNumber);
+		outStream = new PrintWriter(streamSocket.getOutputStream(), true);
+		inStream = new BufferedReader(new InputStreamReader(streamSocket.getInputStream()));
+	}
+	
+	public sendCommand(String command){
+		BufferedReader in =
+		        new BufferedReader(
+		            new InputStreamReader(echoSocket.getInputStream()));
+		    BufferedReader stdIn =
+		        new BufferedReader(
+		            new InputStreamReader(System.in))
+	}
+	
+}

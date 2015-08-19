@@ -1,5 +1,6 @@
 package main.window;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
@@ -10,10 +11,16 @@ public class MainClass {
 
 	public static void main(String[] args) {
 		
+		//System.out.println(FileStreamer.getHash("a.txt"));
+		//[B@659e0bfd
+		//[B@659e0bfd
+		File fd = new File("a.txt");
+		System.out.println((int)(fd.length()));
+		
 		try {
 			TCPCommunication tcp = new TCPCommunication("127.0.0.1", 55555);
 			FileStreamer fs = new FileStreamer(tcp);
-			fs.streamFile(null);
+			fs.streamFile("a.txt");
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

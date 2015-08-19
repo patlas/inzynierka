@@ -1,0 +1,33 @@
+package tcp.stream;
+
+public class FileStreamer {
+	
+	int portNumber = null;
+	String hostName = null;
+	
+	String hostName = args[0];
+	int portNumber = Integer.parseInt(args[1]);
+
+	try (
+	    Socket echoSocket = new Socket(hostName, portNumber);
+	    PrintWriter out =
+	        new PrintWriter(echoSocket.getOutputStream(), true);
+	    BufferedReader in =
+	        new BufferedReader(
+	            new InputStreamReader(echoSocket.getInputStream()));
+	    BufferedReader stdIn =
+	        new BufferedReader(
+	            new InputStreamReader(System.in))
+	)
+	
+	
+	public void setPortNumber(int pn){
+		portNumber = pn;
+		
+	}
+	
+	public void setHostName(String hn){
+		hostName = hn;
+	}
+
+}

@@ -1,0 +1,7 @@
+package tcp.stream;
+
+public class ControllCommands {
+	static String testcommand = "TEST";
+	static String TRANSFER_SUCCESFULL = "success";
+
+}

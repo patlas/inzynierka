@@ -1,0 +1,13 @@
+package main.window;
+
+import tcp.stream.FileStreamer;
+
+public class MainClass {
+
+	public static void main(String[] args) {
+		
+		FileStreamer fs = new FileStreamer("127.0.0.1", 12345);
+
+	}
+
+}
