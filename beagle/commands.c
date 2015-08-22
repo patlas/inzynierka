@@ -18,3 +18,9 @@ char *get_command(file_t type, command_t command){
 		break;
 	}
 }
+
+
+char *get_serv_cmd(serv_cmd_t command){
+	
+	return serv_cmd[command];
+}

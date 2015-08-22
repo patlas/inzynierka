@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "commands.h"
 
@@ -31,13 +32,15 @@ struct sockaddr_in addr_cli;
 socklen_t addrlen;
 int sockoptval = 1;
 pid_t PID = 0;
-char file_name[20] = {"git.ppt"};
+char file_name2[20] = {"git.ppt"};
 
 char xdo_buff[500];
 
-file_t received_file_type = PPT;
+file_t received_file_type = -1;
 char *current_cmd;
-//char mesg[1000];
+char stream_flag = 0;
+char mesg[1000];
+unsigned long fsize;
 
 int main(void)
 {
@@ -54,6 +57,15 @@ int main(void)
 		return 0;
 	}
 	else printf("Socket has been created\n");
+	
+	/* BARDZO WAŻNE USTAWIANIE FLAGI BLOKOWANIA !!!!!!*/
+	int opts;
+	opts = fcntl(socket_desc,F_GETFL);
+	opts = opts & (~O_NONBLOCK);
+	fcntl(socket_desc,F_SETFL,opts);
+
+/*************************************************/
+	
 
 	if ( bind(socket_desc, (struct sockaddr *)&addr_struct, sizeof(addr_struct)) < 0 ) 
 	{
@@ -68,7 +80,7 @@ int main(void)
 	}
 	else printf("Listening...\n");
 	
-	char mesg[5] ;//= "Testowy napis\n";
+	//char mesg[5] ;//= "Testowy napis\n";
 	int n;
 	socklen_t clilen;
 	while ( (socket_cli = accept(socket_desc, (struct sockaddr *)&addr_cli, &addrlen)) < 0) 
@@ -82,25 +94,100 @@ int main(void)
 		}
         
         //sendto(socket_cli,mesg,14,0,(struct sockaddr *)&addr_cli,sizeof(addr_cli));
-        	printf("Connected");
+        	printf("Connected\n");
          
 	}
 	
-	printf("Connected2");
+	printf("Connected2\n");
 
 rcv_cmd:
-	n = recv(socket_cli, mesg, 10, MSG_WAITALL);
+	n = recv(socket_cli, mesg, 100, 0);
+	printf("rcv_command: %.*s\n",n,mesg);
 	
+	
+	if((memcmp(mesg, get_serv_cmd(stream),n)) == 0){
+		printf("%d %d\n",n,mesg[0]);
+		goto rcv_file;
+	}
+	else if((memcmp(mesg, get_serv_cmd(button),n)) == 0){
+		//obsulga buttonu	
+	}
+	else if((memcmp(mesg, get_serv_cmd(disconnect),n)) == 0){
+		//zrobic disconnect servera i ruszyc od poczatku programu
+	}
+	else {
+		//wrocic do rcv_cmd jezeli kilkakrotnie tak sie stanie lub minie timeout to
+		//cos sie posypalo zorlaczyc klienta i zaczac wszystko od nowa
+	}
+	
+
+
+rcv_file:
+
+	n = recv(socket_cli,mesg,100,0);
+	printf("%d %d\n",n,mesg[0]);
+	//unsigned long fsize;
 	switch(n){
-		case 0: 
-			goto start;
-			break;
-		case -1:
-			goto rcv_cmd;
-			break;		
+		case 1:
+		fsize = mesg[0];
+		break;
+		
+		case 2:
+		fsize = mesg[0]+256*mesg[1];
+		break;
+
+		case 3:
+		fsize = mesg[0]+256*mesg[1]+mesg[2]*65536;
+		break;
+	
+	}	
+	printf("File size is: %d\n",fsize);
+	n = recv(socket_cli,mesg,100,0);
+	printf("Hash code is: %.*s\n",n,mesg);
+	n = recv(socket_cli,mesg,100,0);
+	received_file_type = mesg[0];
+	printf("%d\n",mesg[0]/*file_name[received_file_type]*/);
+			//filename
+	
+	
+	
+	//odbieranie pliku
+	FILE* fd = fopen(file_name[received_file_type], "w+");
+	int rsize = 0;
+	while(rsize<fsize){
+	//n = recvfrom(socket_cli,mesg,100,0,(struct sockaddr *)&addr_cli,&clilen);
+		n=recv(socket_cli,mesg,10,0);
+		printf("Zapisano: %d",n);
+		if(fwrite(mesg,1,n,fd) != n){
+			printf("Blad zapisu pliku");
+			stream_flag = -1;
+			break;	
+		}
+		rsize+=n;
+		printf("rsize = %d", rsize);
+	
+	
+	}
+	fclose(fd);
+	
+	if(stream_flag == -1){
+		//wyslac blad streamu
+		//powrot do odbierania komend -> jezeli klient zadecyduje o retransmisji to tu wrocimy
+		printf("stream_flag = -1");
+		//goto rcv_cmd;
+	}
+	
+	n=recv(socket_cli,mesg,100,0);
+	//sprawdzic hash
+	//DONE -sprawdzic typ pliku i ustawic go w received_file_type
+	
+	if( (memcmp(mesg,SUCCESS_QUERY,n)) == 0 ){
+		printf("SUCCESS_QUERY: %s\n", mesg);
+		printf("Wyslano: %d\n",send(socket_cli,TRANSFER_SUCCESFULL,8,0));
 	}
 	
 	
+	//wyslac potwierdzenei poprawnosci odebrania pliku
 	
 	
 	
@@ -120,15 +207,24 @@ start:
 			case PDF:
 			break;
 			
+			case TXT:
+				execl("/usr/bin/mousepad", "mousepad", "plik.txt", NULL);
+				break;
+			
 			case MOVIE:
 			break;
+			
+			default:
+				printf("Unknown file type");
+				goto rcv_cmd;
+				break;
 		}
 	}
 	
 	//wątek podstawowoy odpowiedzialny za komunikacje i utrzymanie serwera
 	for(;;){
 	
-	n = recvfrom(socket_cli,mesg,5,0,(struct sockaddr *)&addr_cli,&clilen);
+	n = recv(socket_cli,mesg,5,0);
         sendto(socket_cli,"OKI\n",4,0,(struct sockaddr *)&addr_cli,sizeof(addr_cli));
 	printf("%.*s\n",n,mesg);
 	

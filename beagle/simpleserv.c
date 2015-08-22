@@ -11,7 +11,9 @@
 
 
 #define IN_ADDR		INADDR_ANY
-#define IN_PORT		55555
+#define IN_PORT		12345
+
+#define PPT_FILE_NAME	"a.txt"
 
 int socket_desc=0;
 struct sockaddr_in addr_struct;
@@ -75,12 +77,13 @@ int main(void)
 
 	
 
-	n = recvfrom(socket_cli,mesg,100,0,(struct sockaddr *)&addr_cli,&clilen);
-	printf("%.*s\n",n,mesg);
+	n = recv(socket_cli,mesg,100,0);
+	//printf("%.*s\n",n,mesg);
+	printf("%s\n",mesg);
 	printf("%d\n",n);
 
-	if((strcmp(mesg, "stream")) == 0){
-	n = recvfrom(socket_cli,mesg,100,0,(struct sockaddr *)&addr_cli,&clilen);
+	if((memcmp(mesg, "stream",n)) == 0){
+	n = recv(socket_cli,mesg,100,0);
 	printf("%d %d",n,mesg[0]);
 	unsigned long fsize;
 	switch(n){
@@ -98,9 +101,22 @@ int main(void)
 	
 	}	
 	printf("File size is: %d\n",fsize);
-	n = recvfrom(socket_cli,mesg,100,0,(struct sockaddr *)&addr_cli,&clilen);
+	n = recv(socket_cli,mesg,100,0);
 	printf("Hash code is: %.*s\n",n,mesg);
-
+	
+	
+	//odbieranie pliku
+	FILE* fd = fopen(PPT_FILE_NAME, "w+");
+	int rsize = 0;
+	while(rsize<fsize){
+	//n = recvfrom(socket_cli,mesg,100,0,(struct sockaddr *)&addr_cli,&clilen);
+		n=recv(socket_cli,mesg,100,0);
+		if(fwrite(mesg,1,n,fd) != n) printf("Zapisano za malo");
+		rsize+=n;
+	
+	
+	}
+	fclose(fd);
 
 	}
 	//sendto(socket_cli,"success2",8,0,(struct sockaddr *)&addr_cli,sizeof(addr_cli));

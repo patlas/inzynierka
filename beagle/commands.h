@@ -5,11 +5,28 @@
 #define PPTX_FILE	"prezentacja.pttx"
 #define PDF_FILE	"dokument.pdf"
 
+
+//static String testcommand = "TEST__TEST";
+#define TRANSFER_SUCCESFULL  	"success\n"
+#define START_FILE_STREAM  	"stream"
+#define SUCCESS_QUERY  		"squery"
+#define TRANSFER_ERROR		"terror"
+
+
 typedef enum {
-	PPT = 100,
-	PDF = 200,
-	MOVIE = 300
+	PPT = 0,
+	PPTX = 1,
+	PDF = 2,
+	TXT = 3,
+	MOVIE = 30
 } file_t;
+
+static char *file_name[] = {
+	"plik.ppt",
+	"plik.pptx",
+	"plik.pdf",
+	"plik.txt"
+};
 
 
 typedef enum {
@@ -25,9 +42,28 @@ static char *ppt_key[] = {
 };
 
 
+static char *txt_key[] = {
+	"Down"
+};
+
+static char *serv_cmd[] = {
+	"stream",
+	"button",
+	"disconnect"
+};
+
+typedef enum {
+	stream = 0,
+	button,
+	disconnect
+
+} serv_cmd_t;
+
+
 
 
 char *get_command(file_t type, command_t command);
+char *get_serv_cmd(serv_cmd_t command);
 
 
 #endif
