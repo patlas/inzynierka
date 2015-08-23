@@ -14,6 +14,10 @@ char *get_command(file_t type, command_t command){
 		case PDF:
 		break;
 		
+		case TXT:
+			return txt_key[command];
+		break;
+		
 		case MOVIE:
 		break;
 	}

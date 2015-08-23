@@ -33,6 +33,8 @@ static char *file_name[] = {
 typedef enum {
 	next = 0,
 	back,
+	zoomin,
+	zommout,
 	exit_prog
 } command_t;
 

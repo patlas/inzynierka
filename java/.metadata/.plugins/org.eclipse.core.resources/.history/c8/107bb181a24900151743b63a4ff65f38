@@ -1,0 +1,23 @@
+package tcp.stream;
+
+public class ActionKey {
+	
+	int key = -1;
+	
+	public ActionKey(String skey){
+		int index=0;
+		for(String k : keyTab){
+			if(skey.equalsIgnoreCase(k)){
+				key = index;
+			}
+			index++;
+		}
+	}
+	
+	
+	
+	public int getKey(){
+		return key;
+	}
+	
+}

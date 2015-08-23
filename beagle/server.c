@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
 
 #include "commands.h"
 #include "md5hash.h"
@@ -105,6 +106,7 @@ int main(void)
 	
 	printf("Connected2\n");
 
+	int counter = 0;
 rcv_cmd:
 	n = recv(socket_cli, mesg, 100, 0);
 	printf("rcv_command: %.*s\n",n,mesg);
@@ -123,6 +125,11 @@ rcv_cmd:
 	else {
 		//wrocic do rcv_cmd jezeli kilkakrotnie tak sie stanie lub minie timeout to
 		//cos sie posypalo zorlaczyc klienta i zaczac wszystko od nowa
+		counter++;
+		if(counter>10){
+			//pozamykac sockety, zwolnic adres, i restartnac server
+		}
+		goto rcv_cmd;
 	}
 	
 
@@ -202,6 +209,7 @@ rcv_file:
 		//DONE-wyslac potwierdzenei poprawnosci odebrania pliku
 		if( stream_flag < 0 ){ 
 			n = send(socket_cli,TRANSFER_ERROR,sizeof(TRANSFER_ERROR),0);
+			//TODO - w javie okienko - opening file error please try againg
 		}
 		else{
 			n = send(socket_cli,TRANSFER_SUCCESFULL,sizeof(TRANSFER_SUCCESFULL),0);
@@ -238,8 +246,12 @@ start:
 			break;
 			
 			default:
+				//zamykame proces ktory mial otworzyc plik
 				printf("Unknown file type");
-				goto rcv_cmd;
+				//TODO-wyslać informacje przez kolejke do procesu głównego że sie nie udalo
+				//i rozpoczac prace serwera od poczatku
+				exit(1);
+				//goto rcv_cmd;
 				break;
 		}
 	}
@@ -249,9 +261,14 @@ start:
 	
 	//wątek podstawowoy odpowiedzialny za komunikacje i utrzymanie serwera
 	for(;;){
-	
+	//TODO - obierac informacje sterujace z kolejki
 	n = recv(socket_cli,mesg,5,0);
-        sendto(socket_cli,"OKI\n",4,0,(struct sockaddr *)&addr_cli,sizeof(addr_cli));
+	if(kill(PID,0) != 0){
+		//proces potomny został zakończony więc wracamy do początku programu
+		goto rcv_cmd;
+	}
+	
+        send(socket_cli,"OKI\n",4,0);
 	printf("%.*s\n",n,mesg);
 	
 	current_cmd=get_command(received_file_type,(command_t)atoi(mesg));

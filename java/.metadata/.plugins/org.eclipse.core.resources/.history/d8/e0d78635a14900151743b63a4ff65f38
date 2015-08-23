@@ -1,0 +1,11 @@
+package tcp.stream;
+
+public class ActionSender {
+	TCPCommunication tcpcomm = null;
+	
+	public ActionSender(TCPCommunication tcp){
+		tcpcomm = tcp;
+		
+	}
+
+}

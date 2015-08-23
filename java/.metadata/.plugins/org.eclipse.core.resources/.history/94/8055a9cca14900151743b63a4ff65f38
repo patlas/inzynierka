@@ -1,0 +1,13 @@
+package tcp.stream;
+
+public class ActionKey {
+
+	
+	
+	
+	
+	public int getKey(){
+		return key;
+	}
+	
+}

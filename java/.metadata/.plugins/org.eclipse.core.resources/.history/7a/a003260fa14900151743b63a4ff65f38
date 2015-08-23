@@ -1,0 +1,9 @@
+package tcp.stream;
+
+public class ActionSender {
+	
+	ActionSender(TCPCommunication tcp){
+		
+	}
+
+}
