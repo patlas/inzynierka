@@ -11,6 +11,7 @@
 #include <fcntl.h>
 
 #include "commands.h"
+#include "md5hash.h"
 
 
 #define IN_ADDR		INADDR_ANY
@@ -40,10 +41,14 @@ file_t received_file_type = -1;
 char *current_cmd;
 char stream_flag = 0;
 char mesg[1000];
+char chash[32];
+char rhash[32];
 unsigned long fsize;
 
 int main(void)
 {
+
+
 
 	memset( (char*)&addr_struct, 0, sizeof(int) );
 
@@ -144,6 +149,7 @@ rcv_file:
 	printf("File size is: %d\n",fsize);
 	n = recv(socket_cli,mesg,100,0);
 	printf("Hash code is: %.*s\n",n,mesg);
+	memcpy(rhash,mesg,32);
 	n = recv(socket_cli,mesg,100,0);
 	received_file_type = mesg[0];
 	printf("%d\n",mesg[0]/*file_name[received_file_type]*/);
@@ -157,10 +163,10 @@ rcv_file:
 	while(rsize<fsize){
 	//n = recvfrom(socket_cli,mesg,100,0,(struct sockaddr *)&addr_cli,&clilen);
 		n=recv(socket_cli,mesg,10,0);
-		printf("Zapisano: %d",n);
+		
 		if(fwrite(mesg,1,n,fd) != n){
 			printf("Blad zapisu pliku");
-			stream_flag = -1;
+			stream_flag = STREAM_ER;
 			break;	
 		}
 		rsize+=n;
@@ -170,11 +176,21 @@ rcv_file:
 	}
 	fclose(fd);
 	
-	if(stream_flag == -1){
+	if(stream_flag == STREAM_ER){
 		//wyslac blad streamu
 		//powrot do odbierania komend -> jezeli klient zadecyduje o retransmisji to tu wrocimy
 		printf("stream_flag = -1");
 		//goto rcv_cmd;
+	}
+	
+	while(!md5(file_name[received_file_type],chash));
+	
+	if(memcmp(chash,rhash,32) != 0){
+		//hash niepoprawny!!!
+		printf("Hash compare error\n");
+		printf("rHash: %.*s\n",32,rhash);
+		printf("cHash: %.*s\n",32,chash);
+		stream_flag = HASH_ER;
 	}
 	
 	n=recv(socket_cli,mesg,100,0);
@@ -183,11 +199,18 @@ rcv_file:
 	
 	if( (memcmp(mesg,SUCCESS_QUERY,n)) == 0 ){
 		printf("SUCCESS_QUERY: %s\n", mesg);
-		printf("Wyslano: %d\n",send(socket_cli,TRANSFER_SUCCESFULL,8,0));
+		//DONE-wyslac potwierdzenei poprawnosci odebrania pliku
+		if( stream_flag < 0 ){ 
+			n = send(socket_cli,TRANSFER_ERROR,sizeof(TRANSFER_ERROR),0);
+		}
+		else{
+			n = send(socket_cli,TRANSFER_SUCCESFULL,sizeof(TRANSFER_SUCCESFULL),0);
+		}
+		printf("Wyslano: %d\n",n);
 	}
 	
 	
-	//wyslac potwierdzenei poprawnosci odebrania pliku
+	
 	
 	
 	
@@ -220,6 +243,9 @@ start:
 				break;
 		}
 	}
+	
+	//tymczasowo -- do usunięcia
+	if(PID != 0) return 0;
 	
 	//wątek podstawowoy odpowiedzialny za komunikacje i utrzymanie serwera
 	for(;;){

@@ -8,9 +8,10 @@
 
 //static String testcommand = "TEST__TEST";
 #define TRANSFER_SUCCESFULL  	"success\n"
+#define TRANSFER_ERROR		"terror\n"
 #define START_FILE_STREAM  	"stream"
 #define SUCCESS_QUERY  		"squery"
-#define TRANSFER_ERROR		"terror"
+
 
 
 typedef enum {
@@ -59,7 +60,11 @@ typedef enum {
 
 } serv_cmd_t;
 
+typedef enum {
+	STREAM_ER = -1,
+	HASH_ER = -2
 
+} error_t;
 
 
 char *get_command(file_t type, command_t command);
