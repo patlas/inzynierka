@@ -9,8 +9,12 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.UIManager;
+import javax.swing.JTextField;
+import viewer.PPTfileViewer;
+
+
 
 /**
  *
@@ -19,11 +23,19 @@ import javax.swing.UIManager;
 public class MainGui extends javax.swing.JFrame {
     public String fName = null;
     private ProgressDialog pd = null;
+    private boolean pptEffects = true;
+    private boolean fileOpened = false;
+    private PPTfileViewer pptViewer = null;
     /**
      * Creates new form MainGui
      */
     public MainGui() {
         initComponents();
+        
+        pptEffectsCombo.setEnabled(false);
+        pptNextBtn.setEnabled(false);
+        pptPrevBtn.setEnabled(false);
+       
     }
 
     /**
@@ -37,6 +49,12 @@ public class MainGui extends javax.swing.JFrame {
 
         tpCharts = new javax.swing.JTabbedPane();
         pptPane = new javax.swing.JPanel();
+        pptPreviewLabel = new javax.swing.JLabel();
+        pptEffectsCombo = new javax.swing.JComboBox();
+        pptPrevBtn = new javax.swing.JButton();
+        pptNextBtn = new javax.swing.JButton();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 5), new java.awt.Dimension(32767, 10));
+        pptSlideNrTxt = new javax.swing.JTextField();
         pdfPane = new javax.swing.JPanel();
         moviePane = new javax.swing.JPanel();
         topMenuBar = new javax.swing.JMenuBar();
@@ -52,15 +70,77 @@ public class MainGui extends javax.swing.JFrame {
         setName("MainFrame"); // NOI18N
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
+        pptPreviewLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        pptPreviewLabel.setText("PREVIEW UNAVELIABLE IN EFFECTS MODE");
+        pptPreviewLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        pptPreviewLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        pptEffectsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "EFFECTS", "NO EFFECTS" }));
+        pptEffectsCombo.setMaximumSize(new java.awt.Dimension(100, 50));
+        pptEffectsCombo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                pptEffectsComboItemStateChanged(evt);
+            }
+        });
+
+        pptPrevBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/left_arrow_16x16.png"))); // NOI18N
+        pptPrevBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pptPrevBtnActionPerformed(evt);
+            }
+        });
+
+        pptNextBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/right_arrow_16x16.png"))); // NOI18N
+        pptNextBtn.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        pptNextBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pptNextBtnActionPerformed(evt);
+            }
+        });
+
+        pptSlideNrTxt.setBackground(getBackground());
+        pptSlideNrTxt.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        pptSlideNrTxt.setText("x/n");
+        pptSlideNrTxt.setBorder(null);
+        pptSlideNrTxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pptSlideNrTxtActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pptPaneLayout = new javax.swing.GroupLayout(pptPane);
         pptPane.setLayout(pptPaneLayout);
         pptPaneLayout.setHorizontalGroup(
             pptPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 395, Short.MAX_VALUE)
+            .addGroup(pptPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pptPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pptPreviewLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(pptPaneLayout.createSequentialGroup()
+                        .addComponent(pptEffectsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                        .addComponent(pptPrevBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pptSlideNrTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pptNextBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE))
+                    .addComponent(filler1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         pptPaneLayout.setVerticalGroup(
             pptPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 245, Short.MAX_VALUE)
+            .addGroup(pptPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pptPreviewLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pptPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(pptNextBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pptPrevBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pptEffectsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pptSlideNrTxt))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         tpCharts.addTab("Presentation", new javax.swing.ImageIcon(getClass().getResource("/gui/icons/ppt-20.png")), pptPane, "Start PowerPoint presentation"); // NOI18N
@@ -69,11 +149,11 @@ public class MainGui extends javax.swing.JFrame {
         pdfPane.setLayout(pdfPaneLayout);
         pdfPaneLayout.setHorizontalGroup(
             pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 395, Short.MAX_VALUE)
+            .addGap(0, 438, Short.MAX_VALUE)
         );
         pdfPaneLayout.setVerticalGroup(
             pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 245, Short.MAX_VALUE)
+            .addGap(0, 307, Short.MAX_VALUE)
         );
 
         tpCharts.addTab("PDF", new javax.swing.ImageIcon(getClass().getResource("/gui/icons/pdf-20.png")), pdfPane, "View pdf file"); // NOI18N
@@ -82,11 +162,11 @@ public class MainGui extends javax.swing.JFrame {
         moviePane.setLayout(moviePaneLayout);
         moviePaneLayout.setHorizontalGroup(
             moviePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 395, Short.MAX_VALUE)
+            .addGap(0, 438, Short.MAX_VALUE)
         );
         moviePaneLayout.setVerticalGroup(
             moviePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 245, Short.MAX_VALUE)
+            .addGap(0, 307, Short.MAX_VALUE)
         );
 
         tpCharts.addTab("Movie", new javax.swing.ImageIcon(getClass().getResource("/gui/icons/mov-20.png")), moviePane, "Stream movie"); // NOI18N
@@ -149,8 +229,20 @@ public class MainGui extends javax.swing.JFrame {
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
           File selectedFile = fileChooser.getSelectedFile();
-          fName = selectedFile.getName();
-          System.out.println(selectedFile.getName());
+          fName = selectedFile.getPath();
+          System.out.println(selectedFile.getName()+ " " + fName);
+          
+          if(fName.toLowerCase().endsWith(".ppt") || fName.toLowerCase().endsWith(".pptx")){
+            pptViewer = new PPTfileViewer(fName);
+            pptEffectsCombo.setEnabled(true);
+            pptNextBtn.setEnabled(true);
+            pptPrevBtn.setEnabled(true);
+            if(pptEffects == false){
+                pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
+                pptSlideNrTxt.setText(pptViewer.currentSlide+"/"+pptViewer.slidesCount);
+            }   
+          }
+
         }
     }//GEN-LAST:event_mOpenFileActionPerformed
 
@@ -180,6 +272,121 @@ public class MainGui extends javax.swing.JFrame {
 
         //pd.setSize(WIDTH, WIDTH);
     }//GEN-LAST:event_mConnectActionPerformed
+
+    private void pptNextBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pptNextBtnActionPerformed
+        if(pptEffects == false){
+            if(pptViewer.slidesCount>pptViewer.currentSlide){
+                pptViewer.currentSlide++;
+                pptPrevBtn.setEnabled(true);
+                pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
+            }
+
+            if(pptViewer.slidesCount == pptViewer.currentSlide){
+                pptNextBtn.setEnabled(false);
+            }
+            pptSlideNrTxt.setText(pptViewer.currentSlide+"/"+pptViewer.slidesCount);
+        }
+        else{
+            pptPrevBtn.setEnabled(true);
+            pptNextBtn.setEnabled(true);
+        }
+    }//GEN-LAST:event_pptNextBtnActionPerformed
+
+    private void pptPrevBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pptPrevBtnActionPerformed
+
+        if(pptEffects == false){
+            if(pptViewer.slidesCount>=pptViewer.currentSlide){
+                pptViewer.currentSlide--;
+                pptNextBtn.setEnabled(true);
+                pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
+            }
+
+            if(1 == pptViewer.currentSlide){
+                pptPrevBtn.setEnabled(false);
+            }
+            pptSlideNrTxt.setText(pptViewer.currentSlide+"/"+pptViewer.slidesCount);
+        }
+        else{
+            pptPrevBtn.setEnabled(true);
+            pptNextBtn.setEnabled(true);
+        }
+    }//GEN-LAST:event_pptPrevBtnActionPerformed
+
+    private void pptEffectsComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_pptEffectsComboItemStateChanged
+        JComboBox combo = (JComboBox)evt.getSource();
+        int currentIndex = combo.getSelectedIndex();
+
+        //Integer.valueOf(currentQuantity);
+        pptViewer.currentSlide=1;
+        pptEffects = (currentIndex==0);
+        if(pptEffects == true){
+            pptPreviewLabel.setText("PREVIEW UNAVELIABLE IN EFFECTS MODE");
+            pptPreviewLabel.setIcon(null);
+            pptNextBtn.setEnabled(true);
+            pptPrevBtn.setEnabled(false);
+        }
+        else{
+            pptSlideNrTxt.setText(pptViewer.currentSlide+"/"+pptViewer.slidesCount);
+            pptPreviewLabel.setText("");
+            pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
+            if(pptViewer.slidesCount>1){
+                pptNextBtn.setEnabled(true);
+                pptPrevBtn.setEnabled(false);
+            }
+        }
+    }//GEN-LAST:event_pptEffectsComboItemStateChanged
+
+    private void pptSlideNrTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pptSlideNrTxtActionPerformed
+        
+        if(pptEffects == false){
+            JTextField tf = (JTextField)evt.getSource();
+            String text = tf.getText();
+            if(text.contains("/")){
+                int page = Integer.parseInt(text.split("/")[0]);
+                if(page<=pptViewer.slidesCount && page>0){
+                    pptViewer.currentSlide = page;
+                    
+                    if(page==pptViewer.slidesCount){
+                        pptNextBtn.setEnabled(false);
+                        pptPrevBtn.setEnabled(true);
+                    }
+                    else{
+                        pptNextBtn.setEnabled(true);
+                    }
+                    if(page==1){
+                        pptPrevBtn.setEnabled(false);
+                        pptNextBtn.setEnabled(true);
+                    }
+                    else{
+                        pptPrevBtn.setEnabled(true);
+                    }
+                }
+            }
+            else{
+                int page = Integer.parseInt(text);
+                if(page<=pptViewer.slidesCount && page>0){
+                    pptViewer.currentSlide = Integer.parseInt(text);
+                    
+                    if(page==pptViewer.slidesCount){
+                        pptNextBtn.setEnabled(false);
+                        pptPrevBtn.setEnabled(true);
+                    }
+                    else{
+                        pptNextBtn.setEnabled(true);
+                    }
+                    if(page==1){
+                        pptPrevBtn.setEnabled(false);
+                        pptNextBtn.setEnabled(true);
+                    }
+                    else{
+                        pptPrevBtn.setEnabled(true);
+                    }
+                }
+            }
+            pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
+        }
+        
+    }//GEN-LAST:event_pptSlideNrTxtActionPerformed
 
     /**
      * @param args the command line arguments
@@ -212,6 +419,9 @@ public class MainGui extends javax.swing.JFrame {
         
         //</editor-fold>
 
+        
+        //XMLSlideShow pptx = new XMLSlideShow(new FileInputStream("slideshow.pptx"));
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -221,6 +431,7 @@ public class MainGui extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.Box.Filler filler1;
     private javax.swing.JMenuItem mConnect;
     private javax.swing.JMenuItem mExit;
     private javax.swing.JMenuItem mOpenFile;
@@ -230,7 +441,12 @@ public class MainGui extends javax.swing.JFrame {
     private javax.swing.JMenu menuFile;
     public javax.swing.JPanel moviePane;
     public javax.swing.JPanel pdfPane;
-    public javax.swing.JPanel pptPane;
+    private javax.swing.JComboBox pptEffectsCombo;
+    private javax.swing.JButton pptNextBtn;
+    private javax.swing.JPanel pptPane;
+    private javax.swing.JButton pptPrevBtn;
+    private javax.swing.JLabel pptPreviewLabel;
+    private javax.swing.JTextField pptSlideNrTxt;
     private javax.swing.JMenuBar topMenuBar;
     private javax.swing.JTabbedPane tpCharts;
     // End of variables declaration//GEN-END:variables
