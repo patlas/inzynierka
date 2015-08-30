@@ -9,9 +9,13 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
+import tcp.stream.FileStreamer;
+import tcp.stream.TCPCommunication;
 import viewer.PPTfileViewer;
 
 
@@ -21,11 +25,17 @@ import viewer.PPTfileViewer;
  * @author PatLas
  */
 public class MainGui extends javax.swing.JFrame {
+    
+    static int PORT = 12345;
+    static String ADDRESS = "127.0.0.1";
+    
     public String fName = null;
     private ProgressDialog pd = null;
     private boolean pptEffects = true;
     private boolean fileOpened = false;
     private PPTfileViewer pptViewer = null;
+    private TCPCommunication tcpcomm = null;
+    private Thread progressThread = null;
     /**
      * Creates new form MainGui
      */
@@ -35,6 +45,7 @@ public class MainGui extends javax.swing.JFrame {
         pptEffectsCombo.setEnabled(false);
         pptNextBtn.setEnabled(false);
         pptPrevBtn.setEnabled(false);
+        mOpenFile.setEnabled(false);
        
     }
 
@@ -227,10 +238,44 @@ public class MainGui extends javax.swing.JFrame {
     private void mOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mOpenFileActionPerformed
        JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(null);
+        
+        //close recently opened file
+        if(fName != null){
+           //czy na pewno trzeba?
+        }
+        
+        //streamowanie pliku
+        
+        //pd.pProgressBar.setValue(70);
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                pd.setVisible(true);
+                progressThread = Thread.currentThread();
+                while(!Thread.currentThread().isInterrupted());
+                pd.dispatchEvent(new WindowEvent(pd, WindowEvent.WINDOW_CLOSING));
+                return;
+            }
+        });
+ 
+
+        
         if (returnValue == JFileChooser.APPROVE_OPTION) {
           File selectedFile = fileChooser.getSelectedFile();
           fName = selectedFile.getPath();
           System.out.println(selectedFile.getName()+ " " + fName);
+          
+          //file transfer
+          if(tcpcomm != null){
+            FileStreamer fs = new FileStreamer(tcpcomm);
+            if(fs.streamFile(fName)){
+                progressThread.interrupt();
+            }
+            else{
+                //błąd transmisji pliku!!!!
+            }
+          }
+          
+          
           
           if(fName.toLowerCase().endsWith(".ppt") || fName.toLowerCase().endsWith(".pptx")){
             pptViewer = new PPTfileViewer(fName);
@@ -248,16 +293,17 @@ public class MainGui extends javax.swing.JFrame {
 
     private void mExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mExitActionPerformed
         // TODO add your handling code here:
-        if(pd != null){
+        /*if(pd != null){
             pd.pProgressBar.setValue(100);
             pd.dispatchEvent(new WindowEvent(pd, WindowEvent.WINDOW_CLOSING));
-        }
-        
+        }*/
+
+ 
     }//GEN-LAST:event_mExitActionPerformed
 
     private void mConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mConnectActionPerformed
-        // TODO add your handling code here:
 
+/*
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int width = gd.getDisplayMode().getWidth();
         int height = gd.getDisplayMode().getHeight();
@@ -271,6 +317,28 @@ public class MainGui extends javax.swing.JFrame {
         });
 
         //pd.setSize(WIDTH, WIDTH);
+ */ 
+        if(mConnect.getText().equalsIgnoreCase("connect")){
+            if(tcpcomm == null){
+                try{
+                    tcpcomm = new TCPCommunication(ADDRESS, PORT);
+                }catch(UnknownHostException he){
+                    
+                }catch(IOException e){
+                    
+                }
+            }
+            if(tcpcomm.isConnected()){
+                mConnect.setText("Disconnect");
+                mOpenFile.setEnabled(true);
+            }
+        }
+        else{
+            while(!tcpcomm.disconnect());
+            tcpcomm = null;
+            mConnect.setText("Connect");
+            mOpenFile.setEnabled(false);
+        }
     }//GEN-LAST:event_mConnectActionPerformed
 
     private void pptNextBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pptNextBtnActionPerformed
@@ -388,6 +456,14 @@ public class MainGui extends javax.swing.JFrame {
         
     }//GEN-LAST:event_pptSlideNrTxtActionPerformed
 
+    
+    public void createDialog(){
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int width = gd.getDisplayMode().getWidth();
+        int height = gd.getDisplayMode().getHeight();
+        pd = new ProgressDialog();
+        pd.setSize((int) Math.round(width*0.3), (int) Math.round(height*0.1));
+    }
     /**
      * @param args the command line arguments
      */

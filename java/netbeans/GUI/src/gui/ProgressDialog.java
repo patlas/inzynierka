@@ -24,6 +24,7 @@ public class ProgressDialog extends javax.swing.JFrame {
 
         pProgressBar.setValue(30);
         pProgressBar.setVisible(true);
+        pProgressBar.setIndeterminate(true);
     }
 
     /**
