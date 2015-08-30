@@ -45,6 +45,7 @@ char mesg[1000];
 char chash[32];
 char rhash[32];
 unsigned long fsize;
+uint32_t ss[5];
 
 int main(void)
 {
@@ -135,24 +136,14 @@ rcv_cmd:
 
 
 rcv_file:
-
-	n = recv(socket_cli,mesg,100,0);
-	printf("%d %d\n",n,mesg[0]);
-	//unsigned long fsize;
-	switch(n){
-		case 1:
-		fsize = mesg[0];
-		break;
-		
-		case 2:
-		fsize = mesg[0]+256*mesg[1];
-		break;
-
-		case 3:
-		fsize = mesg[0]+256*mesg[1]+mesg[2]*65536;
-		break;
 	
-	}	
+	n = recv(socket_cli,mesg,100,0);
+	char *end;
+	mesg[n] = '\0';
+	fsize = strtol(mesg, &end, 10);
+	//n = recv(socket_cli,ss,5,0);
+	printf("String size: %.*s\n",n,mesg);
+	printf("Long size: %d\n",fsize);
 	printf("File size is: %d\n",fsize);
 	n = recv(socket_cli,mesg,100,0);
 	printf("Hash code is: %.*s\n",n,mesg);
@@ -166,20 +157,23 @@ rcv_file:
 	
 	//odbieranie pliku
 	FILE* fd = fopen(file_name[received_file_type], "w+");
-	int rsize = 0;
+	unsigned long rsize = 0;
 	while(rsize<fsize){
 	//n = recvfrom(socket_cli,mesg,100,0,(struct sockaddr *)&addr_cli,&clilen);
 		n=recv(socket_cli,mesg,10,0);
 		
-		if(fwrite(mesg,1,n,fd) != n){
-			printf("Blad zapisu pliku");
-			stream_flag = STREAM_ER;
-			break;	
+		if(stream_flag != STREAM_ER){
+			if(fwrite(mesg,1,n,fd) != n){
+				printf("Blad zapisu pliku");
+				stream_flag = STREAM_ER;
+				fclose(fd);
+				//break;	
+			}
 		}
 		rsize+=n;
 		printf("rsize = %d", rsize);
 	
-	
+	//PRZERYWAM ODBIRANIE I CO??? JAVA DALEJ WYSYŁA I WTEDY ODBIERAM ZLE KOMUNIKATY - zakomentowany break
 	}
 	fclose(fd);
 	
@@ -190,6 +184,11 @@ rcv_file:
 		//goto rcv_cmd;
 	}
 	
+	n=recv(socket_cli,mesg,100,0);
+	printf("Query: %.*s\n",n,mesg);
+	//sprawdzic hash
+	//DONE -sprawdzic typ pliku i ustawic go w received_file_type
+	
 	while(!md5(file_name[received_file_type],chash));
 	
 	if(memcmp(chash,rhash,32) != 0){
@@ -199,10 +198,6 @@ rcv_file:
 		printf("cHash: %.*s\n",32,chash);
 		stream_flag = HASH_ER;
 	}
-	
-	n=recv(socket_cli,mesg,100,0);
-	//sprawdzic hash
-	//DONE -sprawdzic typ pliku i ustawic go w received_file_type
 	
 	if( (memcmp(mesg,SUCCESS_QUERY,n)) == 0 ){
 		printf("SUCCESS_QUERY: %s\n", mesg);
@@ -230,10 +225,11 @@ start:
 	PID = vfork();
 	//wątek obsługujący programy otwierające pliki
 	if( PID == 0 ){
+		printf("Starting process pid: %d", getpid());
 		
 		switch(received_file_type){
 			case PPT:
-				execl(SOFFICE_PATH, "soffice", "--show", PPT_FILE, NULL);
+				execl(SOFFICE_PATH, "soffice", "--show", file_name[PPT], NULL);
 				break;
 			case PDF:
 			break;
@@ -257,24 +253,31 @@ start:
 	}
 	
 	//tymczasowo -- do usunięcia
-	if(PID != 0) return 0;
+	//if(PID != 0) return 0;
 	
 	//wątek podstawowoy odpowiedzialny za komunikacje i utrzymanie serwera
 	for(;;){
 	//TODO - obierac informacje sterujace z kolejki
-	n = recv(socket_cli,mesg,5,0);
+	printf("Czekam na komende\n");
+	n = recv(socket_cli,mesg,100,0);
+	printf("Command: %d",mesg[0]);
 	if(kill(PID,0) != 0){
 		//proces potomny został zakończony więc wracamy do początku programu
-		goto rcv_cmd;
+		//goto rcv_cmd;
+		printf("Zabito program\n");
 	}
+	//printf("%d\n",mesg[0]);
 	
-        send(socket_cli,"OKI\n",4,0);
-	printf("%.*s\n",n,mesg);
+	/* POPRAWNY INTERPRETER KOMEND:
+	 * current_cmd=get_command(received_file_type,(command_t)atoi(mesg));
+	 * */
 	
-	current_cmd=get_command(received_file_type,(command_t)atoi(mesg));
 	//printf("%s",current_cmd);
 	//wątek dodatkowy do obsługi xdotool
-	if(vfork()==0){
+	
+	
+	/* DOBRZE NAPISANE STEROWANIE PONIZEJ !!!!!!!!!!!
+	 *if(vfork()==0){
 	//ewentualnie zrobic kolejke  skoro dane system zeby nie tworzyc nowego procesu za kazdym razem
 		SHELL(current_cmd);
 		printf("%s",current_cmd);
@@ -283,7 +286,7 @@ start:
 		
 		exit(1);
 		
-	}
+	}*/
 	
 	}
 

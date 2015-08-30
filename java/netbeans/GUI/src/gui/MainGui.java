@@ -247,7 +247,7 @@ public class MainGui extends javax.swing.JFrame {
         //streamowanie pliku
         
         //pd.pProgressBar.setValue(70);
-        java.awt.EventQueue.invokeLater(new Runnable() {
+        /*java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 pd.setVisible(true);
                 progressThread = Thread.currentThread();
@@ -255,7 +255,7 @@ public class MainGui extends javax.swing.JFrame {
                 pd.dispatchEvent(new WindowEvent(pd, WindowEvent.WINDOW_CLOSING));
                 return;
             }
-        });
+        });*/
  
 
         
@@ -268,10 +268,12 @@ public class MainGui extends javax.swing.JFrame {
           if(tcpcomm != null){
             FileStreamer fs = new FileStreamer(tcpcomm);
             if(fs.streamFile(fName)){
-                progressThread.interrupt();
+                //progressThread.interrupt();
+                System.out.println("Plik wysłano pomyślnie");
             }
             else{
                 //błąd transmisji pliku!!!!
+                System.out.println("Bład wysyłanai pliku");
             }
           }
           
@@ -347,6 +349,11 @@ public class MainGui extends javax.swing.JFrame {
                 pptViewer.currentSlide++;
                 pptPrevBtn.setEnabled(true);
                 pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
+                
+                //TYMCZASOWA PROWIZORKA
+                tcpcomm.sendCommand(1);
+                
+                
             }
 
             if(pptViewer.slidesCount == pptViewer.currentSlide){
@@ -357,6 +364,8 @@ public class MainGui extends javax.swing.JFrame {
         else{
             pptPrevBtn.setEnabled(true);
             pptNextBtn.setEnabled(true);
+            //TYMCZASOWA PROWIZORKA
+                tcpcomm.sendCommand(1);
         }
     }//GEN-LAST:event_pptNextBtnActionPerformed
 

@@ -83,11 +83,12 @@ public class FileStreamer {
 		
 		if(outBufferedStream != null){
 			File fd = new File(fileName);
-			byte[] fileByteArray = new byte[1024/*(int) fd.length()*/];
+                        System.out.println((int)fd.length());
+			byte[] fileByteArray = new byte[(int) fd.length()];
 			
 			//send info that file will be streamed
 			tcpcomm.sendCommand(ControllCommands.START_FILE_STREAM);
-			tcpcomm.sendCommand((int)fd.length());
+			tcpcomm.sendCommand(Integer.toString((int)fd.length()));
 			tcpcomm.sendCommand(getHash(fileName));
 			
 			int index=0;
@@ -144,6 +145,11 @@ public class FileStreamer {
 	}
 	
 	private boolean isTransferSuccesfull(){
+            try{
+                Thread.sleep(2000); 
+            }catch(InterruptedException ie){
+                
+            }
 		//TODO dodac jakis timeout zeby nie czekal w nieskonczonosc :D
 		while(!tcpcomm.sendCommand(ControllCommands.SUCCESS_QUERY));
 		System.out.println("Command send");

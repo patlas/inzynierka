@@ -25,11 +25,14 @@ public class TCPCommunication {
 	
 	public boolean sendCommand(String command){
 		outStream.write(command);
+                System.out.print("String: ");
+                System.out.println(command);
 		return !outStream.checkError();
 	}
 	
 	public boolean sendCommand(Integer value){
 		outStream.write(value);
+                System.out.println(value);
 		return !outStream.checkError();
 	}
 	
