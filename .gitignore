@@ -32,5 +32,8 @@
 *.dSYM/
 
 #java bin
-java/vlc/.metadata/*
-java/vlc/.recommenders/*
+#java/vlc/.metadata/*
+#java/vlc/.recommenders/*
+/java/netbeans/GUI/nbproject/private/
+/java/netbeans/GUI/build/
+/java/netbeans/GUI/dist/

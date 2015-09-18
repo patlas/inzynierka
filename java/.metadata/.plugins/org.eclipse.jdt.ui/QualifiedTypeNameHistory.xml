@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
+<<<<<<< Updated upstream
 <fullyQualifiedTypeName name="javax.activation.MimetypesFileTypeMap"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
+=======
+<fullyQualifiedTypeName name="java.io.BufferedOutputStream"/>
+<fullyQualifiedTypeName name="java.io.FileInputStream"/>
+<fullyQualifiedTypeName name="java.io.BufferedInputStream"/>
+<fullyQualifiedTypeName name="java.nio.file.Files"/>
+<fullyQualifiedTypeName name="java.security.MessageDigest"/>
+<fullyQualifiedTypeName name="java.io.InputStream"/>
+<fullyQualifiedTypeName name="java.nio.file.Paths"/>
+<fullyQualifiedTypeName name="java.security.DigestInputStream"/>
+<fullyQualifiedTypeName name="tcp.stream.FileStreamer"/>
+>>>>>>> Stashed changes
 </qualifiedTypeNameHistroy>

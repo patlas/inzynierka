@@ -7,13 +7,14 @@ package gui;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
+import tcp.stream.ControllCommands;
 import tcp.stream.FileStreamer;
 import tcp.stream.TCPCommunication;
 import viewer.PPTfileViewer;
@@ -22,7 +23,7 @@ import viewer.PPTfileViewer;
 
 /**
  *
- * @author PatLas
+ * @author Max
  */
 public class MainGui extends javax.swing.JFrame {
     
@@ -40,6 +41,7 @@ public class MainGui extends javax.swing.JFrame {
      * Creates new form MainGui
      */
     public MainGui() {
+
         initComponents();
         
         pptEffectsCombo.setEnabled(false);
@@ -351,7 +353,8 @@ public class MainGui extends javax.swing.JFrame {
                 pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
                 
                 //TYMCZASOWA PROWIZORKA
-                tcpcomm.sendCommand(1);
+                tcpcomm.sendCommand((int)ControllCommands.ppt_nextp);
+               
                 
                 
             }
@@ -365,7 +368,7 @@ public class MainGui extends javax.swing.JFrame {
             pptPrevBtn.setEnabled(true);
             pptNextBtn.setEnabled(true);
             //TYMCZASOWA PROWIZORKA
-                tcpcomm.sendCommand(1);
+                tcpcomm.sendCommand((int)ControllCommands.ppt_next);
         }
     }//GEN-LAST:event_pptNextBtnActionPerformed
 

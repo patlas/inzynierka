@@ -21,7 +21,7 @@ import org.apache.poi.xslf.usermodel.XSLFSlide;
 
 /**
  *
- * @author PatLas
+ * @author Max
  */
 public class PPTfileViewer {
     private String fPath = null;

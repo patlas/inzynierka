@@ -10,7 +10,7 @@ import javax.swing.JProgressBar;
 
 /**
  *
- * @author PatLas
+ * @author Max
  */
 public class ProgressDialog extends javax.swing.JFrame {
 

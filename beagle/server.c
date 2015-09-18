@@ -39,14 +39,14 @@ char file_name2[20] = {"git.ppt"};
 char xdo_buff[500];
 
 file_t received_file_type = -1;
-char *current_cmd;
+uint8_t current_cmd;
 char stream_flag = 0;
 char mesg[1000];
 char chash[32];
 char rhash[32];
 unsigned long fsize;
 uint32_t ss[5];
-
+uint16_t pptCurrentPage = 1;
 int main(void)
 {
 
@@ -261,10 +261,55 @@ start:
 	printf("Czekam na komende\n");
 	n = recv(socket_cli,mesg,100,0);
 	printf("Command: %d",mesg[0]);
+	
+	if(n==1){
+		current_cmd = mesg[0];
+	}
+	
 	if(kill(PID,0) != 0){
 		//proces potomny został zakończony więc wracamy do początku programu
 		//goto rcv_cmd;
 		printf("Zabito program\n");
+	}
+	
+	uint16_t actionPage = pptCurrentPage;
+	uint8_t strCommand[16];
+	uint8_t pindex=0;
+	
+	switch(received_file_type){
+		
+		case PPT:
+			
+			switch(current_cmd){
+				case ppt_nextp:
+					actionPage+=2;
+					pindex = sprintf(strCommand, "%d", actionPage);
+					memcpy(&strCommand[pindex],"+ Enter Left\0",13);
+					printf("Str command: %s\n",strCommand);
+					pptCurrentPage++;
+				break;
+			
+				case ppt_prevp:
+					//actionPage+=2;
+					pindex = sprintf(strCommand, "%d", actionPage);
+					memcpy(&strCommand[pindex],"+ Enter Left\0",13);
+					printf("Str command: %s\n",strCommand);
+					pptCurrentPage--;
+				break;
+				
+			}
+			
+			if(vfork()==0){
+				SHELL(strCommand);
+				printf("%s",xdo_buff);
+				//system(xdo_buff);
+				exit(1);
+			}	
+			
+			break;
+		
+		
+		
 	}
 	//printf("%d\n",mesg[0]);
 	

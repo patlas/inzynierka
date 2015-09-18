@@ -3,26 +3,35 @@ package tcp.stream;
 import java.util.ArrayList;
 
 public class ControllCommands {
-	static String testcommand = "TEST__TEST";
-	static String TRANSFER_SUCCESFULL = "success";
-	static String START_FILE_STREAM = "stream";
-	static String SUCCESS_QUERY = "squery";
-	static String TRANSFER_ERROR = "terror";
+	public static String testcommand = "TEST__TEST";
+	public static String TRANSFER_SUCCESFULL = "success";
+	public static String START_FILE_STREAM = "stream";
+	public static String SUCCESS_QUERY = "squery";
+	public static String TRANSFER_ERROR = "terror";
 	
-	static byte PPT = 0;
-	static byte PPTX = 1;
-	static byte PDF = 2;
-	static byte TXT = 3;
-	static byte MOVIE = 30;
+	public static byte PPT = 0;
+	public static byte PPTX = 1;
+	public static byte PDF = 2;
+	public static byte TXT = 3;
+	public static byte MOVIE = 30;
+        
+        
+        public static byte ppt_nextp = 1;
+	public static byte ppt_prevp = 2;
+	public static byte ppt_next = 3;
+	public static byte ppt_prev = 4;
+	public static byte ppt_exit = 5;
+        
+        
 	
-	static String[] FILE_TYPES = {
+	public static String[] FILE_TYPES = {
 		"ppt",
 		"pptx",
 		"pdf",
 		"txt"
 	};
 	
-	static String[] KEY_TAB = {
+	public static String[] KEY_TAB = {
 			
 	};
 	

@@ -31,12 +31,23 @@ static char *file_name[] = {
 
 
 typedef enum {
-	next = 0,
-	back,
+	//next = 0,
+	//back,
+	//nextp,
+	//prevp,
 	zoomin,
 	zommout,
 	exit_prog
 } command_t;
+
+
+enum PPTcommands{
+	ppt_nextp = 1,
+	ppt_prevp,
+	ppt_next,
+	ppt_prev,
+	ppt_exit
+};
 
 static char *ppt_key[] = {
 	"Down",
