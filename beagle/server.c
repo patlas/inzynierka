@@ -81,6 +81,8 @@ int main(void)
 	}
 	else printf("Binding has ended succesfully\n");
 
+server_listen:
+
 	if( listen(socket_desc,1) < 0)
 	{
 		perror("Listen failed\n");
@@ -229,7 +231,7 @@ start:
 		
 		switch(received_file_type){
 			case PPT:
-				execl(SOFFICE_PATH, "soffice", "--show", file_name[PPT], NULL);
+				//execl(SOFFICE_PATH, "soffice", "--show", file_name[PPT], NULL);
 				break;
 			case PDF:
 			break;
@@ -262,6 +264,17 @@ start:
 	n = recv(socket_cli,mesg,100,0);
 	printf("Command: %d",mesg[0]);
 	
+	if(n<=0){
+	//zamknac watek z otwartym plikiem (jezeli takowy istnieje)
+	//zrestartowac polaczenie (ewentualnie zakonczyc bierzace
+		printf("\n CONNECTION LOST - RESTARTING SERVER \n");
+		pptCurrentPage = 1;
+	//wyzerowac inne istotne zmienne
+		goto server_listen;
+	
+	
+	}
+	
 	if(n==1){
 		current_cmd = mesg[0];
 	}
@@ -273,7 +286,8 @@ start:
 	}
 	
 	uint16_t actionPage = pptCurrentPage;
-	uint8_t strCommand[16];
+	uint8_t tmpCmd[6];
+	uint8_t strCommand[20];
 	uint8_t pindex=0;
 	
 	switch(received_file_type){
@@ -283,18 +297,58 @@ start:
 			switch(current_cmd){
 				case ppt_nextp:
 					actionPage+=2;
-					pindex = sprintf(strCommand, "%d", actionPage);
-					memcpy(&strCommand[pindex],"+ Enter Left\0",13);
+					pindex = sprintf(&tmpCmd[0], "%d", actionPage);
+					printf("KOMENDA: %d, %s\n",pindex, tmpCmd);
+					
+					for(uint8_t i=0, j=0; i<(2*pindex-1); i++, j++)
+					{
+						printf("I: J: %d, %d", i,j);
+						strCommand[i++] = tmpCmd[j];
+						strCommand[i] = '+';
+					}
+					
+					memcpy(&strCommand[2*pindex],"KP_Enter+Left\0",14);
 					printf("Str command: %s\n",strCommand);
 					pptCurrentPage++;
 				break;
 			
 				case ppt_prevp:
 					//actionPage+=2;
-					pindex = sprintf(strCommand, "%d", actionPage);
-					memcpy(&strCommand[pindex],"+ Enter Left\0",13);
+					
+					pindex = sprintf(&tmpCmd[0], "%d", actionPage);
+					
+				//printf("Poprzednia STRONA %d, %s, %d\n", actionPage, tmpCmd, pindex);
+					
+					for(uint8_t i=0, j=0; i<(2*pindex-1); i++, j++)
+					{
+						//printf("I: J: %d, %d, %s", i,j, tmpCmd[j]);
+						strCommand[i++] = tmpCmd[j];
+						strCommand[i] = '+';
+					}
+					
+					memcpy(&strCommand[2*pindex],"KP_Enter+Left\0",14);
 					printf("Str command: %s\n",strCommand);
 					pptCurrentPage--;
+				break;
+				
+				case ppt_prev:
+					
+					memcpy(&strCommand[0], "Left\0",5);
+					printf("Previous effect\n");
+				
+				
+				break;
+				
+				case ppt_next:
+				
+					memcpy(&strCommand[0], "Right\0",6);
+					printf("Next effect\n");
+					
+				break;
+				
+				
+				default:
+					printf("UNKNOWN COMMAND\n");
 				break;
 				
 			}

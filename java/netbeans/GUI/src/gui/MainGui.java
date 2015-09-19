@@ -379,6 +379,11 @@ public class MainGui extends javax.swing.JFrame {
                 pptViewer.currentSlide--;
                 pptNextBtn.setEnabled(true);
                 pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
+                
+                
+                //TYMCZASOWA PROWIZORKA
+                tcpcomm.sendCommand((int)ControllCommands.ppt_prevp);
+                
             }
 
             if(1 == pptViewer.currentSlide){
@@ -389,6 +394,10 @@ public class MainGui extends javax.swing.JFrame {
         else{
             pptPrevBtn.setEnabled(true);
             pptNextBtn.setEnabled(true);
+            
+            //TYMCZASOWA PROWIZORKA
+                tcpcomm.sendCommand((int)ControllCommands.ppt_prev);
+                
         }
     }//GEN-LAST:event_pptPrevBtnActionPerformed
 
