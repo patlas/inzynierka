@@ -14,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 
 import exceptions.ErrorException;
+import java.net.SocketException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeoutException;
 
 public class FileStreamer {
 	
+        static final int SEND_BUFF_SIZE = 100;
 	int portNumber;
 	String hostName = null;
 	Socket streamSocket = null;
@@ -44,6 +46,9 @@ public class FileStreamer {
 		hostName = hn;
 		portNumber = pn;
 		streamSocket = new Socket(hostName, portNumber);
+                
+                streamSocket.setSendBufferSize(SEND_BUFF_SIZE);
+                
 		outStream = new PrintWriter(streamSocket.getOutputStream(), true);
 	}
 	
@@ -57,6 +62,8 @@ public class FileStreamer {
 			streamSocket = new Socket(hostName, portNumber);
 			outStream = new PrintWriter(streamSocket.getOutputStream(), true);
 		}
+                
+                streamSocket.setSendBufferSize(SEND_BUFF_SIZE);
 		
 	}
 	
@@ -67,6 +74,14 @@ public class FileStreamer {
 		outStream = tcp.outStream;
 		tcpcomm = tcp;
 		
+                try{
+                    streamSocket.setSendBufferSize(SEND_BUFF_SIZE);
+                    streamSocket.setTcpNoDelay(false);
+                }catch(SocketException se){
+                    
+                }
+                
+                
 	}
 
 	
@@ -90,6 +105,13 @@ public class FileStreamer {
 			//send info that file will be streamed
 			tcpcomm.sendCommand(ControllCommands.START_FILE_STREAM);
 			tcpcomm.sendCommand(Integer.toString((int)fd.length()));
+                        
+                        try{
+                            Thread.sleep(300); 
+                        }catch(InterruptedException ie){
+
+                        }
+                        
 			tcpcomm.sendCommand(getHash(fileName));
 			
 			int index=0;
@@ -102,7 +124,11 @@ public class FileStreamer {
 			
 			//return true;
 			
-		
+                        try{
+                            Thread.sleep(300); 
+                        }catch(InterruptedException ie){
+
+                        }
 			
 			FileInputStream fileStream = null;
 			
