@@ -28,7 +28,7 @@ import viewer.PPTfileViewer;
 public class MainGui extends javax.swing.JFrame {
     
     static int PORT = 12345;
-    static String ADDRESS = "127.0.0.1";
+    static String ADDRESS = "192.168.1.20";//"127.0.0.1";
     
     public String fName = null;
     private ProgressDialog pd = null;

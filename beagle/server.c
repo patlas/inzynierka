@@ -138,6 +138,15 @@ rcv_cmd:
 
 
 rcv_file:
+
+/********************* setting timeout for receiving file to avoid waiting in infinite time ***********/
+
+	struct timeval tv;
+	tv.tv_sec = 10;  /* 30 Secs Timeout */
+	tv.tv_usec = 0;  // Not init'ing this can cause strange errors
+
+	setsockopt(socket_desc, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
+/******************************************************************************************************/
 	
 	n = recv(socket_cli,mesg,100,0);
 	char *end;
@@ -163,6 +172,11 @@ rcv_file:
 	while(rsize<fsize){
 	//n = recvfrom(socket_cli,mesg,100,0,(struct sockaddr *)&addr_cli,&clilen);
 		n=recv(socket_cli,mesg,10,0);
+		if(n<0){
+			printf("Blad transferu pliku - trzeba cos tu zrobic");
+			n = send(socket_cli,TRANSFER_ERROR,sizeof(TRANSFER_ERROR),0);
+				
+		}
 		
 		if(stream_flag != STREAM_ER){
 			if(fwrite(mesg,1,n,fd) != n){
@@ -355,7 +369,7 @@ start:
 			
 			if(vfork()==0){
 				SHELL(strCommand);
-				printf("%s",xdo_buff);
+				printf("TUTAJ: %s",xdo_buff);
 				//system(xdo_buff);
 				exit(1);
 			}	

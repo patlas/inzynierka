@@ -6,19 +6,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import javax.activation.MimetypesFileTypeMap;
 
 import exceptions.ErrorException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class FileStreamer {
 	
@@ -139,7 +140,7 @@ public class FileStreamer {
 		 */
 		
 		//outStream.wr
-		System.out.println("Jestem tutaj");
+		System.out.println("Streaming done");
 		return isTransferSuccesfull();
 		
 	}
@@ -151,19 +152,56 @@ public class FileStreamer {
                 
             }
 		//TODO dodac jakis timeout zeby nie czekal w nieskonczonosc :D
-		while(!tcpcomm.sendCommand(ControllCommands.SUCCESS_QUERY));
-		System.out.println("Command send");
+
+                ExecutorService service = Executors.newSingleThreadExecutor();
+
+                try {
+                    Runnable r = new Runnable() {
+                        @Override
+                        public void run() {
+                            while(!tcpcomm.sendCommand(ControllCommands.SUCCESS_QUERY));
+                        }
+                    };
+
+                    Future<?> f = service.submit(r);
+
+                    f.get(2, TimeUnit.MINUTES);     // attempt the task for two minutes
+                }
+                catch (final InterruptedException e) {
+                    // The thread was interrupted during sleep, wait or join
+                }
+                catch (final TimeoutException e) {
+                    System.out.println("Can not send SUCCESS_QUERY command!");
+                    service.shutdown();
+                }
+                catch (final ExecutionException e) {
+                    // An exception from within the Runnable task
+                }
+                finally {
+                    service.shutdown();
+                    System.out.println("Command send");
+                }
+            
+            
+		
+		
 		
 		try {
+                        Thread.sleep(2000);
 			if(tcpcomm.receiveCommand().equals(ControllCommands.TRANSFER_SUCCESFULL))
 				return true;
-			else
+                        else{
+                                System.out.println("Transfer not successful - restart connection");
 				return false;
+                        }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
-		}
+		} catch (InterruptedException ie){
+                }  
+                return false;
+            
 	}
 	
 	private static String convertByteArrayToHexString(byte[] arrayBytes) {
