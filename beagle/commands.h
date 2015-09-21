@@ -23,7 +23,7 @@ typedef enum {
 } file_t;
 
 static char *file_name[] = {
-	"plik.ppt",
+	/*"/home/bananapi/Documents/ramdisk/*/"plik.ppt",
 	"plik.pptx",
 	"plik.pdf",
 	"plik.txt"

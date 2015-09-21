@@ -1,6 +1,10 @@
 #ifndef __MD5HASH_H__
 #define __MD5HASH_H__
 
+#define _XOPEN_SOURCE
+#define _BSD_SOURCE
+
+
 #include <stdio.h>
 #include <ctype.h>
 
