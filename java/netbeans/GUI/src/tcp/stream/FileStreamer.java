@@ -104,15 +104,11 @@ public class FileStreamer {
 			
 			//send info that file will be streamed
 			tcpcomm.sendCommand(ControllCommands.START_FILE_STREAM);
-			tcpcomm.sendCommand(Integer.toString((int)fd.length()));
-                        
-                        try{
-                            Thread.sleep(300); 
-                        }catch(InterruptedException ie){
-
-                        }
-                        
+                        delay(300);
+			tcpcomm.sendCommand(Integer.toString((int)fd.length()));                    
+                        delay(300);  
 			tcpcomm.sendCommand(getHash(fileName));
+                        delay(300);
 			
 			int index=0;
 			for(String type : ControllCommands.FILE_TYPES){
@@ -121,15 +117,7 @@ public class FileStreamer {
 				}
 				index++;
 			}
-			
-			//return true;
-			
-                        try{
-                            Thread.sleep(300); 
-                        }catch(InterruptedException ie){
 
-                        }
-			
 			FileInputStream fileStream = null;
 			
 			try {
@@ -172,11 +160,7 @@ public class FileStreamer {
 	}
 	
 	private boolean isTransferSuccesfull(){
-            try{
-                Thread.sleep(2000); 
-            }catch(InterruptedException ie){
-                
-            }
+            delay(2000);
 		//TODO dodac jakis timeout zeby nie czekal w nieskonczonosc :D
 
                 ExecutorService service = Executors.newSingleThreadExecutor();
@@ -213,7 +197,7 @@ public class FileStreamer {
 		
 		
 		try {
-                        Thread.sleep(2000);
+                        delay(2000);
 			if(tcpcomm.receiveCommand().equals(ControllCommands.TRANSFER_SUCCESFULL))
 				return true;
                         else{
@@ -224,9 +208,7 @@ public class FileStreamer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
-		} catch (InterruptedException ie){
-                }  
-                return false;
+                }
             
 	}
 	
@@ -272,4 +254,12 @@ public class FileStreamer {
 		return convertByteArrayToHexString(hashedBytes);
 	}
 	
+        
+        private void delay(int val)
+        {
+            try{
+                Thread.sleep(val); 
+            }catch(InterruptedException ie){}  
+        }
+        
 }

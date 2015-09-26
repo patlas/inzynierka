@@ -10,13 +10,14 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import tcp.stream.ControllCommands;
 import tcp.stream.FileStreamer;
 import tcp.stream.TCPCommunication;
+import viewer.PDFfileViewer;
 import viewer.PPTfileViewer;
 
 
@@ -48,6 +49,15 @@ public class MainGui extends javax.swing.JFrame {
         pptNextBtn.setEnabled(false);
         pptPrevBtn.setEnabled(false);
         mOpenFile.setEnabled(false);
+        
+        
+        PDFfileViewer pdf = new PDFfileViewer(pdfPane, null);
+        pdf.viewPDF();
+        pdfPane.setVisible(true);
+       // JButton a = new JButton("A");
+       // a.setSize(100, 100);
+        //pdfPane.add(a);
+        pack();
        
     }
 
@@ -69,6 +79,12 @@ public class MainGui extends javax.swing.JFrame {
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 5), new java.awt.Dimension(32767, 10));
         pptSlideNrTxt = new javax.swing.JTextField();
         pdfPane = new javax.swing.JPanel();
+        pdfScrollPane = new javax.swing.JScrollPane();
+        pdfRotateBtn = new javax.swing.JButton();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        pdfNextBtn = new javax.swing.JButton();
+        pdfPageNrTxt = new javax.swing.JTextField();
+        pdfPrevBtn = new javax.swing.JButton();
         moviePane = new javax.swing.JPanel();
         topMenuBar = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
@@ -145,7 +161,7 @@ public class MainGui extends javax.swing.JFrame {
             pptPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pptPaneLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pptPreviewLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
+                .addComponent(pptPreviewLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pptPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(pptNextBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -158,15 +174,52 @@ public class MainGui extends javax.swing.JFrame {
 
         tpCharts.addTab("Presentation", new javax.swing.ImageIcon(getClass().getResource("/gui/icons/ppt-20.png")), pptPane, "Start PowerPoint presentation"); // NOI18N
 
+        pdfRotateBtn.setText("jButton2");
+
+        pdfNextBtn.setText("jButton1");
+
+        pdfPageNrTxt.setText("jTextField1");
+
+        pdfPrevBtn.setText("jButton3");
+
         javax.swing.GroupLayout pdfPaneLayout = new javax.swing.GroupLayout(pdfPane);
         pdfPane.setLayout(pdfPaneLayout);
         pdfPaneLayout.setHorizontalGroup(
             pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 438, Short.MAX_VALUE)
+            .addGroup(pdfPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pdfPaneLayout.createSequentialGroup()
+                        .addComponent(pdfScrollPane)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pdfPaneLayout.createSequentialGroup()
+                        .addGap(56, 56, 56)
+                        .addComponent(filler2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(pdfPaneLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(pdfPrevBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+                        .addComponent(pdfRotateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pdfPageNrTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pdfNextBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 131, Short.MAX_VALUE))))
         );
         pdfPaneLayout.setVerticalGroup(
             pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 307, Short.MAX_VALUE)
+            .addGroup(pdfPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pdfScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(pdfRotateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(pdfNextBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(pdfPageNrTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pdfPrevBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         tpCharts.addTab("PDF", new javax.swing.ImageIcon(getClass().getResource("/gui/icons/pdf-20.png")), pdfPane, "View pdf file"); // NOI18N
@@ -179,7 +232,7 @@ public class MainGui extends javax.swing.JFrame {
         );
         moviePaneLayout.setVerticalGroup(
             moviePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 307, Short.MAX_VALUE)
+            .addGap(0, 322, Short.MAX_VALUE)
         );
 
         tpCharts.addTab("Movie", new javax.swing.ImageIcon(getClass().getResource("/gui/icons/mov-20.png")), moviePane, "Stream movie"); // NOI18N
@@ -529,6 +582,7 @@ public class MainGui extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
     private javax.swing.JMenuItem mConnect;
     private javax.swing.JMenuItem mExit;
     private javax.swing.JMenuItem mOpenFile;
@@ -537,13 +591,18 @@ public class MainGui extends javax.swing.JFrame {
     private javax.swing.JMenu menuEdit;
     private javax.swing.JMenu menuFile;
     public javax.swing.JPanel moviePane;
-    public javax.swing.JPanel pdfPane;
-    private javax.swing.JComboBox pptEffectsCombo;
-    private javax.swing.JButton pptNextBtn;
-    private javax.swing.JPanel pptPane;
-    private javax.swing.JButton pptPrevBtn;
-    private javax.swing.JLabel pptPreviewLabel;
-    private javax.swing.JTextField pptSlideNrTxt;
+    private javax.swing.JButton pdfNextBtn;
+    private javax.swing.JTextField pdfPageNrTxt;
+    private javax.swing.JPanel pdfPane;
+    private javax.swing.JButton pdfPrevBtn;
+    private javax.swing.JButton pdfRotateBtn;
+    private javax.swing.JScrollPane pdfScrollPane;
+    public javax.swing.JComboBox pptEffectsCombo;
+    public javax.swing.JButton pptNextBtn;
+    public javax.swing.JPanel pptPane;
+    public javax.swing.JButton pptPrevBtn;
+    public javax.swing.JLabel pptPreviewLabel;
+    public javax.swing.JTextField pptSlideNrTxt;
     private javax.swing.JMenuBar topMenuBar;
     private javax.swing.JTabbedPane tpCharts;
     // End of variables declaration//GEN-END:variables
