@@ -8,12 +8,15 @@ package viewer;
 import java.awt.Component;
 import javax.swing.Box.Filler;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
 import org.icepdf.ri.common.views.DocumentViewController;
+import org.icepdf.ri.common.views.DocumentViewControllerImpl;
 
 
 /**
@@ -25,7 +28,9 @@ public class PDFfileViewer {
     private JPanel pdfPane = null;
     private JScrollPane pdfScrollPane = null;
     private JButton pdfPrevBtn = null, pdfNextBtn = null, pdfRotateBtn = null;
+    private JToggleButton pdfFullBtn = null;
     private JTextField pdfPageNrTxt = null;
+    private JLabel pdfPageCntLbl = null;
     private Filler filler2 = new Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
     
     public PDFfileViewer(JPanel pane, JScrollPane sp)
@@ -62,12 +67,13 @@ public class PDFfileViewer {
         
         DocumentViewController dvc = controller.getDocumentViewController();
         
-       // DocumentViewControllerImpl documentViewController = (DocumentViewControllerImpl) dvc;
-        //documentViewController.setDocumentViewType(DocumentViewControllerImpl.ONE_COLUMN_VIEW,DocumentViewController.PAGE_FIT_WINDOW_HEIGHT);
+        DocumentViewControllerImpl documentViewController = (DocumentViewControllerImpl) dvc;
+        documentViewController.setDocumentViewType(DocumentViewControllerImpl.ONE_PAGE_VIEW/*ONE_COLUMN_VIEW*/,DocumentViewController.PAGE_FIT_WINDOW_HEIGHT);
 
         
       
         pdfScrollPane = (JScrollPane)dvc.getViewContainer();
+        
         
         Component comp = dvc.getViewContainer();
         //comp.setSize(300, 300);
@@ -76,11 +82,27 @@ public class PDFfileViewer {
 //        System.out.println(dvc.getViewContainer().toString());
         // Open a PDF document to view
         
-        pdfPrevBtn = new JButton("A");
-        pdfPageNrTxt = new JTextField("F");
-        pdfNextBtn = new JButton("C");
-        pdfRotateBtn = new JButton("D");
+        pdfPrevBtn = new JButton();
+        pdfPageNrTxt = new JTextField();
+        pdfNextBtn = new JButton();
+        pdfRotateBtn = new JButton();
+        pdfFullBtn = new JToggleButton();
+        pdfPageCntLbl = new JLabel();
+        
+
+        controller.setNextPageButton(pdfNextBtn);
+        controller.setPreviousPageButton(pdfPrevBtn);
+        controller.setRotateRightButton(pdfRotateBtn);
+        controller.setFitWidthButton(pdfFullBtn);
+        controller.setCurrentPageNumberTextField(pdfPageNrTxt);
+        controller.setNumberOfPagesLabel(pdfPageCntLbl);
+        
         setPDFlayout();
+        pdfScrollPane.setWheelScrollingEnabled(false);
+        
+       
+        
+        
         
         controller.openDocument(filePath);
     }
@@ -94,22 +116,27 @@ public class PDFfileViewer {
             .addGroup(pdfPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pdfPaneLayout.createSequentialGroup()
-                        .addComponent(pdfScrollPane)
-                        .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pdfPaneLayout.createSequentialGroup()
                         .addGap(56, 56, 56)
                         .addComponent(filler2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(pdfPaneLayout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(pdfPrevBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-                        .addComponent(pdfRotateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pdfPageNrTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pdfNextBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 131, Short.MAX_VALUE))))
+                        .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(pdfScrollPane)
+                            .addGroup(pdfPaneLayout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(pdfRotateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+                                .addComponent(pdfPrevBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pdfPageNrTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pdfPageCntLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pdfNextBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
+                                .addComponent(pdfFullBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)))
+                        .addContainerGap())))
         );
         
         
@@ -122,12 +149,26 @@ public class PDFfileViewer {
                 .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(pdfRotateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(pdfNextBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(pdfPrevBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(pdfPageNrTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(pdfPrevBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(pdfNextBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pdfFullBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pdfPageCntLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
+        
+        pdfPrevBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/left_arrow_16x16.png")));
+        pdfNextBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/right_arrow_16x16.png")));
+        pdfRotateBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/redo_16x16.png")));
+        pdfFullBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/expand_16x16.png")));
+        
+        //pdfPageCntLbl.setBackground(getBackground());
+        pdfPageCntLbl.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        pdfPageCntLbl.setBorder(null);
+        
+       
+        
     }
     
     
