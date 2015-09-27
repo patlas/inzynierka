@@ -23,6 +23,13 @@ public class ControllCommands {
 	public static byte ppt_exit = 5;
         
         
+        public static byte pdf_nextp = 1;
+	public static byte pdf_prevp = 2;
+	public static byte pdf_next = 3;
+	public static byte pdf_prev = 4;
+        public static byte pdf_rotate = 5;
+	public static byte pdf_exit = 6;
+        
 	
 	public static String[] FILE_TYPES = {
 		"ppt",

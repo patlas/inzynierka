@@ -5,18 +5,29 @@
  */
 package viewer;
 
+import java.awt.Adjustable;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.KeyEvent;
+import javax.swing.AbstractAction;
 import javax.swing.Box.Filler;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
 import org.icepdf.ri.common.views.DocumentViewController;
 import org.icepdf.ri.common.views.DocumentViewControllerImpl;
+import tcp.stream.TCPCommunication;
 
 
 /**
@@ -33,6 +44,10 @@ public class PDFfileViewer {
     private JLabel pdfPageCntLbl = null;
     private Filler filler2 = new Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
     
+    private TCPCommunication tcpcomm = null;
+    
+    public SwingController controller = null;
+    
     public PDFfileViewer(JPanel pane, JScrollPane sp)
     {
         pdfPane = pane;
@@ -43,7 +58,7 @@ public class PDFfileViewer {
         String filePath = "stmEncoder.pdf";
 
         // build a controller
-        SwingController controller = new SwingController();
+        controller = new SwingController();
 
         // Build a SwingViewFactory configured with the controller
         SwingViewBuilder factory = new SwingViewBuilder(controller);
@@ -73,7 +88,7 @@ public class PDFfileViewer {
         
       
         pdfScrollPane = (JScrollPane)dvc.getViewContainer();
-        
+        pdfScrollPane.setWheelScrollingEnabled(false);
         
         Component comp = dvc.getViewContainer();
         //comp.setSize(300, 300);
@@ -98,13 +113,17 @@ public class PDFfileViewer {
         controller.setNumberOfPagesLabel(pdfPageCntLbl);
         
         setPDFlayout();
+        //pdfScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        pdfScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         pdfScrollPane.setWheelScrollingEnabled(false);
-        
-       
-        
-        
-        
+        //MouseWheelListener[] a = pdfScrollPane.getMouseWheelListeners();
+        pdfScrollPane.removeMouseWheelListener(pdfScrollPane.getMouseWheelListeners()[0]);
+      
         controller.openDocument(filePath);
+        pdfScrollPane.removeMouseWheelListener(pdfScrollPane.getMouseWheelListeners()[0]);
+        pdfScrollPane.setWheelScrollingEnabled(false);
+        pdfScrollPane.getVerticalScrollBar().setMinimum(5);
+
     }
     
     private void setPDFlayout()
@@ -166,10 +185,142 @@ public class PDFfileViewer {
         //pdfPageCntLbl.setBackground(getBackground());
         pdfPageCntLbl.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         pdfPageCntLbl.setBorder(null);
-        
-       
-        
+
     }
     
     
+    public void setKeyBindings()
+    {
+        pdfPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "down");
+        pdfPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0), "up");
+        
+        pdfPane.getActionMap().put("down", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("down");
+                
+                int min = pdfScrollPane.getVerticalScrollBar().getMinimum();
+                int max = pdfScrollPane.getVerticalScrollBar().getMaximum();
+                int cur = pdfScrollPane.getVerticalScrollBar().getValue();
+                int value = 0;
+                
+                float per = (float) cur/(max-min);
+                System.out.println(per);
+                
+                if(per < 0.25)
+                {
+                    value = (int)(0.25*max);
+                    value++;
+                    System.out.println("0,25 "+value);
+                } else if(per >= 0.25 && per < 0.5)
+                {
+                    value = (int)(0.50*max);
+                    value++;
+                    System.out.println("0,5 "+value);
+                } else if(per >= 0.5 && per < 0.75)
+                {
+                    value = (int)(0.75*max);
+                    value++;
+                    System.out.println("0,75 "+value);
+                } else if(per >= 0.75 && per < 1)
+                {
+                    value = (int)(max);
+                    System.out.println("1 "+value);
+                } else
+                {
+                    int dp = controller.getCurrentPageNumber();
+                    if(dp<controller.getDocument().getNumberOfPages())
+                    {
+                        dp++;
+                        controller.goToDeltaPage(dp);
+                    }
+                    return;
+                }
+                
+                pdfScrollPane.getVerticalScrollBar().setValue(value);
+                
+            }
+        });
+        
+        pdfPane.getActionMap().put("up", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("up");
+            }
+        });
+        
+    }
+    
+    public void setScrollBarListener(TCPCommunication tcp)
+    {
+        tcpcomm = tcp;
+        pdfScrollPane.getVerticalScrollBar().addAdjustmentListener(new MyScrollBarListener());
+        
+    }
+    
+    public void setButtonListeners(TCPCommunication tcp)
+    {
+        tcpcomm = tcp;
+        pdfNextBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+
+            }
+        }); 
+        
+        pdfPrevBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+
+            }
+        }); 
+    }
+    
+    
+}
+
+
+class MyScrollBarListener implements AdjustmentListener {
+    @Override
+  public void adjustmentValueChanged(AdjustmentEvent evt) {
+    Adjustable source = evt.getAdjustable();
+    if (evt.getValueIsAdjusting()) {
+      return;
+    }
+
+    int cur = evt.getValue();
+    JScrollBar sb = (JScrollBar)(evt.getSource());
+    int max = sb.getMaximum();
+    System.out.println("SCROLL: "+cur);
+    
+    
+    // w zaleznosci od zmapowania ile pageup/down jest w xpdf (lub innym) takie ustawic proporcje ich wysylania
+    //w przypadku scrolla/pageupdown !!!!!
+     float per = (float) cur/max;
+//                System.out.println(per);
+//                
+//                if(per >= 0.25 && per < 0.5)
+//                {
+//                    
+//                    System.out.println("0,5 ");
+//                } else if(per >= 0.5 && per < 0.75)
+//                {
+//
+//                    System.out.println("0,75 ");
+//                } else if(per >= 0.75 && per < 1)
+//                {
+//                
+//                    System.out.println("1 ");
+//                } 
+    if(per == 0)
+    {
+        sb.setValue(sb.getUnitIncrement());
+        System.out.println("NEw page");
+        return;
+    }
+                
+    
+  }
 }

@@ -10,9 +10,9 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JTextField;
 import tcp.stream.ControllCommands;
 import tcp.stream.FileStreamer;
@@ -38,6 +38,8 @@ public class MainGui extends javax.swing.JFrame {
     private PPTfileViewer pptViewer = null;
     private TCPCommunication tcpcomm = null;
     private Thread progressThread = null;
+    
+    private PDFfileViewer pdf = null;
     /**
      * Creates new form MainGui
      */
@@ -50,13 +52,33 @@ public class MainGui extends javax.swing.JFrame {
         pptPrevBtn.setEnabled(false);
         mOpenFile.setEnabled(false);
         
-        
-        PDFfileViewer pdf = new PDFfileViewer(pdfPane, null);
+        pdf = new PDFfileViewer(pdfPane, null);
         pdf.viewPDF();
-        pdfPane.setVisible(true);
+        //pdf.setKeyBindings();
+        //tymczasowo tutal listener bo później po rozpoznaniu pliku z TCPobjectem
+        pdf.setScrollBarListener(tcpcomm); //usunac
+        pdf.setButtonListeners(tcpcomm);//usunac
+        
+        
+//        pdfPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "forward");
+//        pdfPane.getActionMap().put("forward", new AbstractAction() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                System.out.println("test");
+//            }
+//        });
+        
+       
+        /*pdfPane.addKeyListener(new java.awt.event.KeyAdapter() {
+            
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                System.out.println("TEST");
+            }
+        });*/
        // JButton a = new JButton("A");
        // a.setSize(100, 100);
         //pdfPane.add(a);
+        
         pack();
        
     }
@@ -355,7 +377,8 @@ public class MainGui extends javax.swing.JFrame {
           
           
           
-          if(fName.toLowerCase().endsWith(".ppt") || fName.toLowerCase().endsWith(".pptx")){
+          if(fName.toLowerCase().endsWith(".ppt") || fName.toLowerCase().endsWith(".pptx"))
+          {
             pptViewer = new PPTfileViewer(fName);
             pptEffectsCombo.setEnabled(true);
             pptNextBtn.setEnabled(true);
@@ -364,6 +387,14 @@ public class MainGui extends javax.swing.JFrame {
                 pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
                 pptSlideNrTxt.setText(pptViewer.currentSlide+"/"+pptViewer.slidesCount);
             }   
+          }
+          
+          else if(fName.toLowerCase().endsWith(".pdf"))
+          {
+              //bing pdf keys
+              pdf.setScrollBarListener(tcpcomm);
+              pdf.setButtonListeners(tcpcomm);
+              
           }
 
         }
@@ -600,7 +631,9 @@ public class MainGui extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainGui().setVisible(true);
+                MainGui GUI = new MainGui();
+                GUI.setVisible(true);
+                GUI.setExtendedState(GUI.getExtendedState() | JFrame.MAXIMIZED_BOTH);
             }
         });
     }
@@ -620,10 +653,10 @@ public class MainGui extends javax.swing.JFrame {
     public javax.swing.JPanel moviePane;
     private javax.swing.JButton pdfNextBtn;
     private javax.swing.JTextField pdfPageNrTxt;
-    private javax.swing.JPanel pdfPane;
+    public javax.swing.JPanel pdfPane;
     private javax.swing.JButton pdfPrevBtn;
     private javax.swing.JButton pdfRotateBtn;
-    private javax.swing.JScrollPane pdfScrollPane;
+    public javax.swing.JScrollPane pdfScrollPane;
     public javax.swing.JComboBox pptEffectsCombo;
     public javax.swing.JButton pptNextBtn;
     public javax.swing.JPanel pptPane;
