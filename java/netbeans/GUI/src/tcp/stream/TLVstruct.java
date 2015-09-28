@@ -9,8 +9,11 @@ package tcp.stream;
  *
  * @author PatLas
  */
-public class TLVstruct {
-    
-  
-    
+public class TLVstruct 
+{
+    public static int TLV_DATA_SIZE = 11;
+    public byte type;
+    public long length;
+    public byte[] data = new byte[TLV_DATA_SIZE];
+   
 }
