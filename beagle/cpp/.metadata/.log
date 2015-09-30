@@ -1,0 +1,231 @@
+!SESSION 2015-09-30 12:28:50.531 -----------------------------------------------
+eclipse.buildId=4.5.0.I20150603-2000
+java.version=1.8.0_51
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=pl_PL
+Framework arguments:  -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 12:29:49.938
+!MESSAGE Indexed 'server' (0 sources, 0 headers) in 0,003 sec: 0 declarations; 0 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 13:38:40.267
+!MESSAGE Indexed 'server' (5 sources, 262 headers) in 3,06 sec: 14 592 declarations; 22 216 references; 0 unresolved inclusions; 1 syntax errors; 4 unresolved names (0,011%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 13:38:57.959
+!MESSAGE Indexed 'server' (5 sources, 262 headers) in 2,13 sec: 14 592 declarations; 22 216 references; 0 unresolved inclusions; 1 syntax errors; 4 unresolved names (0,011%)
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:46:20.353
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException: org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTAlignmentSpecifier cannot be cast to org.eclipse.cdt.internal.core.dom.parser.IASTAmbiguityParent
+	at org.eclipse.cdt.internal.core.dom.parser.ASTAmbiguousNode.doResolveAmbiguity(ASTAmbiguousNode.java:88)
+	at org.eclipse.cdt.internal.core.dom.parser.ASTAmbiguousNode.resolveAmbiguity(ASTAmbiguousNode.java:83)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTAmbiguityResolver.visit(CPPASTAmbiguityResolver.java:65)
+	at org.eclipse.cdt.internal.core.dom.parser.ASTAmbiguousNode.accept(ASTAmbiguousNode.java:66)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTAlignmentSpecifier.accept(CPPASTAlignmentSpecifier.java:65)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTBaseDeclSpecifier.visitAlignmentSpecifiers(CPPASTBaseDeclSpecifier.java:195)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclSpecifier.accept(CPPASTSimpleDeclSpecifier.java:225)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration.accept(CPPASTSimpleDeclaration.java:102)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTCompositeTypeSpecifier.accept(CPPASTCompositeTypeSpecifier.java:203)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration.accept(CPPASTSimpleDeclaration.java:102)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTTemplateDeclaration.accept(CPPASTTemplateDeclaration.java:123)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTNamespaceDefinition.accept(CPPASTNamespaceDefinition.java:139)
+	at org.eclipse.cdt.internal.core.dom.parser.ASTTranslationUnit.accept(ASTTranslationUnit.java:266)
+	at org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTTranslationUnit.resolveAmbiguities(CPPASTTranslationUnit.java:195)
+	at org.eclipse.cdt.internal.core.dom.parser.AbstractGNUSourceCodeParser.resolveAmbiguities(AbstractGNUSourceCodeParser.java:675)
+	at org.eclipse.cdt.internal.core.dom.parser.AbstractGNUSourceCodeParser.parse(AbstractGNUSourceCodeParser.java:663)
+	at org.eclipse.cdt.core.dom.parser.AbstractCLikeLanguage.getASTTranslationUnit(AbstractCLikeLanguage.java:167)
+	at org.eclipse.cdt.internal.core.pdom.AbstractIndexerTask.createAST(AbstractIndexerTask.java:1229)
+	at org.eclipse.cdt.internal.core.pdom.AbstractIndexerTask.parseFile(AbstractIndexerTask.java:1086)
+	at org.eclipse.cdt.internal.core.pdom.AbstractIndexerTask.parseLinkage(AbstractIndexerTask.java:898)
+	at org.eclipse.cdt.internal.core.pdom.AbstractIndexerTask.runTask(AbstractIndexerTask.java:554)
+	at org.eclipse.cdt.internal.core.pdom.indexer.PDOMIndexerTask.run(PDOMIndexerTask.java:161)
+	at org.eclipse.cdt.internal.core.pdom.indexer.PDOMRebuildTask.run(PDOMRebuildTask.java:90)
+	at org.eclipse.cdt.internal.core.pdom.PDOMIndexerJob.run(PDOMIndexerJob.java:149)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:46:21.890
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 13:46:21.937
+!MESSAGE Indexed 'server' (4 sources, 174 headers) in 3,61 sec: 6 298 declarations; 8 041 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:47:12.981
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:47:13.650
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:49:44.279
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:49:44.864
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:49:51.413
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:49:52.036
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:49:56.962
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:49:57.482
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 13:49:57.485
+!MESSAGE Indexed 'server' (4 sources, 174 headers) in 1,68 sec: 6 298 declarations; 8 041 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:52:28.344
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:52:28.835
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:52:30.753
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:52:31.278
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:53:05.519
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:53:06.012
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:53:07.773
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:53:08.238
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:53:58.843
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:53:59.301
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:54:13.174
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:54:13.630
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:54:20.585
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 4 0 2015-09-30 13:54:21.042
+!MESSAGE Error while parsing /server/test/main.cpp.
+!STACK 0
+java.lang.ClassCastException
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 13:54:21.046
+!MESSAGE Indexed 'server' (4 sources, 174 headers) in 1,5 sec: 6 298 declarations; 8 041 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 14:00:45.179
+!MESSAGE Indexed 'server' (5 sources, 262 headers) in 1,6 sec: 14 592 declarations; 22 218 references; 0 unresolved inclusions; 1 syntax errors; 3 unresolved names (0,0081%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 14:03:24.184
+!MESSAGE Indexed 'testetse' (0 sources, 0 headers) in 0 sec: 0 declarations; 0 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 14:07:55.912
+!MESSAGE Indexed 'testetse' (1 sources, 111 headers) in 0,964 sec: 9 176 declarations; 15 111 references; 0 unresolved inclusions; 1 syntax errors; 3 unresolved names (0,012%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 14:13:14.016
+!MESSAGE Indexed 'testetse' (1 sources, 111 headers) in 1 sec: 9 176 declarations; 15 111 references; 0 unresolved inclusions; 1 syntax errors; 3 unresolved names (0,012%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 14:14:54.926
+!MESSAGE Indexed 'adf' (1 sources, 38 headers) in 0,116 sec: 1 194 declarations; 1 798 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 14:17:43.530
+!MESSAGE Indexed 'adf' (1 sources, 111 headers) in 0,902 sec: 9 176 declarations; 15 111 references; 0 unresolved inclusions; 1 syntax errors; 3 unresolved names (0,012%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 14:22:56.011
+!MESSAGE Indexed 'server' (0 sources, 0 headers) in 0 sec: 0 declarations; 0 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 14:45:49.781
+!MESSAGE Indexed 'server' (2 sources, 1 headers) in 0,013 sec: 40 declarations; 40 references; 14 unresolved inclusions; 0 syntax errors; 47 unresolved names (37%)
+
+!ENTRY org.eclipse.ui.ide 4 4 2015-09-30 16:19:47.146
+!MESSAGE Problems saving workspace
+
+!ENTRY org.eclipse.ui.ide 2 1 2015-09-30 16:19:47.147
+!MESSAGE Problems occurred while trying to save the state of the workbench.
+!SUBENTRY 1 org.eclipse.core.resources 2 234 2015-09-30 16:19:47.147
+!MESSAGE The project description file (.project) for 'RemoteSystemsTempFiles' was missing.  This file contains important information about the project.  A new project description file has been created, but some information about the project may have been lost.
+
+!ENTRY org.eclipse.core.resources 2 10035 2015-09-30 16:19:47.566
+!MESSAGE The workspace will exit with unsaved changes in this session.
+!SESSION 2015-09-30 18:31:10.633 -----------------------------------------------
+eclipse.buildId=4.5.0.I20150603-2000
+java.version=1.8.0_51
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=pl_PL
+Framework arguments:  -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.core.resources 2 10035 2015-09-30 18:31:16.858
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 18:41:33.010
+!MESSAGE Indexed 'server' (3 sources, 2 headers) in 0,225 sec: 70 declarations; 77 references; 19 unresolved inclusions; 1 syntax errors; 59 unresolved names (29%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2015-09-30 18:48:11.687
+!MESSAGE Indexed 'server' (3 sources, 78 headers) in 1,06 sec: 2 648 declarations; 3 010 references; 18 unresolved inclusions; 1 syntax errors; 126 unresolved names (2,2%)
+!SESSION 2015-09-30 20:29:59.544 -----------------------------------------------
+eclipse.buildId=4.5.0.I20150603-2000
+java.version=1.8.0_51
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=pl_PL
+Framework arguments:  -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.core.resources 2 10035 2015-09-30 20:30:08.077
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.

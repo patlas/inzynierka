@@ -1,0 +1,10 @@
+CC=g++
+CFLAGS=-g
+LFLAGS=-lpthread -std=c++11
+TCP_LOC=tcp/
+TEST_LOC=test/
+
+OBJS= $(TEST_LOC)main.cpp $(TCP_LOC)TCPCommunication.cpp
+
+all: $(OBJS)
+	$(CC) $(LFLAGS) $(OBJS) -o test

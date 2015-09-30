@@ -1,0 +1,106 @@
+/*
+ * Messanger.cpp
+ *
+ *  Created on: 30 wrz 2015
+ *      Author: patlas
+ */
+
+#include "Messanger.h"
+
+Messanger::Messanger(TCPCommunication &tcp, mutex *tm, mutex *rm, queue<QueueStruct_t>  &tq, queue<string> &rq)
+{
+	tcpcomm = tcp;
+	tMutex = tm;
+	rMutex = rm;
+	tQueue = tq;
+	rQueue = rq;
+
+}
+
+Messanger::Messanger(){
+
+}
+
+Messanger::~Messanger() {
+	// TODO Auto-generated destructor stub
+}
+
+
+
+void Messanger::TLVtoArray(TLVStruct *tlv, uint8_t *rawData)
+{
+	//ustawia w kolejności najstarszy na najstarszym czyli
+	//liczba 0x11170 (70000) byte[0]=0x01; byte[1]=0x11; byte[2]=0x70
+	memcpy(rawData, tlv, TLV_STRUCT_SIZE);
+
+}
+
+void Messanger::ArrayToTLV(TLVStruct *tlv, uint8_t *rawData)
+{
+	memcpy(tlv,rawData,TLV_STRUCT_SIZE);
+}
+
+//cmd string could not be longer than TLV_DATA_SIZE!
+void Messanger::buildTLVheader(TLVStruct *tlv, string cmd)
+{
+	// TODO - this implementation supports only command header
+	tlv->type = 0;
+	tlv->length = cmd.length();
+
+
+
+}
+
+void Messanger::run()
+{
+	QueueStruct_t QSt;
+	while(1)
+	{
+		if(tMutex->try_lock())
+		{
+			if(!tQueue.empty()){
+				QSt = tQueue.front();
+				tQueue.pop();
+				tMutex->unlock();
+				//parse command
+				if(QSt.stream == false)
+				{
+					string cmd = QSt.command;
+					uint8_t index =  (uint8_t) ceil(cmd.length() / TLV_DATA_SIZE);
+
+				   for(uint8_t i=0; i<index;i++)
+				   {
+					   uint8_t end = (i+1)*TLV_DATA_SIZE;
+					   if(end>cmd.length())
+					   {
+						   end = cmd.length();
+					   }
+
+					   string substr =  cmd.substring(i*TLV_DATA_SIZE, end);
+					  // System.out.println(substr);
+					  //byte[] dataToSend =  buildTLVdataHeader(true,substr.getBytes(Charset.forName("UTF-8")), qs.getCommand().length());
+					  //tcpcomm.sendByteArray(dataToSend, dataToSend.length);
+				   }
+				}
+				else
+				{
+					// TODO - if server will be steamer than implement that functionality
+				}
+
+				continue;
+			}
+			tMutex->unlock();
+		}
+
+		if(tMutex->try_lock()){
+			string b = "trd";
+			//tq.push(b);
+			tMutex->unlock();
+			//cout<<"Wątek wstawił do kolejki "<<index<<endl;
+		}
+
+
+
+	}
+
+}

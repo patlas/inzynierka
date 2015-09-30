@@ -1,0 +1,7 @@
+CC=g++
+CFLAGS=-g
+LFLAGS=-lpthread -std=c++11
+OBJS=main.cpp TCPCommunication.cpp
+
+all: $(OBJS)
+	$(CC) $(LFLAGS) $(OBJS) -o test

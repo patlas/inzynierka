@@ -7,6 +7,8 @@
 
 #include "TCPCommunication.h"
 
+TCPCommunication::TCPCommunication(){}
+
 TCPCommunication::TCPCommunication(uint32_t in_addr, uint16_t in_port) {
 	// TODO Auto-generated constructor stub
 
@@ -121,7 +123,15 @@ int TCPCommunication::receiveData(uint8_t *buffer)
 
 int TCPCommunication::sendData(uint8_t *buffer)
 {
-	return send(socket_cli,buffer,TLV_STRUCT_SIZE,0);
+	int size = 0;
+	if(blockingMode == false)
+	{
+		while(!(size = send(socket_cli,buffer,TLV_STRUCT_SIZE,0)));
+		return size;
+	}
+	else{
+		return send(socket_cli,buffer,TLV_STRUCT_SIZE,0);
+	}
 }
 
 

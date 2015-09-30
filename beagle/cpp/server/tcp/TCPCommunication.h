@@ -33,16 +33,19 @@ typedef enum {
 	SERVER_ERROR = -8
 } TCPCommunicationError_t;
 
+#pragma pack(push)
+#pragma pack(1)
 typedef struct {
 	uint8_t type;
 	uint64_t length;
 	uint8_t value[11];
 }TLVStruct;
-
+#pragma pack(pop)
 
 class TCPCommunication {
 
 private:
+	bool blockingMode = false;
 	int socket_desc=0;
 	struct sockaddr_in addr_struct;
 	int socket_cli=0;
@@ -59,6 +62,7 @@ private:
 
 public:
 	TCPCommunication(uint32_t, uint16_t);
+	TCPCommunication();
 	virtual ~TCPCommunication();
 
 	void setBlockingSocketOption(bool);

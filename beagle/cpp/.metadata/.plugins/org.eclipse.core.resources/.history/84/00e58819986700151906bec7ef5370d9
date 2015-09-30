@@ -1,0 +1,83 @@
+/*
+ * main.cpp
+ *
+ *  Created on: 30 wrz 2015
+ *      Author: patlas
+ */
+#include <iostream>
+#include <thread>
+#include <unistd.h>
+#include "../tcp/TCPCommunication.h"
+#include "../tcp/Messanger.h"
+#include <mutex>
+#include <queue>
+#include <string>
+#include <stdint.h>
+
+using namespace std;
+
+mutex tMutex, rMutex;
+queue<QueueStruct_t> tQueue, rQueue;
+queue<string> tq,rq;
+
+
+
+void trd(){
+
+	while(1){
+		if(tMutex.try_lock()){
+			string b = "trd";
+			tq.push(b);
+			tMutex.unlock();
+			cout<<"Wątek wstawił do kolejki"<<endl;
+		}
+
+		if(rMutex.try_lock()){
+			cout<<"Wątek odczytał z kolejki: "<<rq.front()<<endl;
+			rq.pop();
+			rMutex.unlock();
+		}
+
+		sleep(1);
+	}
+}
+
+
+int main(void){
+
+
+	thread t(trd);
+	//TCPCommunication *a = new TCPCommunication(INADDR_ANY,12345);
+	while(1)
+	{
+		if(tMutex.try_lock()){
+			string b = "main";
+			tq.push(b);
+			tMutex.unlock();
+			cout<<"Main wstawił do kolejki"<<endl;
+		}
+
+		if(rMutex.try_lock()){
+			cout<<"Wątek odczytał z kolejki: "<<rq.front()<<endl;
+			rq.pop();
+			rMutex.unlock();
+		}
+		cout<<"Glowny program policzyl do:"<<a<<endl;
+		sleep(2);
+	}
+//	tMutex.lock();
+//	if(a->startServer() == NO_ERROR) cout<<"Connection has been established"<<endl;
+//	uint8_t buff[] = "PATRYK";
+//	a->sendData(buff);
+//	while(1);
+
+
+
+
+
+
+	return 0;
+}
+
+
+

@@ -1,0 +1,24 @@
+/*
+ * Messanger.h
+ *
+ *  Created on: 30 wrz 2015
+ *      Author: patlas
+ */
+
+#ifndef TCP_MESSANGER_H_
+#define TCP_MESSANGER_H_
+
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <stdint.h>
+
+#include "TCPCommunication.h"
+
+class Messanger {
+public:
+	Messanger(TCPCommunication &); // jako argumenty przyjmować 2x mutex i 2x kolejka
+	virtual ~Messanger();
+};
+
+#endif /* TCP_MESSANGER_H_ */

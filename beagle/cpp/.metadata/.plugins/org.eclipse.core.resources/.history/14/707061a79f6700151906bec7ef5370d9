@@ -1,0 +1,25 @@
+/*
+ * Messanger.cpp
+ *
+ *  Created on: 30 wrz 2015
+ *      Author: patlas
+ */
+
+#include "Messanger.h"
+
+Messanger::Messanger(TCPCommunication &tcp, mutex &tm, mutex &rm, queue &tq, queue &rq)
+{
+	tcpcomm = tcp;
+	tMutex = tm;
+	rMutex = rm;
+	tQueue = tx;
+	rQueue = rq;
+
+
+
+}
+
+Messanger::~Messanger() {
+	// TODO Auto-generated destructor stub
+}
+

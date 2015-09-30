@@ -1,0 +1,44 @@
+/*
+ * Messanger.h
+ *
+ *  Created on: 30 wrz 2015
+ *      Author: patlas
+ */
+
+#ifndef TCP_MESSANGER_H_
+#define TCP_MESSANGER_H_
+
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <string>
+#include <stdint.h>
+
+#include "TCPCommunication.h"
+
+using namespace std;
+#pragma pack(1)
+typedef struct {
+	bool stream;
+    string command;
+    uint8_t data[20];
+    uint64_t fileSize;
+}QueueStruct_t;
+
+
+class Messanger {
+
+private:
+	TCPCommunication tcpcomm;
+	queue<QueueStruct_t> tQueue;
+	queue<string> rQueue;
+	mutex tMutex, rMutex;
+
+public:
+	Messanger(TCPCommunication &, mutex &, mutex &, queue &, queue &); // jako argumenty przyjmować 2x mutex i 2x kolejka
+	virtual ~Messanger();
+
+	void run();
+};
+
+#endif /* TCP_MESSANGER_H_ */
