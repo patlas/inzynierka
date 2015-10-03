@@ -58,7 +58,9 @@ void Messanger::run()
 	uint8_t rData[TLV_STRUCT_SIZE];
 	uint64_t commandSize = 0;
 	uint64_t compSize = 0;
-	stringr command ;
+	uint64_t fsize = 0;
+	string command ;
+	ofstream outfile;
 
 	while(1)
 	{
@@ -109,21 +111,56 @@ void Messanger::run()
 
 				TLVStruct tempTLV;
 				ArrayToTLV(&tempTLV,rData);
-				//TODO - if tempTLV.type == stream than ommit below and start saving to file
-				if(commandSize == 0)
+				if(tempTLV.type == 0)
 				{
-					compSize = tempTLV.length;
+					//TODO - if tempTLV.type == stream than ommit below and start saving to file
+					if(commandSize == 0)
+					{
+						compSize = tempTLV.length;
+					}
+
+					command.append((char*)tempTLV.value);
+					commandSize+=sizeof(tempTLV.value);
+
+					if(commandSize >= compSize)
+					{
+						rQueue.push(command.substr(0, (int)compSize));
+
+						command.clear();
+						commandSize = 0;
+					}
 				}
-
-				command.append(tempTLV.value);
-				commandSize+=sizeof(tempTLV.value);
-
-				if(commandSize >= compSize)
+				else
 				{
-					rQueue.push(command.substr(0, (int)compSize));
+					//TODO - save stream to file
+					if(fsize == 0)
+					{
+						compSize = tempTLV.length;
 
-					command.clear();
-					commandSize = 0;
+						if(outfile.is_open()) outfile.close();
+						outfile.open("temp.raw", ofstream::binary | ofstream::out);
+
+					}
+					else if(fsize < compSize)
+					{
+						fsize+=TLV_DATA_SIZE;
+
+						outfile.write((char*)tempTLV.value,TLV_DATA_SIZE);
+					}
+					else if(fsize >= compSize)
+					{
+						//zrobic flush i zapisać do pliku
+						outfile.flush();
+						outfile.close();
+						int source = open("temp.raw", O_RDONLY, 0);
+						int dest = open(tempName.c_str(), O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
+
+						sendfile(dest, source, 0, compSize);
+
+						close(source);
+						close(dest);
+
+					}
 				}
 			}
 

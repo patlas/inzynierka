@@ -13,7 +13,9 @@
 #include <queue>
 #include <string>
 #include <stdint.h>
+#include <sys/sendfile.h>
 #include <math.h>
+#include <fstream>
 
 #include "TCPCommunication.h"
 
@@ -37,6 +39,10 @@ private:
 	queue<QueueStruct_t> tQueue;
 	queue<string> rQueue;
 	mutex *tMutex, *rMutex;
+
+public:
+	string tempName = "tempfile.raw";
+
 public:
 	void TLVtoArray(TLVStruct *, uint8_t *);
 	void ArrayToTLV(TLVStruct *, uint8_t *);

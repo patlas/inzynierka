@@ -13,6 +13,7 @@
 #include <queue>
 #include <string>
 #include <stdint.h>
+#include <fstream>
 
 using namespace std;
 
@@ -46,7 +47,7 @@ int index = 0;
 	}
 }
 
-
+using namespace std;
 int main(void){
 
 	tlv.type = 1;
@@ -70,6 +71,24 @@ int main(void){
 
 	mes->buildTLVheader(&tlv, a);
 	printf("%d, %d, %s\n",tlv.type,tlv.length,tlv.value);
+
+
+	ofstream outfile;
+
+	if(outfile.is_open()) outfile.close();
+	outfile.open("temp.raw", ofstream::binary | ofstream::out);
+	outfile.write("asdfs",5);
+	outfile.write("gfdss",5);
+	outfile.close();
+
+	int source = open("temp.raw", O_RDONLY, 0);
+	int dest = open("text.txt", O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
+
+	sendfile(dest, source, 0, 3);
+
+	close(source);
+	close(dest);
+
 
 
 
