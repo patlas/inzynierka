@@ -61,6 +61,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 	uint64_t fsize = 0;
 	string command ;
 	ofstream outfile;
+	cout<<"WAtek ruszyl"<<endl;
 
 	while(1)
 	{
@@ -108,6 +109,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 		{
 			if(tcpcomm->receiveData(rData) > 0)
 			{
+				cout<<"Odebrano dane:"<<rData<<endl;
 
 				TLVStruct tempTLV;
 				ArrayToTLV(&tempTLV,rData);

@@ -1,6 +1,6 @@
 CCXX=g++
 CFLAGS=-g
-LFLAGS=-std=c++11 -pthread -v
+LFLAGS=-std=c++11 -pthread -v -lpthread
 TCP_LOC=tcp/
 TEST_LOC=main/
 

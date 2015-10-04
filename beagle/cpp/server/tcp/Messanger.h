@@ -16,6 +16,7 @@
 #include <sys/sendfile.h>
 #include <math.h>
 #include <fstream>
+#include <iostream>
 
 #include "TCPCommunication.h"
 

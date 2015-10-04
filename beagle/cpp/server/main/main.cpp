@@ -55,7 +55,7 @@ string getCommand()
 
 
 void test(void){
-
+cout<<test<<endl;
 }
 
 int main(void){
@@ -63,13 +63,13 @@ int main(void){
 	TCPCommunication tcpcomm = TCPCommunication(SERV_ADDR, SERV_PORT);
 	Messanger messanger = Messanger(&tcpcomm, &tMutex, &rMutex, &tQueue, &rQueue);
 
-	if(tcpcomm.startServer() == NO_ERROR)
-	{
+	//if(tcpcomm.startServer() == NO_ERROR)
+//	{
 		cout<<"Server starts correctly!"<<endl;
 		//messanger.startMessanger();
-		thread mes_thread(Messanger::run,&tcpcomm,&tMutex,&rMutex,&tQueue,&rQueue);
-		//thread t(test);
-	}
+		//thread mes_thread(Messanger::run,&tcpcomm,&tMutex,&rMutex,&tQueue,&rQueue);
+		thread t(test);
+	//}
 	// TODO - sprawdzac czy nie zerwano połączenia, jeżeli tak to catchNewConnection, jak?
 
 	cout<<"Odebrano komende: "<<getCommand()<<endl;
