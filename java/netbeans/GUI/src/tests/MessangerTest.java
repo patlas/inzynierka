@@ -5,7 +5,11 @@
  */
 package tests;
 
+import java.io.IOException;
+import java.util.concurrent.LinkedBlockingQueue;
 import tcp.stream.Messanger;
+import tcp.stream.QueueStruct;
+import tcp.stream.TCPCommunication;
 import tcp.stream.TLVstruct;
 
 /**
@@ -17,29 +21,43 @@ public class MessangerTest {
     
     public static void main(String [ ] args){
         
-        Messanger m = new Messanger(null, null, null);
         
-        byte a[] = "patryk".getBytes();
-        byte app[] = m.buildTLVdataHeader(true,a,a.length);
-//        m.buildTLVdataHeader(true,a,a.length);
         
-//        for(byte ax : app)
-//        System.out.println(ax);
+     LinkedBlockingQueue receiver = new LinkedBlockingQueue();
+     LinkedBlockingQueue<QueueStruct> transmitter = new LinkedBlockingQueue<>();
+     
+     try{
+         QueueStruct x = new QueueStruct();
+         x.setStream(false);
+         x.setCommand("TEST");
+         transmitter.add(x);
+         
+        TCPCommunication atcp = new TCPCommunication("192.168.56.101", 12345);
+        Messanger m = new Messanger(atcp,receiver,transmitter);
+        (new Thread(m)).start();
         
-        String str = "jakisDziwnyNapis123456789"; //25
-        int index =  (int) Math.ceil((double)str.length() / TLVstruct.TLV_DATA_SIZE);
-                    
-                   for(int i=0; i<index;i++)
-                   {
-                       int end = (i+1)*TLVstruct.TLV_DATA_SIZE;
-                       if(end>str.length())
-                           end = str.length();
-                       
-                      String substr =  str.substring(i*TLVstruct.TLV_DATA_SIZE, end);
-                       System.out.println(substr);
-                   
-                   }
         
-    }
+        for(int a=0;a<4;a++){
+            x.setStream(false);
+         x.setCommand("TEST"+a);
+         transmitter.add(x);
+         
+         Thread.sleep(1000);
+        }
+        
+        while(true){
+            if(!receiver.isEmpty()){
+                System.out.println(receiver.poll());
+            }
+        }
+                
+                
+                
+                
+     }catch(IOException io){}
+     catch(InterruptedException ie){}
+ 
     
+    
+}
 }
