@@ -1,0 +1,3 @@
+all:
+	g++  -std=c++11 -lpthread -v main/main.cpp tcp/Messanger.cpp tcp/TCPCommunication.cpp -o serv
+	

@@ -22,6 +22,11 @@
 using namespace std;
 
 
+mutex tMutex, rMutex;
+queue<QueueStruct_t> tQueue;
+queue<string> rQueue;
+
+
 string getCommand()
 {
 //	while(1)
@@ -49,20 +54,21 @@ string getCommand()
 
 
 
+void test(void){
 
-mutex tMutex, rMutex;
-queue<QueueStruct_t> tQueue;
-queue<string> rQueue;
+}
 
 int main(void){
 
 	TCPCommunication tcpcomm = TCPCommunication(SERV_ADDR, SERV_PORT);
-	Messanger messanger = Messanger(tcpcomm, &tMutex, &rMutex, tQueue, rQueue);
+	Messanger messanger = Messanger(&tcpcomm, &tMutex, &rMutex, &tQueue, &rQueue);
 
 	if(tcpcomm.startServer() == NO_ERROR)
 	{
 		cout<<"Server starts correctly!"<<endl;
-		messanger.startMessanger();
+		//messanger.startMessanger();
+		thread mes_thread(Messanger::run,&tcpcomm,&tMutex,&rMutex,&tQueue,&rQueue);
+		//thread t(test);
 	}
 	// TODO - sprawdzac czy nie zerwano połączenia, jeżeli tak to catchNewConnection, jak?
 

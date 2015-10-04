@@ -7,13 +7,13 @@
 
 #include "Messanger.h"
 
-Messanger::Messanger(TCPCommunication &tcp, mutex *tm, mutex *rm, queue<QueueStruct_t>  &tq, queue<string> &rq)
+Messanger::Messanger(TCPCommunication *tcp, mutex *tm, mutex *rm, queue<QueueStruct_t>  *tq, queue<string> *rq)
 {
-	tcpcomm = tcp;
-	tMutex = tm;
-	rMutex = rm;
-	tQueue = tq;
-	rQueue = rq;
+	tcpcomm1 = tcp;
+	tMutex1 = tm;
+	rMutex1 = rm;
+	tQueue1 = tq;
+	rQueue1 = rq;
 
 }
 
@@ -52,7 +52,7 @@ void Messanger::buildTLVheader(TLVStruct *tlv, string cmd)
 
 }
 
-void Messanger::run()
+void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, queue<QueueStruct_t>  *tQueue, queue<string> *rQueue)
 {
 	QueueStruct_t QSt;
 	uint8_t rData[TLV_STRUCT_SIZE];
@@ -66,10 +66,10 @@ void Messanger::run()
 	{
 		if(tMutex->try_lock())
 		{
-			if(!tQueue.empty())
+			if(!tQueue->empty())
 			{
-				QSt = tQueue.front();
-				tQueue.pop();
+				QSt = tQueue->front();
+				tQueue->pop();
 				tMutex->unlock();
 				//parse command
 				if(QSt.stream == false)
@@ -91,7 +91,7 @@ void Messanger::run()
 					   buildTLVheader(&tempTLV,substr);
 					   uint8_t dataToSend[TLV_STRUCT_SIZE];
 					   TLVtoArray(&tempTLV,dataToSend);
-					   tcpcomm.sendData(dataToSend);
+					   tcpcomm->sendData(dataToSend);
 				   }
 				}
 				else
@@ -106,7 +106,7 @@ void Messanger::run()
 
 		if(rMutex->try_lock())
 		{
-			if(tcpcomm.receiveData(rData) > 0)
+			if(tcpcomm->receiveData(rData) > 0)
 			{
 
 				TLVStruct tempTLV;
@@ -124,7 +124,7 @@ void Messanger::run()
 
 					if(commandSize >= compSize)
 					{
-						rQueue.push(command.substr(0, (int)compSize));
+						rQueue->push(command.substr(0, (int)compSize));
 
 						command.clear();
 						commandSize = 0;
@@ -153,7 +153,7 @@ void Messanger::run()
 						outfile.flush();
 						outfile.close();
 						int source = open("temp.raw", O_RDONLY, 0);
-						int dest = open(tempName.c_str(), O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
+						int dest = open(TEMP_NAME, O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
 
 						sendfile(dest, source, 0, compSize);
 
@@ -175,7 +175,9 @@ void Messanger::run()
 
 void Messanger::startMessanger()
 {
+	//(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, queue<QueueStruct_t>  *tQueue, queue<string> *rQueue)
+
 
 // TODO - start messanger thread -> return bool?
-	thread mes_thread(run);
+	thread mes_thread(run,tcpcomm1,tMutex1,rMutex1,tQueue1,rQueue1);
 }

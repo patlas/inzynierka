@@ -19,6 +19,8 @@
 
 #include "TCPCommunication.h"
 
+#define TEMP_NAME "tempfile.raw"
+
 using namespace std;
 
 #pragma pack(push)
@@ -35,26 +37,26 @@ typedef struct {
 class Messanger {
 
 private:
-	TCPCommunication tcpcomm;
-	queue<QueueStruct_t> tQueue;
-	queue<string> rQueue;
-	mutex *tMutex, *rMutex;
+	TCPCommunication *tcpcomm1;
+	queue<QueueStruct_t> *tQueue1;
+	queue<string> *rQueue1;
+	mutex *tMutex1, *rMutex1;
 
 public:
-	string tempName = "tempfile.raw";
+	//static string tempName = "tempfile.raw";
 
 public:
-	void TLVtoArray(TLVStruct *, uint8_t *);
-	void ArrayToTLV(TLVStruct *, uint8_t *);
-	void buildTLVheader(TLVStruct *, string); //only support command mode
+	static void TLVtoArray(TLVStruct *, uint8_t *);
+	static void ArrayToTLV(TLVStruct *, uint8_t *);
+	static void buildTLVheader(TLVStruct *, string); //only support command mode
 	void startMessanger();
 
 public:
-	Messanger(TCPCommunication &, mutex *, mutex *, queue<QueueStruct_t> &, queue<string> &); // jako argumenty przyjmować 2x mutex i 2x kolejka
+	Messanger(TCPCommunication *, mutex *, mutex *, queue<QueueStruct_t> *, queue<string> *); // jako argumenty przyjmować 2x mutex i 2x kolejka
 	virtual ~Messanger();
 	Messanger();
 
-	void run();
+	static void run(TCPCommunication*, mutex*, mutex*, queue<QueueStruct_t>*, queue<string>*);
 };
 
 #endif /* TCP_MESSANGER_H_ */
