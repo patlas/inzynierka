@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <sys/sendfile.h>
 #include <math.h>
+#include <string.h>
 #include <fstream>
 #include <iostream>
 

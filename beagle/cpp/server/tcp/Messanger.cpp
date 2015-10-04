@@ -37,7 +37,30 @@ void Messanger::TLVtoArray(TLVStruct *tlv, uint8_t *rawData)
 
 void Messanger::ArrayToTLV(TLVStruct *tlv, uint8_t *rawData)
 {
-	memcpy(tlv,rawData,TLV_STRUCT_SIZE);
+	memcpy((uint8_t*)tlv,rawData,TLV_STRUCT_SIZE);
+	
+	uint64_t tempLen = 0;
+	
+	
+	tempLen |= rawData[0];
+	tempLen<<=8;
+	tempLen |= rawData[2];
+	tempLen<<=8;
+	tempLen |= rawData[3];
+	tempLen<<=8;	
+	tempLen |= rawData[4];
+	tempLen<<=8;
+	tempLen |= rawData[5];
+	tempLen<<=8;
+	tempLen |= rawData[6];
+	tempLen<<=8;
+	tempLen |= rawData[7];
+	tempLen<<=8;	
+	tempLen |= rawData[8];
+
+
+	tlv->length = tempLen;
+
 }
 
 //cmd string could not be longer than TLV_DATA_SIZE!
@@ -109,24 +132,27 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 		{
 			if(tcpcomm->receiveData(rData) > 0)
 			{
-				cout<<"Odebrano dane:"<<rData<<endl;
+				
 
 				TLVStruct tempTLV;
 				ArrayToTLV(&tempTLV,rData);
 				if(tempTLV.type == 0)
 				{
+					cout<<"Odebralem komende"<<endl;
 					//TODO - if tempTLV.type == stream than ommit below and start saving to file
 					if(commandSize == 0)
 					{
 						compSize = tempTLV.length;
+						printf("Rozmiar komendy to: %x\n",tempTLV.length);
 					}
 
 					command.append((char*)tempTLV.value);
-					commandSize+=sizeof(tempTLV.value);
+					commandSize+=TLV_DATA_SIZE;//sizeof(tempTLV.value);
 
 					if(commandSize >= compSize)
 					{
 						rQueue->push(command.substr(0, (int)compSize));
+						cout<<"To taka komenda:"<<command.substr(0, (int)compSize)<<endl;
 
 						command.clear();
 						commandSize = 0;
@@ -134,6 +160,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 				}
 				else
 				{
+					cout<<"Odebralem stream"<<endl;
 					//TODO - save stream to file
 					if(fsize == 0)
 					{
