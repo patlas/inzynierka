@@ -171,3 +171,11 @@ void Messanger::run()
 	}
 
 }
+
+
+void Messanger::startMessanger()
+{
+
+// TODO - start messanger thread -> return bool?
+	thread mes_thread(run);
+}

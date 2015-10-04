@@ -47,6 +47,7 @@ public:
 	void TLVtoArray(TLVStruct *, uint8_t *);
 	void ArrayToTLV(TLVStruct *, uint8_t *);
 	void buildTLVheader(TLVStruct *, string); //only support command mode
+	void startMessanger();
 
 public:
 	Messanger(TCPCommunication &, mutex *, mutex *, queue<QueueStruct_t> &, queue<string> &); // jako argumenty przyjmować 2x mutex i 2x kolejka

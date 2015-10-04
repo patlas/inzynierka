@@ -2,7 +2,7 @@ CCXX=g++
 CFLAGS=-g
 LFLAGS=-std=c++11 -lpthread -v
 TCP_LOC=tcp/
-TEST_LOC=test/
+TEST_LOC=main/
 
 OBJS=$(TEST_LOC)main.cpp $(TCP_LOC)TCPCommunication.cpp $(TCP_LOC)Messanger.cpp
 
