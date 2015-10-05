@@ -65,7 +65,7 @@ public:
 	TCPCommunication();
 	virtual ~TCPCommunication();
 
-	void setBlockingSocketOption(bool);
+	void setBlockingSocketOption(bool, int);
 	bool listenSocket();
 	bool acceptConnection();
 	TCPCommunicationError_t startServer();

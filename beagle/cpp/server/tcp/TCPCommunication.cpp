@@ -37,7 +37,7 @@ bool TCPCommunication::createSocket()
 }
 
 //BARDZO WAŻNE USTAWIANIE FLAGI BLOKOWANIA !!!!!!
-void TCPCommunication::setBlockingSocketOption(bool set) //moze zwraca bool jezeli fcntl sie nie powiedzie?
+void TCPCommunication::setBlockingSocketOption(bool set, int socket_desc) //moze zwraca bool jezeli fcntl sie nie powiedzie?
 {
 	int opts;
 	opts = fcntl(socket_desc,F_GETFL);
@@ -99,11 +99,13 @@ TCPCommunicationError_t TCPCommunication::startServer()
 {
 	if(!createSocket()) return SOCKET_ERROR;
 
-	setBlockingSocketOption(true);
+	setBlockingSocketOption(true,socket_desc);
 
 	if(!bindToSocket()) return BIND_ERROR;
 	if(!listenSocket()) return LISTEN_ERROR;
 	if(!acceptConnection()) return ACCEPT_ERROR;
+
+    setBlockingSocketOption(false,socket_cli);
 
 	return NO_ERROR;
 }

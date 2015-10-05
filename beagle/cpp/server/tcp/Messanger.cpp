@@ -42,7 +42,7 @@ void Messanger::ArrayToTLV(TLVStruct *tlv, uint8_t *rawData)
 	uint64_t tempLen = 0;
 	
 	
-	tempLen |= rawData[0];
+	tempLen |= rawData[1];
 	tempLen<<=8;
 	tempLen |= rawData[2];
 	tempLen<<=8;
@@ -84,7 +84,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 	uint64_t fsize = 0;
 	string command ;
 	ofstream outfile;
-	cout<<"WAtek ruszyl"<<endl;
+	//cout<<"WAtek ruszyl"<<endl;
 
 	while(1)
 	{
@@ -130,6 +130,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 
 		if(rMutex->try_lock())
 		{
+            //cout<<"T: Biore kolejke"<<endl;
 			if(tcpcomm->receiveData(rData) > 0)
 			{
 				
@@ -138,12 +139,12 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 				ArrayToTLV(&tempTLV,rData);
 				if(tempTLV.type == 0)
 				{
-					cout<<"Odebralem komende"<<endl;
+					//cout<<"Odebralem komende"<<endl;
 					//TODO - if tempTLV.type == stream than ommit below and start saving to file
 					if(commandSize == 0)
 					{
 						compSize = tempTLV.length;
-						printf("Rozmiar komendy to: %x\n",tempTLV.length);
+						//printf("Rozmiar komendy to: %x\n",tempTLV.length);
 					}
 
 					command.append((char*)tempTLV.value);
@@ -152,7 +153,8 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					if(commandSize >= compSize)
 					{
 						rQueue->push(command.substr(0, (int)compSize));
-						cout<<"To taka komenda:"<<command.substr(0, (int)compSize)<<endl;
+                        cout<<"T: Wstawiam do kolejki"<<endl;                    
+						//cout<<"To taka komenda:"<<command.substr(0, (int)compSize)<<endl;
 
 						command.clear();
 						commandSize = 0;
@@ -160,7 +162,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 				}
 				else
 				{
-					cout<<"Odebralem stream"<<endl;
+					//cout<<"Odebralem stream"<<endl;
 					//TODO - save stream to file
 					if(fsize == 0)
 					{
@@ -194,6 +196,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 			}
 
 			rMutex->unlock();
+            //cout<<"T: Zwalniam kolejke"<<endl;
 		}
 
 

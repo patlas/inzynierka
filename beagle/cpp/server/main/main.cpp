@@ -44,19 +44,15 @@ string getCommand()
 	return cmd;
 }
 
-bool sendCommand(string cmd)
+void sendCommand(string cmd)
 {
 	QueueStruct_t command_struct;
 	command_struct.command = cmd; //czy takie kopiowanie dziala?
 	
-	if(tMutex.lock())
-	{
-		tQueue.push(&command_struct)
-		tMutex.unlock();
-		return true;
-	}
-	else
-		return false;
+    tMutex.lock();
+	tQueue.push(command_struct);
+	tMutex.unlock();
+
 }
 
 
@@ -75,9 +71,13 @@ int main(void){
 		mes_thread.detach();
 	}
 	// TODO - sprawdzac czy nie zerwano połączenia, jeżeli tak to catchNewConnection, jak?
-
+cout << "Ide do maina"<<endl;
 while(1){
-	cout<<"Odebrano komende: "<<getCommand()<<endl;
+	cout<<"Odebrano komendex: "<<getCommand()<<endl;
+    sleep(2);
+//      if(!rQueue.empty()) cout<<"Kolejka pelna"<<endl;
+//      else cout<<"Kolejka pusta:"<<endl;
+    sendCommand("Patryk");
 }
 
 	return 0;
