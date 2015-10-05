@@ -92,6 +92,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 		{
 			if(!tQueue->empty())
 			{
+                cout<<"Chce wysylac dane"<<endl;
 				QSt = tQueue->front();
 				tQueue->pop();
 				tMutex->unlock();
@@ -99,8 +100,10 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 				if(QSt.stream == false)
 				{
 					string cmd = QSt.command;
-					uint8_t index =  (uint8_t) ceil(cmd.length() / TLV_DATA_SIZE);
-
+                    cout<<"Wysylam takie dane: "<<cmd<<cmd.length()<<endl;
+					uint8_t index =  (uint8_t) ceil(cmd.length() / (float)TLV_DATA_SIZE);
+                    //uint8_t index =  (uint8_t) divCeil(cmd.length(),TLV_DATA_SIZE);
+                    cout<<"Dane to tyle pakietow: "<<(int)index<<endl;
 				   for(uint8_t i=0; i<index;i++)
 				   {
 					   uint8_t end = (i+1)*TLV_DATA_SIZE;
@@ -115,7 +118,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					   buildTLVheader(&tempTLV,substr);
 					   uint8_t dataToSend[TLV_STRUCT_SIZE];
 					   TLVtoArray(&tempTLV,dataToSend);
-					   tcpcomm->sendData(dataToSend); //sprawdzac czy sie wyslalo - przez returny
+					   cout<<"Wyslalem tyle: "<<tcpcomm->sendData(dataToSend) <<endl; //sprawdzac czy sie wyslalo - przez returny
 				   }
 				}
 				else
@@ -202,6 +205,12 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 
 	}
 
+}
+
+uint8_t Messanger::divCeil(uint8_t num, uint8_t denom)
+{
+    std::div_t res = std::div(num,denom);
+    return res.rem ? (res.quot + 1) : res.quot;
 }
 
 

@@ -47,6 +47,7 @@ string getCommand()
 void sendCommand(string cmd)
 {
 	QueueStruct_t command_struct;
+    command_struct.stream=false;
 	command_struct.command = cmd; //czy takie kopiowanie dziala?
 	
     tMutex.lock();

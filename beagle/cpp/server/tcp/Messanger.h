@@ -44,6 +44,8 @@ private:
 	queue<string> *rQueue1;
 	mutex *tMutex1, *rMutex1;
 
+    static uint8_t divCeil(uint8_t, uint8_t);
+
 public:
 	//static string tempName = "tempfile.raw";
 
