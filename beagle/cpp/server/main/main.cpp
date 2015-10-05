@@ -29,14 +29,6 @@ queue<string> rQueue;
 
 string getCommand()
 {
-//	while(1)
-//	{
-//		if(rMutex.try_lock()){
-//			string b = "main";
-//			rq.push(b);
-//			rMutex.unlock();
-//			cout<<"Main wstawił do kolejki "<<index<<endl;
-//		}
 	string cmd;
 	cmd.clear();
 	while(cmd.empty())
@@ -52,11 +44,22 @@ string getCommand()
 	return cmd;
 }
 
-
-
-void test(void){
-cout<<test<<endl;
+bool sendCommand(string cmd)
+{
+	QueueStruct_t command_struct;
+	command_struct.command = cmd; //czy takie kopiowanie dziala?
+	
+	if(tMutex.lock())
+	{
+		tQueue.push(&command_struct)
+		tMutex.unlock();
+		return true;
+	}
+	else
+		return false;
 }
+
+
 
 int main(void){
 

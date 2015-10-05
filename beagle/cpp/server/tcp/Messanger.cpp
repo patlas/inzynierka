@@ -115,7 +115,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					   buildTLVheader(&tempTLV,substr);
 					   uint8_t dataToSend[TLV_STRUCT_SIZE];
 					   TLVtoArray(&tempTLV,dataToSend);
-					   tcpcomm->sendData(dataToSend);
+					   tcpcomm->sendData(dataToSend); //sprawdzac czy sie wyslalo - przez returny
 				   }
 				}
 				else
