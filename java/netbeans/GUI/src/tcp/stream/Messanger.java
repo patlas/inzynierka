@@ -77,7 +77,7 @@ public class Messanger implements Runnable {
                 {
                     //TODO - think about dataList -> is it realy necessary?
                     //dataList.add(tts);  
-
+                    System.out.println("Sa jakies dane odebrane");
                         //tlv = TTStoTLV(dataList.poll());
                     tlv = TTStoTLV(tts);
                     
@@ -150,12 +150,20 @@ public class Messanger implements Runnable {
     
     private TLVstruct TTStoTLV(TwoTypeStruct tts)
     {
+//        byte[] x = tts.getData();
+//        for(int a =0 ; a<tts.length(); a++)
+//            System.out.println(x[a]);
+        
         TLVstruct tlv = new TLVstruct();
         tlv.type = tts.getData()[0];
+        
+        System.out.println("Type is: "+tlv.type);
         tlv.length = ByteUtils.bytesToLong(tts.getData(),1);
+        System.out.println("Length is: "+tlv.length);
         //tlv.data = new ByteBuffer()
         ByteBuffer bb = ByteBuffer.allocate(TLVstruct.TLV_DATA_SIZE);
         tlv.data = (bb.put(tts.getData(), 9, TLVstruct.TLV_DATA_SIZE)).array();
+        System.out.println("data is: "+tlv.data[0]);
         
         return tlv;
     }
@@ -183,16 +191,48 @@ public class Messanger implements Runnable {
 
 
 class ByteUtils {
-    private static ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);    
+    //private static ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);    
 
     public static byte[] longToBytes(long x) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
         buffer.putLong(0, x);
-        return buffer.array();
+        return myArray(buffer);
     }
 
     public static long bytesToLong(byte[] bytes, int offset) {
-        buffer.put(bytes, offset, 8);
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        byte[] tempB = new byte[Long.BYTES];
+        
+        for(int index=0; index<(Long.BYTES);index++){
+            tempB[index] = bytes[offset+index];
+        }
+        
+        buffer.put(myArray(tempB), 0, 8);
         buffer.flip();//need flip 
         return buffer.getLong();
+    }
+    
+    private static byte[] myArray(ByteBuffer b){
+        
+        int size = b.capacity();
+        byte[] ret = new byte[size];
+        
+        System.out.println(size);
+        for(int index=0; index<size; index++){
+            ret[index]= b.get((size-1)-index) ;
+        }
+       return ret; 
+    }
+    
+    private static byte[] myArray(byte[] b){
+        
+        int size = b.length;
+        byte[] ret = new byte[size];
+        
+        System.out.println(size);
+        for(int index=0; index<size; index++){
+            ret[index]= b[(size-1)-index] ;
+        }
+       return ret; 
     }
 }

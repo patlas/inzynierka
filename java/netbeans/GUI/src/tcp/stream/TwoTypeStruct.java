@@ -13,8 +13,10 @@ public class TwoTypeStruct {
     private byte[] data = new byte[500];
     private int size = 0;
     
-    public byte[] getData(){
-        return data;
+    public byte[] getData(){      
+        byte[] dat = new byte[size];
+        System.arraycopy(data, 0, dat, 0, size);
+        return dat;
     }
     
     public int length(){

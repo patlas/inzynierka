@@ -6,6 +6,7 @@
 package tests;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.concurrent.LinkedBlockingQueue;
 import tcp.stream.Messanger;
 import tcp.stream.QueueStruct;
@@ -22,7 +23,7 @@ public class MessangerTest {
     public static void main(String [ ] args){
         
         
-        
+       
      LinkedBlockingQueue receiver = new LinkedBlockingQueue();
      LinkedBlockingQueue<QueueStruct> transmitter = new LinkedBlockingQueue<>();
      
@@ -32,7 +33,7 @@ public class MessangerTest {
          x.setCommand("TEST");
          transmitter.add(x);
          
-        TCPCommunication atcp = new TCPCommunication("192.168.56.101", 12345);
+        TCPCommunication atcp = new TCPCommunication("192.168.1.3", 12345);
         Messanger m = new Messanger(atcp,receiver,transmitter);
         (new Thread(m)).start();
         
@@ -57,7 +58,13 @@ public class MessangerTest {
      }catch(IOException io){}
      catch(InterruptedException ie){}
  
-    
-    
+
 }
+        
+        
+       
+        
+        
 }
+
+    
