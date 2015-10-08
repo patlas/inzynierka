@@ -5,9 +5,13 @@
  */
 package tcp.stream;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -62,7 +66,19 @@ public class Messanger implements Runnable {
                 else
                 {
                     //send stream data (file)
-                    byte[] dataToSend =  buildTLVdataHeader(false,qs.getData(),qs.getFileSize());
+                    byte[] dat = new byte[TLVstruct.TLV_DATA_SIZE];
+                   // if(qs.getData().length > TLVstruct.TLV_DATA_SIZE)
+                    //    System.arraycopy(qs.getData(), 0, dat, 0, TLVstruct.TLV_DATA_SIZE);
+                    //else
+                        System.arraycopy(qs.getData(), 0, dat, 0, TLVstruct.TLV_DATA_SIZE);
+                    
+                    for(long ww = 0; ww<TLVstruct.TLV_DATA_SIZE; ww++)
+                    System.out.println(qs.getData()[(int)ww]);
+                    
+                    byte[] dataToSend =  buildTLVdataHeader(false,dat,qs.getFileSize());
+                    
+                    
+                    
                     tcpcomm.sendByteArray(dataToSend, dataToSend.length);
                     
                     System.out.println("Streaming file, size: "+qs.getFileSize()+", packet length: "+dataToSend.length);
@@ -77,7 +93,7 @@ public class Messanger implements Runnable {
                 {
                     //TODO - think about dataList -> is it realy necessary?
                     //dataList.add(tts);  
-                    System.out.println("Sa jakies dane odebrane");
+                    //System.out.println("Sa jakies dane odebrane");
                         //tlv = TTStoTLV(dataList.poll());
                     tlv = TTStoTLV(tts);
                     
@@ -157,13 +173,13 @@ public class Messanger implements Runnable {
         TLVstruct tlv = new TLVstruct();
         tlv.type = tts.getData()[0];
         
-        System.out.println("Type is: "+tlv.type);
+        //System.out.println("Type is: "+tlv.type);
         tlv.length = ByteUtils.bytesToLong(tts.getData(),1);
-        System.out.println("Length is: "+tlv.length);
+        //System.out.println("Length is: "+tlv.length);
         //tlv.data = new ByteBuffer()
         ByteBuffer bb = ByteBuffer.allocate(TLVstruct.TLV_DATA_SIZE);
         tlv.data = (bb.put(tts.getData(), 9, TLVstruct.TLV_DATA_SIZE)).array();
-        System.out.println("data is: "+tlv.data[0]);
+        //System.out.println("data is: "+tlv.data[0]);
         
         return tlv;
     }
@@ -186,6 +202,94 @@ public class Messanger implements Runnable {
         
         return header;
     }
+    
+    
+    
+    public boolean sendCommand(String cmd)
+    {
+         QueueStruct struct = new QueueStruct();
+         struct.setStream(false);
+         struct.setCommand(cmd);
+         return transmitter.add(struct);
+    }
+    
+    public String recvCommand()
+    {
+        while(true)
+        {
+            if(!receiver.isEmpty())
+                return (String)receiver.poll();
+        }
+    }
+    
+    
+    
+    public boolean streamFile(String fileName)
+    {
+        File fd = new File(fileName);
+
+
+
+        //send info that file will be streamed
+//            tcpcomm.sendCommand(ControllCommands.START_FILE_STREAM);
+//            delay(300);
+//            tcpcomm.sendCommand(Integer.toString((int)fd.length()));                    
+//            delay(300);  
+//            tcpcomm.sendCommand(getHash(fileName));
+//            delay(300);
+
+        int index=0;
+        /*for(String type : ControllCommands.FILE_TYPES){
+                if(type.equalsIgnoreCase(fileName.split("\\.")[1])){
+                        tcpcomm.sendCommand(index);
+                }
+                index++;
+        }*/
+        try{
+            Path path = fd.toPath();
+            byte[] fileByteArray = Files.readAllBytes(path);
+            byte[] tempDat = new byte[TLVstruct.TLV_DATA_SIZE];
+            
+        
+                int sindex =  (int) Math.ceil((double)fileByteArray.length / TLVstruct.TLV_DATA_SIZE);
+                for(int i=0; i<sindex;i++)
+               {
+                    QueueStruct fileQS = new QueueStruct();
+                    fileQS.setStream(true);
+                    fileQS.setFileSize(fd.length());
+                   
+                    int end = TLVstruct.TLV_DATA_SIZE;
+                    if(((1+i)*TLVstruct.TLV_DATA_SIZE)>fileByteArray.length)
+                    {
+                        end = fileByteArray.length - (i*TLVstruct.TLV_DATA_SIZE);
+                    }
+
+                    
+                    for(int pos=0; pos<end; pos++)
+                    {
+                        tempDat[pos] = fileByteArray[i*TLVstruct.TLV_DATA_SIZE + pos];
+                    }
+                    
+                    fileQS.setData(tempDat);
+                    
+                    transmitter.put(fileQS);      
+               }
+
+
+
+            } catch (IOException ex) {
+                // Do exception handling
+                return false;
+            }catch(InterruptedException ie){
+                
+            }
+
+    System.out.println("Streaming done");
+    return true;//isTransferSuccesfull();
+		
+    }
+    
+    
     
 }
 
@@ -217,7 +321,7 @@ class ByteUtils {
         int size = b.capacity();
         byte[] ret = new byte[size];
         
-        System.out.println(size);
+        //System.out.println(size);
         for(int index=0; index<size; index++){
             ret[index]= b.get((size-1)-index) ;
         }
@@ -229,7 +333,7 @@ class ByteUtils {
         int size = b.length;
         byte[] ret = new byte[size];
         
-        System.out.println(size);
+        //System.out.println(size);
         for(int index=0; index<size; index++){
             ret[index]= b[(size-1)-index] ;
         }

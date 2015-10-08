@@ -31,32 +31,42 @@ public class MessangerTest {
          QueueStruct x = new QueueStruct();
          x.setStream(false);
          x.setCommand("TEST");
-         transmitter.add(x);
+         //transmitter.add(x);
          
         TCPCommunication atcp = new TCPCommunication("192.168.1.3", 12345);
         Messanger m = new Messanger(atcp,receiver,transmitter);
         (new Thread(m)).start();
         
+        byte[] xxx = new byte[11];
+        /*for(byte i=0; i<10;i++)
+            xxx[i] = (byte)(i+0x30);
+        xxx[10] = 'a';
         
-        for(int a=0;a<4;a++){
-            x.setStream(false);
-         x.setCommand("TEST"+a);
-         transmitter.add(x);
-         
-         Thread.sleep(1000);
-        }
+        x.setStream(true);
+        x.setFileSize(87);
+        x.setData(xxx);
+        for(int t=0;t<8;t++)
+            transmitter.add(x);*/
         
-        while(true){
-            if(!receiver.isEmpty()){
-                System.out.println(receiver.poll());
-            }
-        }
+        m.streamFile("pat.txt");
+        
+        
+//        for(int a=0;a<20;a++){
+//            m.sendCommand("Komenda testowa"+a);
+//        }
+//         
+//         Thread.sleep(1000);
+//        }
+//        
+//        while(true){
+//            System.out.println(m.recvCommand());
+//        }
                 
                 
                 
                 
      }catch(IOException io){}
-     catch(InterruptedException ie){}
+     //catch(InterruptedException ie){}
  
 
 }
