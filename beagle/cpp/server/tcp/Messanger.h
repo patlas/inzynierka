@@ -52,7 +52,7 @@ public:
 public:
 	static void TLVtoArray(TLVStruct *, uint8_t *);
 	static void ArrayToTLV(TLVStruct *, uint8_t *);
-	static void buildTLVheader(TLVStruct *, string); //only support command mode
+	static void buildTLVheader(TLVStruct *, string, uint64_t); //only support command mode
 	void startMessanger();
 
 public:

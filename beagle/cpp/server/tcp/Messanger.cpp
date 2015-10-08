@@ -41,7 +41,7 @@ void Messanger::ArrayToTLV(TLVStruct *tlv, uint8_t *rawData)
 	
 	uint64_t tempLen = 0;
 	
-	
+	/*
 	tempLen |= rawData[1];
 	tempLen<<=8;
 	tempLen |= rawData[2];
@@ -59,16 +59,16 @@ void Messanger::ArrayToTLV(TLVStruct *tlv, uint8_t *rawData)
 	tempLen |= rawData[8];
 
 
-	tlv->length = tempLen;
+	tlv->length = tempLen;*/
 
 }
 
 //cmd string could not be longer than TLV_DATA_SIZE!
-void Messanger::buildTLVheader(TLVStruct *tlv, string cmd)
+void Messanger::buildTLVheader(TLVStruct *tlv, string cmd, uint64_t full_cmd_length)
 {
 	// TODO - this implementation supports only command header
 	tlv->type = 0;
-	tlv->length = cmd.length();
+	tlv->length = full_cmd_length;//cmd.length();
 	uint8_t dataStr[TLV_DATA_SIZE];
 	memcpy(dataStr,cmd.data(), cmd.length());
 	memcpy(tlv->value,dataStr,cmd.length());
@@ -84,6 +84,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 	uint64_t fsize = 0;
 	string command ;
 	ofstream outfile;
+    TLVStruct tempTLV;
 	//cout<<"WAtek ruszyl"<<endl;
 
 	while(1)
@@ -115,7 +116,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					   string substr =  cmd.substr(i*TLV_DATA_SIZE, end);
 
 					   TLVStruct tempTLV;
-					   buildTLVheader(&tempTLV,substr);
+					   buildTLVheader(&tempTLV,substr,cmd.length());
 					   uint8_t dataToSend[TLV_STRUCT_SIZE];
 					   TLVtoArray(&tempTLV,dataToSend);
 					   cout<<"Wyslalem tyle: "<<tcpcomm->sendData(dataToSend) <<endl; //sprawdzac czy sie wyslalo - przez returny
@@ -138,8 +139,9 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 			{
 				
 
-				TLVStruct tempTLV;
+				//TLVStruct tempTLV;
 				ArrayToTLV(&tempTLV,rData);
+                printf("Taki typ: %d\n",tempTLV.type);
 				if(tempTLV.type == 0)
 				{
 					//cout<<"Odebralem komende"<<endl;
@@ -163,36 +165,48 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 						commandSize = 0;
 					}
 				}
-				else
+				else if(tempTLV.type == 1)
 				{
-					//cout<<"Odebralem stream"<<endl;
+					cout<<"Odebralem stream"<<endl;
+                    cout<<"Dlugosc streama: "<<tempTLV.length<<endl;
+                    //for(int c =0; c<8;c++)
+                    //    printf("%d\n",(uint8_t)(tempTLV.length>>(c*8)));
+                    for(int c=0; c<20;c++)
+                        printf("%d\n",(uint8_t)rData[c]);
+
 					//TODO - save stream to file
 					if(fsize == 0)
 					{
 						compSize = tempTLV.length;
+                        cout<<"Rozmiar pliku to: "<<tempTLV.length<<endl;
 
 						if(outfile.is_open()) outfile.close();
 						outfile.open("temp.raw", ofstream::binary | ofstream::out);
 
 					}
-					else if(fsize < compSize)
+					if(fsize < compSize)
 					{
 						fsize+=TLV_DATA_SIZE;
+                        printf("fsize: %d\n",fsize);;
 
 						outfile.write((char*)tempTLV.value,TLV_DATA_SIZE);
+                        //cout<<tempTLV.value[0]<<"rozmiar:"<<fsize<<endl;
 					}
-					else if(fsize >= compSize)
+					if(fsize >= compSize)
 					{
 						//zrobic flush i zapisać do pliku
 						outfile.flush();
 						outfile.close();
 						int source = open("temp.raw", O_RDONLY, 0);
 						int dest = open(TEMP_NAME, O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
-
+                        
+                        printf("compSize before save: %d\n",compSize);
 						sendfile(dest, source, 0, compSize);
 
 						close(source);
 						close(dest);
+                        fsize = 0;
+                        cout<<"Odebralem plik"<<endl;
 
 					}
 				}

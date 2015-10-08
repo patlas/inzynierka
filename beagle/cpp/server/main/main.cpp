@@ -75,10 +75,10 @@ int main(void){
 cout << "Ide do maina"<<endl;
 while(1){
 	cout<<"Odebrano komendex: "<<getCommand()<<endl;
-    sleep(2);
+    //sleep(2);
 //      if(!rQueue.empty()) cout<<"Kolejka pelna"<<endl;
 //      else cout<<"Kolejka pusta:"<<endl;
-    sendCommand("Patryk");
+    //sendCommand("Patryk12345678945612321456");
 }
 
 	return 0;
