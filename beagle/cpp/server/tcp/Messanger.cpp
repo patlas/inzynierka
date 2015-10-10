@@ -6,6 +6,7 @@
  */
 
 #include "Messanger.h"
+#include "commands.h"
 
 Messanger::Messanger(TCPCommunication *tcp, mutex *tm, mutex *rm, queue<QueueStruct_t>  *tq, queue<string> *rq)
 {
@@ -86,6 +87,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 	ofstream outfile;
     TLVStruct tempTLV;
 	//cout<<"WAtek ruszyl"<<endl;
+    uint8_t count = 0;
 
 	while(1)
 	{
@@ -135,7 +137,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 		if(rMutex->try_lock())
 		{
             //cout<<"T: Biore kolejke"<<endl;
-			if(tcpcomm->receiveData(rData) > 0)
+			if( (count = tcpcomm->receiveData(rData)) > 0)
 			{
 				
 
@@ -211,7 +213,11 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					}
 				}
 			}
-
+            else if(count<0)
+            {
+                //connection lost -> send to queue error message, close conection and goto listen state
+                rQueue->push(RESTART_SERV);
+            }
 			rMutex->unlock();
             //cout<<"T: Zwalniam kolejke"<<endl;
 		}

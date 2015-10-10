@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include "TCPCommunication.h"
+#include "commands.h"
 
 #define TEMP_NAME "tempfile.raw"
 

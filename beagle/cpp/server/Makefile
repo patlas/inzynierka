@@ -1,10 +1,10 @@
 CCXX=g++
 CFLAGS=-g
-LFLAGS=-std=c++11 -pthread -v
+LFLAGS=-std=c++11 -pthread #-v
 TCP_LOC=tcp/
-TEST_LOC=main/
+MAIN_LOC=main/
 
-OBJS=$(TEST_LOC)main.cpp $(TCP_LOC)TCPCommunication.cpp $(TCP_LOC)Messanger.cpp
+OBJS=$(MAIN_LOC)main.cpp $(TCP_LOC)TCPCommunication.cpp $(TCP_LOC)Messanger.cpp $(MAIN_LOC)Invoker.cpp
 
 test:
 	$(CCXX) $(LFLAGS) $(OBJS) -o test

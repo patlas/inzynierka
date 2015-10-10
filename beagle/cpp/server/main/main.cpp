@@ -9,11 +9,14 @@
 #include <unistd.h>
 #include "../tcp/TCPCommunication.h"
 #include "../tcp/Messanger.h"
+#include "../main/Invoker.h"
 #include <mutex>
 #include <queue>
 #include <string>
 #include <stdint.h>
 #include <fstream>
+
+#include <map>
 
 
 #define SERV_ADDR	INADDR_ANY
@@ -48,7 +51,7 @@ void sendCommand(string cmd)
 {
 	QueueStruct_t command_struct;
     command_struct.stream=false;
-	command_struct.command = cmd; //czy takie kopiowanie dziala?
+	command_struct.command = cmd;
 	
     tMutex.lock();
 	tQueue.push(command_struct);
@@ -58,10 +61,47 @@ void sendCommand(string cmd)
 
 
 
+
+
+//tutaj funkcje do rejestracji
+void test(void *param){
+
+    cout<<"Invoker dziala"<<endl;//(int)(*param)<<endl;
+    printf("%d",*((int*)param));
+}
+
+
+
+
+void server_restart(void *param)
+{
+    
+    TCPCommunication *tcpptr = (TCPCommunication *) param;
+    TCPCommunicationError_t error_code;
+    if( (error_code=tcpptr->catchNewConnection()) == NO_ERROR)
+    {
+        cout<<"New connection established"<<endl;
+    }
+    else
+    {
+        printf("An error occured while trying new connection established. ERROR CODE: %d",error_code);
+    }
+
+}
+
 int main(void){
 
 	TCPCommunication tcpcomm = TCPCommunication(SERV_ADDR, SERV_PORT);
 	Messanger messanger = Messanger(&tcpcomm, &tMutex, &rMutex, &tQueue, &rQueue);
+    Invoker invoker;
+
+//    invoker.insert_function("testowa",&test);
+//    int xxx = 2;
+//    cout<<"Wynik wywolania invokera: "<<endl;
+//    invoker.invoke("testowa",&xxx);//<<endl;
+
+
+
 
 	if(tcpcomm.startServer() == NO_ERROR)
 	{
@@ -72,14 +112,24 @@ int main(void){
 		mes_thread.detach();
 	}
 	// TODO - sprawdzac czy nie zerwano połączenia, jeżeli tak to catchNewConnection, jak?
-cout << "Ide do maina"<<endl;
-while(1){
-	cout<<"Odebrano komendex: "<<getCommand()<<endl;
+
+
+    while(1)
+    {
+        //maszyna stanu :)
+
+
+    }
+
+
+//cout << "Ide do maina"<<endl;
+//while(1){
+//	cout<<"Odebrano komendex: "<<getCommand()<<endl;
     //sleep(2);
 //      if(!rQueue.empty()) cout<<"Kolejka pelna"<<endl;
 //      else cout<<"Kolejka pusta:"<<endl;
     //sendCommand("Patryk12345678945612321456");
-}
+//}
 
 	return 0;
 }
