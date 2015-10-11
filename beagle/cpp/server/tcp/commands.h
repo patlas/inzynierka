@@ -2,6 +2,13 @@
 #define __COMMANDS_H__
 
 #define RESTART_SERV    "RESTART_S"
+#define F_STREAM        "F_STREAM"
+#define GET_SIZE        "GET_SIZE"
+#define GET_HASH        "GET_HASH"
+#define GET_TYPE        "GET_TYPE"
+#define F_RECEIVED      "F_RECEIVED"
+#define F_DONE          "F_DONE"
+#define F_ERROR         "F_ERROR"
 
 /*
 typedef enum {

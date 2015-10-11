@@ -23,7 +23,8 @@ public:
     
     bool insert_function(string, funct);
     bool invoke(string, void*);
-    
+    bool invoke(string);
+
 	virtual ~Invoker();
 	Invoker();
 

@@ -10,6 +10,7 @@
 #include "../tcp/TCPCommunication.h"
 #include "../tcp/Messanger.h"
 #include "../main/Invoker.h"
+#include "../main/md5hash.h"
 #include <mutex>
 #include <queue>
 #include <string>
@@ -28,6 +29,9 @@ using namespace std;
 mutex tMutex, rMutex;
 queue<QueueStruct_t> tQueue;
 queue<string> rQueue;
+uint64_t fSize = 0;
+string fHash;
+string fType;
 
 
 string getCommand()
@@ -75,7 +79,7 @@ void test(void *param){
 
 void server_restart(void *param)
 {
-    
+    //TODO - zabić messangera i stworzyć nowy obiekt???
     TCPCommunication *tcpptr = (TCPCommunication *) param;
     TCPCommunicationError_t error_code;
     if( (error_code=tcpptr->catchNewConnection()) == NO_ERROR)
@@ -89,18 +93,57 @@ void server_restart(void *param)
 
 }
 
+
+void receive_stream(void *param)
+{
+    sendCommand(GET_SIZE);
+    string size = getCommand();
+    fSize = stol(size);
+    sendCommand(GET_HASH);
+    fHash = getCommand();
+    sendCommand(GET_TYPE);
+    fType = getCommand();
+}
+
+void check_file(void *param)
+{
+    char md5_tab[50];
+
+    md5(TEMP_NAME, md5_tab); 
+    string md5_hash(md5_tab);
+
+    if(md5_hash.compare(fHash)==0)
+    {
+        cout<<"Received file hash match"<<endl;
+        sendCommand(F_RECEIVED);
+    }
+    else
+    {
+        //wyslac error code
+        cout<<"Hash doesn't match"<<endl;
+        cout<<fHash<<endl;
+        cout<<md5_hash<<endl;
+        sendCommand(F_ERROR);
+    }
+
+}
+
+
 int main(void){
 
 	TCPCommunication tcpcomm = TCPCommunication(SERV_ADDR, SERV_PORT);
 	Messanger messanger = Messanger(&tcpcomm, &tMutex, &rMutex, &tQueue, &rQueue);
     Invoker invoker;
+    string command;
 
 //    invoker.insert_function("testowa",&test);
 //    int xxx = 2;
 //    cout<<"Wynik wywolania invokera: "<<endl;
 //    invoker.invoke("testowa",&xxx);//<<endl;
 
-
+    invoker.insert_function(RESTART_SERV, &server_restart);
+    invoker.insert_function(F_STREAM, &receive_stream);
+    invoker.insert_function(F_DONE, &check_file);
 
 
 	if(tcpcomm.startServer() == NO_ERROR)
@@ -113,10 +156,23 @@ int main(void){
 	}
 	// TODO - sprawdzac czy nie zerwano połączenia, jeżeli tak to catchNewConnection, jak?
 
-
+    cout<<"Ide do maszyny stanu"<<endl;
     while(1)
     {
         //maszyna stanu :)
+        command = getCommand();
+            cout<<command<<endl;
+        if(command.compare(RESTART_SERV)==0)
+        {
+            cout<<"RESTART SERV???"<<endl;
+            invoker.invoke(RESTART_SERV,&tcpcomm);
+        }
+        else
+        {
+            invoker.invoke(command);
+            //cout<<command<<endl;
+
+        }
 
 
     }

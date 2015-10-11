@@ -120,7 +120,7 @@ TCPCommunicationError_t TCPCommunication::catchNewConnection()
 
 int TCPCommunication::receiveData(uint8_t *buffer)
 {
-	return recv(socket_cli, buffer, TLV_STRUCT_SIZE, 0);
+	return TEMP_FAILURE_RETRY(recv(socket_cli, buffer, TLV_STRUCT_SIZE, 0));
 }
 
 int TCPCommunication::sendData(uint8_t *buffer)

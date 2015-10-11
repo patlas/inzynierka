@@ -87,7 +87,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 	ofstream outfile;
     TLVStruct tempTLV;
 	//cout<<"WAtek ruszyl"<<endl;
-    uint8_t count = 0;
+    int count = 0;
 
 	while(1)
 	{
@@ -137,7 +137,9 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 		if(rMutex->try_lock())
 		{
             //cout<<"T: Biore kolejke"<<endl;
-			if( (count = tcpcomm->receiveData(rData)) > 0)
+            count = tcpcomm->receiveData(rData);
+            //printf("count: %d\n",count);
+			if( count > 0)
 			{
 				
 
@@ -151,7 +153,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					if(commandSize == 0)
 					{
 						compSize = tempTLV.length;
-						//printf("Rozmiar komendy to: %x\n",tempTLV.length);
+						printf("Rozmiar komendy to: %x\n",tempTLV.length);
 					}
 
 					command.append((char*)tempTLV.value);
@@ -161,7 +163,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					{
 						rQueue->push(command.substr(0, (int)compSize));
                         cout<<"T: Wstawiam do kolejki"<<endl;                    
-						//cout<<"To taka komenda:"<<command.substr(0, (int)compSize)<<endl;
+						cout<<"To taka komenda:"<<command.substr(0, (int)compSize)<<endl;
 
 						command.clear();
 						commandSize = 0;
@@ -213,11 +215,13 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					}
 				}
 			}
-            else if(count<0)
+            /*else if(count<0)
             {
+                cout<<"Connection lost, go back to listen state"<<endl;
                 //connection lost -> send to queue error message, close conection and goto listen state
                 rQueue->push(RESTART_SERV);
-            }
+                
+            }*/
 			rMutex->unlock();
             //cout<<"T: Zwalniam kolejke"<<endl;
 		}
