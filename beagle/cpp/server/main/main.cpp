@@ -17,6 +17,7 @@
 #include <mutex>
 #include <queue>
 #include <string>
+#include <string.h>
 #include <stdint.h>
 #include <fstream>
 #include <map>
@@ -35,6 +36,8 @@ pid_t childPID;
 uint64_t fSize = 0;
 string fHash;
 string fType;
+char xdo_buff[500];
+uint16_t pptCurrentPage = 1;
 
 
 string getCommand()
@@ -160,7 +163,7 @@ void start_file(void *param)
         switch(index)
         {
             case 0:
-                execl(SOFFICE_PATH, "soffice", "--show", file_name_tab[PPT_FILE_INDEX].c_str(), NULL);
+                //execl(SOFFICE_PATH, "soffice", "--show", file_name_tab[PPT_FILE_INDEX].c_str(), NULL);
 			    break;
 
             case 1:
@@ -182,7 +185,57 @@ void start_file(void *param)
         }
     }
 
+}
 
+void next_page(void *param)
+{
+    uint8_t index;
+    uint16_t actionPage = pptCurrentPage;
+
+	uint8_t tmpCmd[6];
+	uint8_t strCommand[20];
+	uint8_t pindex=0;
+
+    string command;
+
+    for(index=0; index<EXTENSION_TAB_SIZE; index++)
+    {
+        if(extension_tab[index].compare(fType) == 0){
+            break;  
+        } 
+    }
+
+    switch(index)
+    {
+        case 0:
+        case 1:
+        {
+            actionPage+=2;
+
+            string str_actionPage = to_string(actionPage);
+            for(int strIndex=0; strIndex<str_actionPage.length(); strIndex++)
+            {
+                command+=str_actionPage[strIndex];
+                command+="+";
+            }
+            command += "KP_Enter+Left";
+			
+			cout<<"Command: "<<command<<endl;
+			pptCurrentPage++;
+        }
+        break;
+
+        default:
+            return;
+    }
+
+    if(vfork()==0)
+    {
+		SHELL(command.c_str());
+		printf("TUTAJ: %s",xdo_buff);
+		//system(xdo_buff);
+		exit(1);
+	}
 }
 
 
@@ -202,6 +255,7 @@ int main(void){
     invoker.insert_function(F_STREAM, &receive_stream);
     invoker.insert_function(F_DONE, &check_file);
     invoker.insert_function(F_START, &start_file);
+    invoker.insert_function(F_NEXTP, &next_page);
 
 
 	if(tcpcomm.startServer() == NO_ERROR)

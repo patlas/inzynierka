@@ -23,6 +23,7 @@
 #define F_DONE          "F_DONE"
 #define F_ERROR         "F_ERROR"
 #define F_START         "F_START"
+#define F_NEXTP         "F_NEXTP"
 
 //RAW FILE TEMP NAME
 #define TEMP_NAME       "tempfile.raw"
