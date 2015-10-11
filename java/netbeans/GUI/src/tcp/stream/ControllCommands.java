@@ -20,7 +20,7 @@ public class ControllCommands {
 	public static String F_ERROR = "F_ERROR";
         public static String RESTART_S = "RESTART_S";
         public static String F_START = "F_START";
-        
+        public static String F_NEXTP = "F_NEXTP";
 	
 	public static byte PPT = 0;
 	public static byte PPTX = 1;

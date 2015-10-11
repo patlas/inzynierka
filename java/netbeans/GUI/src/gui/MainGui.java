@@ -468,8 +468,8 @@ public class MainGui extends javax.swing.JFrame {
                 pptPreviewLabel.setIcon(pptViewer.showSlide(pptViewer.currentSlide));
                 
                 //TYMCZASOWA PROWIZORKA
-                tcpcomm.sendCommand((int)ControllCommands.ppt_nextp);
-               
+                //tcpcomm.sendCommand((int)ControllCommands.ppt_nextp);
+               messanger.sendCommand(ControllCommands.F_NEXTP);
                 
                 
             }
