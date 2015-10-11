@@ -27,6 +27,7 @@ public class Messanger implements Runnable {
     
     private LinkedList<TwoTypeStruct> dataList = new LinkedList();
     private int index = 0;
+    public boolean streamDone = false;
     
     @Override 
     public void run(){
@@ -224,9 +225,9 @@ public class Messanger implements Runnable {
     
     
     
-    public boolean streamFile(String fileName)
+    public boolean streamFile(File fd)
     {
-        File fd = new File(fileName);
+       // File fd = new File(fileName);
 
 
 
@@ -285,6 +286,7 @@ public class Messanger implements Runnable {
             }
 
     System.out.println("Streaming done");
+    streamDone = true;
     return true;//isTransferSuccesfull();
 		
     }

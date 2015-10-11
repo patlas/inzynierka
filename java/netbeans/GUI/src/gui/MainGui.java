@@ -10,12 +10,15 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.concurrent.LinkedBlockingQueue;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import tcp.stream.ControllCommands;
 import tcp.stream.FileStreamer;
+import tcp.stream.Messanger;
+import tcp.stream.QueueStruct;
 import tcp.stream.TCPCommunication;
 import viewer.PDFfileViewer;
 import viewer.PPTfileViewer;
@@ -29,7 +32,7 @@ import viewer.PPTfileViewer;
 public class MainGui extends javax.swing.JFrame {
     
     static int PORT = 12345;
-    static String ADDRESS = "192.168.1.20";/*"127.0.0.1";*/
+    static String ADDRESS = "192.168.1.3";/*"127.0.0.1";*/
     
     public String fName = null;
     private ProgressDialog pd = null;
@@ -37,7 +40,10 @@ public class MainGui extends javax.swing.JFrame {
     private boolean fileOpened = false;
     private PPTfileViewer pptViewer = null;
     private TCPCommunication tcpcomm = null;
+    private Messanger messanger = null;
     private Thread progressThread = null;
+    public LinkedBlockingQueue receiver = new LinkedBlockingQueue();
+    public LinkedBlockingQueue<QueueStruct> transmitter = new LinkedBlockingQueue<>();
     
     private PDFfileViewer pdf = null;
     /**
@@ -364,10 +370,11 @@ public class MainGui extends javax.swing.JFrame {
           
           //file transfer
           if(tcpcomm != null){
-            FileStreamer fs = new FileStreamer(tcpcomm);
-            if(fs.streamFile(fName)){
+
+            if(sendFile(messanger,selectedFile)){
                 //progressThread.interrupt();
                 System.out.println("Plik wysłano pomyślnie");
+                messanger.sendCommand(ControllCommands.F_START);
             }
             else{
                 //błąd transmisji pliku!!!!
@@ -436,6 +443,9 @@ public class MainGui extends javax.swing.JFrame {
                 }catch(IOException e){
                     
                 }
+                
+                messanger = new Messanger(tcpcomm,receiver,transmitter);
+                (new Thread(messanger)).start();
             }
             if(tcpcomm.isConnected()){
                 mConnect.setText("Disconnect");
@@ -594,6 +604,51 @@ public class MainGui extends javax.swing.JFrame {
         pd = new ProgressDialog();
         pd.setSize((int) Math.round(width*0.3), (int) Math.round(height*0.1));
     }
+    
+    
+    
+    private boolean sendFile(Messanger m, File fd){
+        m.sendCommand("F_STREAM");
+        if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_SIZE)){
+            System.out.println("Ask for size");        
+            m.sendCommand(Integer.toString((int)fd.length()));
+            
+        }
+        
+        if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_HASH)){
+            System.out.println("Ask for hash");        
+            m.sendCommand(FileStreamer.getHash(fd.getAbsolutePath()));      
+        }
+        
+        if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_TYPE)){
+            System.out.println("Ask for type");    
+            String[] ext = fd.getAbsolutePath().toLowerCase().split("\\.");
+            String extention = ext[ext.length-1];       
+            m.sendCommand(extention); 
+
+        }
+                        
+        m.streamFile(fd);
+        while(m.streamDone != true){};
+        m.streamDone = false;
+        m.sendCommand(ControllCommands.F_DONE);
+        String stramSucces = m.recvCommand();
+        System.out.println("Stream done with: "+stramSucces);
+        
+        if(stramSucces.equalsIgnoreCase(ControllCommands.F_RECEIVED))
+        {
+            return true;
+        }
+        else if(stramSucces.equalsIgnoreCase(ControllCommands.F_ERROR))
+        {
+            return false;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */

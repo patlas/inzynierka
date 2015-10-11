@@ -8,6 +8,19 @@ public class ControllCommands {
 	public static String START_FILE_STREAM = "stream";
 	public static String SUCCESS_QUERY = "squery";
 	public static String TRANSFER_ERROR = "terror";
+        
+        
+        
+        public static String F_STREAM = "F_STREAM";
+	public static String GET_SIZE = "GET_SIZE";
+	public static String GET_HASH = "GET_HASH";
+	public static String GET_TYPE = "GET_TYPE";
+	public static String F_DONE = "F_DONE";
+        public static String F_RECEIVED = "F_RECEIVED";
+	public static String F_ERROR = "F_ERROR";
+        public static String RESTART_S = "RESTART_S";
+        public static String F_START = "F_START";
+        
 	
 	public static byte PPT = 0;
 	public static byte PPTX = 1;
