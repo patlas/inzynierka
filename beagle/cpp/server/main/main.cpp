@@ -7,6 +7,9 @@
 #include <iostream>
 #include <thread>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/sendfile.h>
+#include <sys/stat.h>
 #include "../tcp/TCPCommunication.h"
 #include "../tcp/Messanger.h"
 #include "../main/Invoker.h"
@@ -16,7 +19,6 @@
 #include <string>
 #include <stdint.h>
 #include <fstream>
-
 #include <map>
 
 
@@ -29,6 +31,7 @@ using namespace std;
 mutex tMutex, rMutex;
 queue<QueueStruct_t> tQueue;
 queue<string> rQueue;
+pid_t childPID;
 uint64_t fSize = 0;
 string fHash;
 string fType;
@@ -121,10 +124,64 @@ void check_file(void *param)
     {
         //wyslac error code
         cout<<"Hash doesn't match"<<endl;
-        cout<<fHash<<endl;
-        cout<<md5_hash<<endl;
+        cout<<"Receied hash: "<<fHash<<endl;
+        cout<<"Compute hash: "<<md5_hash<<endl;
         sendCommand(F_ERROR);
     }
+
+}
+
+
+void start_file(void *param)
+{
+    uint8_t index;
+    for(index=0; index<EXTENSION_TAB_SIZE; index++)
+    {
+        if(extension_tab[index].compare(fType) == 0){
+            //prepare file with proper extension
+            int source = open(TEMP_NAME, O_RDONLY,0);
+            int dest = open(file_name_tab[index].c_str(), O_WRONLY | O_CREAT, 0664);
+
+            struct stat stat_source;
+            fstat(source, &stat_source);
+            sendfile(dest, source, 0, stat_source.st_size);
+            
+            close(source);
+            close(dest);
+
+            break;  
+        } 
+    }
+
+    childPID = vfork();
+	//proces obsługujący programy otwierające pliki
+	if( childPID == 0 )
+    {
+        switch(index)
+        {
+            case 0:
+                execl(SOFFICE_PATH, "soffice", "--show", file_name_tab[PPT_FILE_INDEX].c_str(), NULL);
+			    break;
+
+            case 1:
+                execl(SOFFICE_PATH, "soffice", "--show", file_name_tab[PPTX_FILE_INDEX].c_str(), NULL);
+			    break;
+
+            case 2:
+                //execl(PDF_PATH, "pdf", file_name_tab[PDF_FILE_INDEX].c_str(), NULL);
+			    break;
+
+            case 3:
+                execl(MOUSEPAD_PATH, "mousepad", file_name_tab[TXT_FILE_INDEX].c_str(), NULL);
+			    break;
+
+            default:
+                cout<<"Unknown file format: "<<fType<<endl;
+                exit(1);
+                break;
+        }
+    }
+
 
 }
 
@@ -144,6 +201,7 @@ int main(void){
     invoker.insert_function(RESTART_SERV, &server_restart);
     invoker.insert_function(F_STREAM, &receive_stream);
     invoker.insert_function(F_DONE, &check_file);
+    invoker.insert_function(F_START, &start_file);
 
 
 	if(tcpcomm.startServer() == NO_ERROR)

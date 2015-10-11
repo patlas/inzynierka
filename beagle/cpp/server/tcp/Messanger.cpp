@@ -6,7 +6,6 @@
  */
 
 #include "Messanger.h"
-#include "commands.h"
 
 Messanger::Messanger(TCPCommunication *tcp, mutex *tm, mutex *rm, queue<QueueStruct_t>  *tq, queue<string> *rq)
 {
