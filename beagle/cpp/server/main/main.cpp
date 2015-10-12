@@ -73,11 +73,16 @@ void sendCommand(string cmd)
 
 
 
-//tutaj funkcje do rejestracji
-void test(void *param){
+void execute_command(string cmd)
+{
+    if(vfork()==0)
+    {
+		SHELL(cmd.c_str());
+		printf("TUTAJ: %s",xdo_buff);
+		system(xdo_buff);
+		exit(1);
+	}
 
-    cout<<"Invoker dziala"<<endl;//(int)(*param)<<endl;
-    printf("%d",*((int*)param));
 }
 
 
@@ -102,6 +107,7 @@ void server_restart(void *param)
 
 void receive_stream(void *param)
 {
+    cout<<endl<<endl<<"receive_stream"<<endl;
     sendCommand(GET_SIZE);
     string size = getCommand();
     fSize = stol(size);
@@ -113,6 +119,8 @@ void receive_stream(void *param)
 
 void check_file(void *param)
 {
+
+    cout<<endl<<endl<<"check_file"<<endl;
     char md5_tab[50];
 
     md5(TEMP_NAME, md5_tab); 
@@ -137,6 +145,7 @@ void check_file(void *param)
 
 void start_file(void *param)
 {
+    cout<<endl<<endl<<"start_file"<<endl;
     uint8_t index;
     for(index=0; index<EXTENSION_TAB_SIZE; index++)
     {
@@ -163,8 +172,9 @@ void start_file(void *param)
         switch(index)
         {
             case 0:
-                //execl(SOFFICE_PATH, "soffice", "--show", file_name_tab[PPT_FILE_INDEX].c_str(), NULL);
-			    break;
+                execl(SOFFICE_PATH, "soffice", "--show", file_name_tab[PPT_FILE_INDEX].c_str(), NULL);
+			 //exit(1);   
+            break;
 
             case 1:
                 execl(SOFFICE_PATH, "soffice", "--show", file_name_tab[PPTX_FILE_INDEX].c_str(), NULL);
@@ -187,9 +197,9 @@ void start_file(void *param)
 
 }
 
-void next_page(void *param)
+void pnext_page(void *param)
 {
-    uint8_t index;
+    cout<<endl<<endl<<"pnext_page"<<endl;
     uint16_t actionPage = pptCurrentPage;
 
 	uint8_t tmpCmd[6];
@@ -198,45 +208,88 @@ void next_page(void *param)
 
     string command;
 
-    for(index=0; index<EXTENSION_TAB_SIZE; index++)
+    actionPage+=2;
+
+    string str_actionPage = to_string(actionPage);
+    for(int strIndex=0; strIndex<str_actionPage.length(); strIndex++)
     {
-        if(extension_tab[index].compare(fType) == 0){
-            break;  
-        } 
+        command+=str_actionPage[strIndex];
+        command+="+";
     }
+    command += "KP_Enter+Left";
+	
+	cout<<"Command: "<<command<<endl;
+	pptCurrentPage++;
 
-    switch(index)
-    {
-        case 0:
-        case 1:
-        {
-            actionPage+=2;
-
-            string str_actionPage = to_string(actionPage);
-            for(int strIndex=0; strIndex<str_actionPage.length(); strIndex++)
-            {
-                command+=str_actionPage[strIndex];
-                command+="+";
-            }
-            command += "KP_Enter+Left";
-			
-			cout<<"Command: "<<command<<endl;
-			pptCurrentPage++;
-        }
-        break;
-
-        default:
-            return;
-    }
-
-    if(vfork()==0)
-    {
-		SHELL(command.c_str());
-		printf("TUTAJ: %s",xdo_buff);
-		//system(xdo_buff);
-		exit(1);
-	}
+    execute_command(command);
+   
 }
+
+
+void pprev_page(void *param)
+{
+    cout<<endl<<endl<<"pprev_page"<<endl;
+    uint16_t actionPage = pptCurrentPage;
+
+	uint8_t tmpCmd[6];
+	uint8_t strCommand[20];
+	uint8_t pindex=0;
+
+    string command;
+
+    string str_actionPage = to_string(actionPage);
+    for(int strIndex=0; strIndex<str_actionPage.length(); strIndex++)
+    {
+        command+=str_actionPage[strIndex];
+        command+="+";
+    }
+    command += "KP_Enter+Left";
+	
+	cout<<"Command: "<<command<<endl;
+	pptCurrentPage--;
+
+    execute_command(command);
+   
+}
+
+void pnext_effect(void *param)
+{
+    cout<<endl<<endl<<"pnext_effect"<<endl;
+    string command;
+
+    command += "Right";
+	
+	cout<<"Command: "<<command<<endl;
+
+    execute_command(command);
+   
+}
+
+void pprev_effect(void *param)
+{
+    cout<<endl<<endl<<"pprev_effect"<<endl;
+    string command;
+
+    command += "Left";
+	
+	cout<<"Command: "<<command<<endl;
+
+    execute_command(command);
+   
+}
+
+void pfirst_page(void *param)
+{
+    cout<<endl<<endl<<"pfirst_page"<<endl;
+    string command;
+
+    command += "Home";
+	
+	cout<<"Command: "<<command<<endl;
+
+    execute_command(command);
+}
+
 
 
 int main(void){
@@ -255,8 +308,11 @@ int main(void){
     invoker.insert_function(F_STREAM, &receive_stream);
     invoker.insert_function(F_DONE, &check_file);
     invoker.insert_function(F_START, &start_file);
-    invoker.insert_function(F_NEXTP, &next_page);
-
+    invoker.insert_function(F_PNEXTP, &pnext_page);
+    invoker.insert_function(F_PPREVP, &pprev_page);
+    invoker.insert_function(F_PNEXTE, &pnext_effect);
+    invoker.insert_function(F_PPREVE, &pprev_effect);
+    invoker.insert_function(F_PFIRST, &pfirst_page);
 
 	if(tcpcomm.startServer() == NO_ERROR)
 	{
