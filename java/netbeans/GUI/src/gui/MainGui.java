@@ -409,6 +409,8 @@ public class MainGui extends javax.swing.JFrame {
 
     private void mExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mExitActionPerformed
         // TODO add your handling code here:
+        
+        //messanger.sendCommand(ControllCommands.F_NEXTP);
         /*if(pd != null){
             pd.pProgressBar.setValue(100);
             pd.dispatchEvent(new WindowEvent(pd, WindowEvent.WINDOW_CLOSING));
@@ -469,7 +471,7 @@ public class MainGui extends javax.swing.JFrame {
                 
                 //TYMCZASOWA PROWIZORKA
                 //tcpcomm.sendCommand((int)ControllCommands.ppt_nextp);
-               messanger.sendCommand(ControllCommands.F_NEXTP);
+               messanger.sendCommand(ControllCommands.F_PNEXTP);
                 
                 
             }
@@ -483,7 +485,8 @@ public class MainGui extends javax.swing.JFrame {
             pptPrevBtn.setEnabled(true);
             pptNextBtn.setEnabled(true);
             //TYMCZASOWA PROWIZORKA
-                tcpcomm.sendCommand((int)ControllCommands.ppt_next);
+                //tcpcomm.sendCommand((int)ControllCommands.ppt_next);
+            messanger.sendCommand(ControllCommands.F_PNEXTE);
         }
     }//GEN-LAST:event_pptNextBtnActionPerformed
 
@@ -497,7 +500,8 @@ public class MainGui extends javax.swing.JFrame {
                 
                 
                 //TYMCZASOWA PROWIZORKA
-                tcpcomm.sendCommand((int)ControllCommands.ppt_prevp);
+                //tcpcomm.sendCommand((int)ControllCommands.ppt_prevp);
+                messanger.sendCommand(ControllCommands.F_PPREVP);
                 
             }
 
@@ -511,7 +515,8 @@ public class MainGui extends javax.swing.JFrame {
             pptNextBtn.setEnabled(true);
             
             //TYMCZASOWA PROWIZORKA
-                tcpcomm.sendCommand((int)ControllCommands.ppt_prev);
+                //tcpcomm.sendCommand((int)ControllCommands.ppt_prev);
+            messanger.sendCommand(ControllCommands.F_PPREVE);
                 
         }
     }//GEN-LAST:event_pptPrevBtnActionPerformed
@@ -538,6 +543,8 @@ public class MainGui extends javax.swing.JFrame {
                 pptPrevBtn.setEnabled(false);
             }
         }
+        
+        messanger.sendCommand(ControllCommands.F_PFIRST);
     }//GEN-LAST:event_pptEffectsComboItemStateChanged
 
     private void pptSlideNrTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pptSlideNrTxtActionPerformed
