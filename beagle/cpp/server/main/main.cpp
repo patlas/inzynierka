@@ -73,13 +73,13 @@ void sendCommand(string cmd)
 
 
 
-void execute_command(string cmd)
+void execute_command(string *cmd, string *prog)
 {
     if(vfork()==0)
     {
-		SHELL(cmd.c_str());
-		printf("TUTAJ: %s",xdo_buff);
-		system(xdo_buff);
+		//SHELL(cmd.c_str(),prog.c_str());
+		//printf("TUTAJ: %s",xdo_buff);
+		//system(xdo_buff);
 		exit(1);
 	}
 
@@ -181,7 +181,7 @@ void start_file(void *param)
 			    break;
 
             case 2:
-                //execl(PDF_PATH, "pdf", file_name_tab[PDF_FILE_INDEX].c_str(), NULL);
+                execl(PDF_PATH, "qpdfview", file_name_tab[PDF_FILE_INDEX].c_str(), NULL);
 			    break;
 
             case 3:
@@ -221,7 +221,7 @@ void pnext_page(void *param)
 	cout<<"Command: "<<command<<endl;
 	pptCurrentPage++;
 
-    execute_command(command);
+    execute_command(command,PROG_PPT_ALIAS);
    
 }
 
@@ -248,7 +248,7 @@ void pprev_page(void *param)
 	cout<<"Command: "<<command<<endl;
 	pptCurrentPage--;
 
-    execute_command(command);
+    execute_command(command,PROG_PPT_ALIAS);
    
 }
 
@@ -261,7 +261,7 @@ void pnext_effect(void *param)
 	
 	cout<<"Command: "<<command<<endl;
 
-    execute_command(command);
+    execute_command(command,PROG_PPT_ALIAS);
    
 }
 
@@ -274,7 +274,7 @@ void pprev_effect(void *param)
 	
 	cout<<"Command: "<<command<<endl;
 
-    execute_command(command);
+    execute_command(command,PROG_PPT_ALIAS);
    
 }
 
@@ -287,9 +287,82 @@ void pfirst_page(void *param)
 	
 	cout<<"Command: "<<command<<endl;
 
-    execute_command(command);
+    execute_command(command,PROG_PPT_ALIAS);
 }
 
+
+void dnext_page(void *param)
+{
+    cout<<endl<<endl<<"dnext_page"<<endl;
+    string command;
+
+    command += "Right";
+	
+	cout<<"Command: "<<command<<endl;
+
+    execute_command(command,PROG_PDF_ALIAS);
+}
+
+void dprev_page(void *param)
+{
+    cout<<endl<<endl<<"dprev_page"<<endl;
+    string command;
+
+    command += "Left";
+	
+	cout<<"Command: "<<command<<endl;
+
+    execute_command(command,PROG_PDF_ALIAS);
+}
+
+void dfull_page(void *param)
+{
+    cout<<endl<<endl<<"dfull_page"<<endl;
+    string command;
+
+    command += "Ctrl+9";
+	
+	cout<<"Command: "<<command<<endl;
+
+    execute_command(command,PROG_PDF_ALIAS);
+}
+
+void drotate_page(void *param)
+{
+    cout<<endl<<endl<<"drotate_page"<<endl;
+    string command;
+
+    command += "Ctrl+Left";
+	
+	cout<<"Command: "<<command<<endl;
+
+    execute_command(command,PROG_PDF_ALIAS);
+}
+
+
+void dup_page(void *param)
+{
+    cout<<endl<<endl<<"dup_page"<<endl;
+    string command;
+
+    command += "Page_Up";
+	
+	cout<<"Command: "<<command<<endl;
+
+    execute_command(command,PROG_PDF_ALIAS);
+}
+
+void ddown_page(void *param)
+{
+    cout<<endl<<endl<<"ddown_page"<<endl;
+    string command;
+
+    command += "Page_Down";
+	
+	cout<<"Command: "<<command<<endl;
+
+    execute_command(command,PROG_PDF_ALIAS);
+}
 
 
 int main(void){
@@ -304,15 +377,23 @@ int main(void){
 //    cout<<"Wynik wywolania invokera: "<<endl;
 //    invoker.invoke("testowa",&xxx);//<<endl;
 
-    invoker.insert_function(RESTART_SERV, &server_restart);
-    invoker.insert_function(F_STREAM, &receive_stream);
-    invoker.insert_function(F_DONE, &check_file);
-    invoker.insert_function(F_START, &start_file);
-    invoker.insert_function(F_PNEXTP, &pnext_page);
-    invoker.insert_function(F_PPREVP, &pprev_page);
-    invoker.insert_function(F_PNEXTE, &pnext_effect);
-    invoker.insert_function(F_PPREVE, &pprev_effect);
-    invoker.insert_function(F_PFIRST, &pfirst_page);
+    invoker.insert_function(RESTART_SERV,   &server_restart);
+    invoker.insert_function(F_STREAM,       &receive_stream);
+    invoker.insert_function(F_DONE,         &check_file);
+    invoker.insert_function(F_START,        &start_file);
+
+    invoker.insert_function(F_PNEXTP,       &pnext_page);
+    invoker.insert_function(F_PPREVP,       &pprev_page);
+    invoker.insert_function(F_PNEXTE,       &pnext_effect);
+    invoker.insert_function(F_PPREVE,       &pprev_effect);
+    invoker.insert_function(F_PFIRST,       &pfirst_page);
+    
+    invoker.insert_function(F_DPUP,         &dup_page);
+    invoker.insert_function(F_DPDOWN,       &ddown_page);
+    invoker.insert_function(F_DNEXT,        &dnext_page);
+    invoker.insert_function(F_DPREV,        &dprev_page);
+    invoker.insert_function(F_DROTATE,      &drotate_page);
+    invoker.insert_function(F_DFULL,        &dfull_page);
 
 	if(tcpcomm.startServer() == NO_ERROR)
 	{

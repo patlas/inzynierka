@@ -204,7 +204,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 						int dest = open(TEMP_NAME, O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
                         
                         printf("compSize before save: %d\n",compSize);
-						sendfile(dest, source, 0, compSize);
+						while(sendfile(dest, source, 0, compSize)!= compSize);
 
 						close(source);
 						close(dest);

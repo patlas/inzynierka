@@ -6,10 +6,13 @@
 #define SOFFICE_PATH	"/usr/bin/soffice"
 #define XDOTOOL_PATH	"/usr/bin/xdotool"
 #define MOUSEPAD_PATH   "/usr/bin/mousepad"
-#define PDF_PATH        "/usr/bin/mousepad"
+#define PDF_PATH        "/usr/bin/qpdfview"
+
+static std::string PROG_PPT_ALIAS="soffice.bin";
+static std::string PROG_PDF_ALIAS="qpdfview";     
 //przed PID dac # ewentualnie
 					
-#define SHELL(key) sprintf(xdo_buff,"PID=`pidof soffice.bin`\n windowID=`xdotool search --pid $PID | tail -1`\n xdotool windowfocus --sync $windowID key %s \n",key)
+#define SHELL(key,prog) sprintf(xdo_buff,"PID=`pidof %s`\n windowID=`xdotool search --pid $PID | tail -1`\n xdotool windowfocus --sync $windowID key %s \n",prog,key)
 
 
 
@@ -23,11 +26,21 @@
 #define F_DONE          "F_DONE"
 #define F_ERROR         "F_ERROR"
 #define F_START         "F_START"
+
 #define F_PNEXTP        "F_PNEXTP"
 #define F_PPREVP        "F_PPREVP"
 #define F_PNEXTE        "F_PNEXTE"
 #define F_PPREVE        "F_PPREVE"
 #define F_PFIRST        "F_PFIRST"
+
+#define F_DPUP          "F_DPUP"
+#define F_DPDOWN        "F_DPDOWN"
+#define F_DFULL         "F_DFULL"
+#define F_DROTATE       "F_DROTATE"
+#define F_DNEXT         "F_DNEXT"
+#define F_DPREV         "F_DPREV"
+
+
 
 
 
