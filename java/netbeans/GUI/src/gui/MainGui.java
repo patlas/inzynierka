@@ -58,12 +58,12 @@ public class MainGui extends javax.swing.JFrame {
         pptPrevBtn.setEnabled(false);
         mOpenFile.setEnabled(false);
         
-        pdf = new PDFfileViewer(pdfPane, null);
+        pdf = new PDFfileViewer(pdfPane, null, null);
         pdf.viewPDF();
         //pdf.setKeyBindings();
         //tymczasowo tutal listener bo później po rozpoznaniu pliku z TCPobjectem
-        pdf.setScrollBarListener(tcpcomm); //usunac
-        pdf.setButtonListeners(tcpcomm);//usunac
+//        pdf.setScrollBarListener(messanger); //usunac
+//        pdf.setButtonListeners(messanger);//usunac
         
         
 //        pdfPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "forward");
@@ -362,6 +362,7 @@ public class MainGui extends javax.swing.JFrame {
         });*/
  
 
+        pdf.setMessanger(messanger);
         
         if (returnValue == JFileChooser.APPROVE_OPTION) {
           File selectedFile = fileChooser.getSelectedFile();
@@ -399,8 +400,8 @@ public class MainGui extends javax.swing.JFrame {
           else if(fName.toLowerCase().endsWith(".pdf"))
           {
               //bing pdf keys
-              pdf.setScrollBarListener(tcpcomm);
-              pdf.setButtonListeners(tcpcomm);
+              pdf.setScrollBarListener(messanger);
+              pdf.setButtonListeners(messanger);
               
           }
 

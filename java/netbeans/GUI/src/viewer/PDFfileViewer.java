@@ -27,6 +27,8 @@ import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
 import org.icepdf.ri.common.views.DocumentViewController;
 import org.icepdf.ri.common.views.DocumentViewControllerImpl;
+import tcp.stream.ControllCommands;
+import tcp.stream.Messanger;
 import tcp.stream.TCPCommunication;
 
 
@@ -44,14 +46,17 @@ public class PDFfileViewer {
     private JLabel pdfPageCntLbl = null;
     private Filler filler2 = new Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
     
-    private TCPCommunication tcpcomm = null;
+    private Messanger messanger = null;
     
     public SwingController controller = null;
+    public static boolean is_moved_up = false;
+    public static boolean is_moved_down = false;
     
-    public PDFfileViewer(JPanel pane, JScrollPane sp)
+    public PDFfileViewer(JPanel pane, JScrollPane sp, Messanger m)
     {
         pdfPane = pane;
         pdfScrollPane = sp;
+        messanger = m;
     }
     
     public void viewPDF(){
@@ -189,6 +194,11 @@ public class PDFfileViewer {
     }
     
     
+    public void setMessanger(Messanger m)
+    {
+        messanger = m;
+    }
+    
     public void setKeyBindings()
     {
         pdfPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "down");
@@ -233,6 +243,9 @@ public class PDFfileViewer {
                     {
                         dp++;
                         controller.goToDeltaPage(dp);
+                        messanger.sendCommand(ControllCommands.F_DNEXT);
+                        PDFfileViewer.is_moved_up = false;
+                        PDFfileViewer.is_moved_down = false;
                     }
                     return;
                 }
@@ -251,20 +264,21 @@ public class PDFfileViewer {
         
     }
     
-    public void setScrollBarListener(TCPCommunication tcp)
+    public void setScrollBarListener(Messanger m)
     {
-        tcpcomm = tcp;
-        pdfScrollPane.getVerticalScrollBar().addAdjustmentListener(new MyScrollBarListener());
+        pdfScrollPane.getVerticalScrollBar().addAdjustmentListener(new MyScrollBarListener(m));
         
     }
     
-    public void setButtonListeners(TCPCommunication tcp)
+    public void setButtonListeners(Messanger m)
     {
-        tcpcomm = tcp;
         pdfNextBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                messanger.sendCommand(ControllCommands.F_DNEXT);
+                PDFfileViewer.is_moved_up = false;
+                PDFfileViewer.is_moved_down = false;
 
             }
         }); 
@@ -273,9 +287,35 @@ public class PDFfileViewer {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-
+                messanger.sendCommand(ControllCommands.F_DPREV);
+                PDFfileViewer.is_moved_up = false;
+                PDFfileViewer.is_moved_down = false;
             }
         }); 
+        
+        
+        pdfRotateBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                messanger.sendCommand(ControllCommands.F_DROTATE);
+
+            }
+        });
+        
+        
+        pdfFullBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                messanger.sendCommand(ControllCommands.F_DFULL);
+
+            }
+        });
+                
+                
+                
+                
     }
     
     
@@ -283,6 +323,13 @@ public class PDFfileViewer {
 
 
 class MyScrollBarListener implements AdjustmentListener {
+    
+    Messanger messanger = null;
+    public MyScrollBarListener(Messanger mes)
+    {
+        messanger = mes;
+    }
+    
     @Override
   public void adjustmentValueChanged(AdjustmentEvent evt) {
     Adjustable source = evt.getAdjustable();
@@ -314,10 +361,27 @@ class MyScrollBarListener implements AdjustmentListener {
 //                
 //                    System.out.println("1 ");
 //                } 
+     
+     if(per<0.5 && PDFfileViewer.is_moved_up==false)
+     {
+         messanger.sendCommand(ControllCommands.F_DPUP);
+         PDFfileViewer.is_moved_up = true;
+     }
+     
+     if(per>=0.5 && PDFfileViewer.is_moved_down==false)
+     {
+         messanger.sendCommand(ControllCommands.F_DPDOWN);
+         PDFfileViewer.is_moved_down = true;
+     }
+     
+     
     if(per == 0)
     {
         sb.setValue(sb.getUnitIncrement());
         System.out.println("NEw page");
+        PDFfileViewer.is_moved_down = false;
+        PDFfileViewer.is_moved_up = false;
+        
         return;
     }
                 

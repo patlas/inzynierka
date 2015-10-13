@@ -26,6 +26,13 @@ public class ControllCommands {
 	public static String F_PPREVE = "F_PPREVE";
         public static String F_PFIRST = "F_PFIRST";
         
+        public static String F_DPUP = "F_DPUP";
+        public static String F_DPDOWN = "F_DPDOWN";
+        public static String F_DFULL = "F_DFULL";
+        public static String F_DROTATE = "F_DROTATE";
+        public static String F_DNEXT = "F_DNEXT";
+        public static String F_DPREV = "F_DPREV";
+        
         
 	public static byte PPT = 0;
 	public static byte PPTX = 1;
