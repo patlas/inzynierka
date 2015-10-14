@@ -38,6 +38,7 @@ string fHash;
 string fType;
 char xdo_buff[500];
 uint16_t pptCurrentPage = 1;
+string exec_command;
 
 
 string getCommand()
@@ -73,14 +74,14 @@ void sendCommand(string cmd)
 
 
 
-void execute_command(string *cmd, string *prog)
+void execute_command(string cmd, string prog)
 {
     if(vfork()==0)
     {
-		//SHELL(cmd.c_str(),prog.c_str());
-		//printf("TUTAJ: %s",xdo_buff);
-		//system(xdo_buff);
-		exit(1);
+		SHELL(cmd.c_str(),prog.c_str()); // wyrzucić przed forka
+		printf("TUTAJ: %s",xdo_buff);
+		system(xdo_buff);
+		//exit(1);
 	}
 
 }
@@ -206,22 +207,22 @@ void pnext_page(void *param)
 	uint8_t strCommand[20];
 	uint8_t pindex=0;
 
-    string command;
 
     actionPage+=2;
+    exec_command.clear();
 
     string str_actionPage = to_string(actionPage);
     for(int strIndex=0; strIndex<str_actionPage.length(); strIndex++)
     {
-        command+=str_actionPage[strIndex];
-        command+="+";
+        exec_command+=str_actionPage[strIndex];
+        exec_command+="+";
     }
-    command += "KP_Enter+Left";
+    exec_command += "KP_Enter+Left";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 	pptCurrentPage++;
 
-    execute_command(command,PROG_PPT_ALIAS);
+    execute_command(exec_command,PROG_PPT_ALIAS);
    
 }
 
@@ -235,133 +236,123 @@ void pprev_page(void *param)
 	uint8_t strCommand[20];
 	uint8_t pindex=0;
 
-    string command;
-
+    exec_command.clear();
     string str_actionPage = to_string(actionPage);
     for(int strIndex=0; strIndex<str_actionPage.length(); strIndex++)
     {
-        command+=str_actionPage[strIndex];
-        command+="+";
+        exec_command+=str_actionPage[strIndex];
+        exec_command+="+";
     }
-    command += "KP_Enter+Left";
+    exec_command += "KP_Enter+Left";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 	pptCurrentPage--;
 
-    execute_command(command,PROG_PPT_ALIAS);
+    execute_command(exec_command,PROG_PPT_ALIAS);
    
 }
 
 void pnext_effect(void *param)
 {
     cout<<endl<<endl<<"pnext_effect"<<endl;
-    string command;
 
-    command += "Right";
+    exec_command = "Right";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 
-    execute_command(command,PROG_PPT_ALIAS);
+    execute_command(exec_command,PROG_PPT_ALIAS);
    
 }
 
 void pprev_effect(void *param)
 {
     cout<<endl<<endl<<"pprev_effect"<<endl;
-    string command;
 
-    command += "Left";
+    exec_command = "Left";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 
-    execute_command(command,PROG_PPT_ALIAS);
+    execute_command(exec_command,PROG_PPT_ALIAS);
    
 }
 
 void pfirst_page(void *param)
 {
     cout<<endl<<endl<<"pfirst_page"<<endl;
-    string command;
 
-    command += "Home";
+    exec_command = "Home";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 
-    execute_command(command,PROG_PPT_ALIAS);
+    execute_command(exec_command,PROG_PPT_ALIAS);
 }
 
 
 void dnext_page(void *param)
 {
     cout<<endl<<endl<<"dnext_page"<<endl;
-    string command;
 
-    command += "Right";
+    exec_command = "Right";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 
-    execute_command(command,PROG_PDF_ALIAS);
+    execute_command(exec_command,PROG_PDF_ALIAS);
 }
 
 void dprev_page(void *param)
 {
     cout<<endl<<endl<<"dprev_page"<<endl;
-    string command;
 
-    command += "Left";
+    exec_command = "Left";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 
-    execute_command(command,PROG_PDF_ALIAS);
+    execute_command(exec_command,PROG_PDF_ALIAS);
 }
 
 void dfull_page(void *param)
 {
     cout<<endl<<endl<<"dfull_page"<<endl;
-    string command;
 
-    command += "Ctrl+9";
+    exec_command = "Ctrl+9";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 
-    execute_command(command,PROG_PDF_ALIAS);
+    execute_command(exec_command,PROG_PDF_ALIAS);
 }
 
 void drotate_page(void *param)
 {
     cout<<endl<<endl<<"drotate_page"<<endl;
-    string command;
 
-    command += "Ctrl+Left";
+    exec_command = "Ctrl+Left";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 
-    execute_command(command,PROG_PDF_ALIAS);
+    execute_command(exec_command,PROG_PDF_ALIAS);
 }
 
 
 void dup_page(void *param)
 {
     cout<<endl<<endl<<"dup_page"<<endl;
-    string command;
 
-    command += "Page_Up";
+    exec_command = "Page_Up";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 
-    execute_command(command,PROG_PDF_ALIAS);
+    execute_command(exec_command,PROG_PDF_ALIAS);
 }
 
 void ddown_page(void *param)
 {
     cout<<endl<<endl<<"ddown_page"<<endl;
-    string command;
 
-    command += "Page_Down";
+    exec_command = "Page_Down";
 	
-	cout<<"Command: "<<command<<endl;
+	cout<<"Command: "<<exec_command<<endl;
 
-    execute_command(command,PROG_PDF_ALIAS);
+    execute_command(exec_command,PROG_PDF_ALIAS);
 }
 
 

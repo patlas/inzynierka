@@ -14,6 +14,7 @@ static std::string PROG_PDF_ALIAS="qpdfview";
 					
 #define SHELL(key,prog) sprintf(xdo_buff,"PID=`pidof %s`\n windowID=`xdotool search --pid $PID | tail -1`\n xdotool windowfocus --sync $windowID key %s \n",prog,key)
 
+#define SHELL2(key) sprintf(xdo_buff,"PID=`pidof qpdfview`\n windowID=`xdotool search --pid $PID | tail -1`\n xdotool windowfocus --sync $windowID key %s \n",key)
 
 
 //COMMUNICATION COMMANDS
