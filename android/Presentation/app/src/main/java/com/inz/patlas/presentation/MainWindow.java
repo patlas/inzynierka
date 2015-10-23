@@ -9,14 +9,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainWindow extends AppCompatActivity {
 
-    public TextView addr_tv = null;
-    public TextView mask_tv = null;
-    public TextView net_tv = null;
+    public TextView     addr_tv = null;
+    public TextView     mask_tv = null;
+    public TextView     net_tv = null;
+    public Button       open_btn = null;
 
     private boolean IS_CONNECTED = false;
 
@@ -31,6 +33,7 @@ public class MainWindow extends AppCompatActivity {
         addr_tv = (TextView) findViewById(R.id.addr_tv);
         mask_tv = (TextView) findViewById(R.id.mask_tv);
         net_tv = (TextView) findViewById(R.id.net_tv);
+        open_btn = (Button) findViewById(R.id.open_btn);
 
         if(checkConnectionStatus(this) != 0)
         {
@@ -45,6 +48,16 @@ public class MainWindow extends AppCompatActivity {
         }
 
         updateInfo();
+
+
+        open_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(v.getContext(), ListFileActivity.class);
+                startActivity(myIntent);
+            }
+        });
+
     }
 
 
@@ -65,6 +78,20 @@ public class MainWindow extends AppCompatActivity {
         }
         updateInfo();
 
+    }
+
+
+    @Override
+    protected void  onStop()
+    {
+        super.onStop();
+
+    }
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        disconnectWifi(this);
     }
 
 
@@ -89,6 +116,8 @@ public class MainWindow extends AppCompatActivity {
             String[] ret = {"NOT CONNECTED","NOT CONNECTED","NOT CONNECTED"};
             return ret;
         }
+
+        IS_CONNECTED = true;
 
         String hostIpAddr;
         String networkMask;
@@ -134,6 +163,21 @@ public class MainWindow extends AppCompatActivity {
         {
             startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
         }
+    }
+
+    public boolean disconnectWifi(Context context)
+    {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(WIFI_SERVICE);
+        /*return */wifiManager.disconnect();
+        return wifiManager.setWifiEnabled(false);
+    }
+
+    public void refreshWifiTapper(View v)
+    {
+        if(checkConnectionStatus(this) != 0)
+            screenTapper(v);
+        else
+            updateInfo();
     }
 
 }
