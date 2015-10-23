@@ -1,5 +1,7 @@
 package com.inz.patlas.presentation;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.DhcpInfo;
@@ -15,10 +17,12 @@ import android.widget.Toast;
 
 public class MainWindow extends AppCompatActivity {
 
-    public TextView     addr_tv = null;
-    public TextView     mask_tv = null;
-    public TextView     net_tv = null;
-    public Button       open_btn = null;
+    public TextView         addr_tv = null;
+    public TextView         mask_tv = null;
+    public TextView         net_tv = null;
+    public Button           open_btn = null;
+    public ProgressDialog   progress_dialog = null;
+    public String           fName = null;
 
     private boolean IS_CONNECTED = false;
 
@@ -53,8 +57,7 @@ public class MainWindow extends AppCompatActivity {
         open_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(v.getContext(), ListFileActivity.class);
-                startActivity(myIntent);
+                openFileClicked(v);
             }
         });
 
@@ -94,6 +97,17 @@ public class MainWindow extends AppCompatActivity {
         disconnectWifi(this);
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                fName = data.getStringExtra("file_path");
+                Toast.makeText(this, "File name is: " + fName , Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
 
     private void updateInfo()
@@ -178,6 +192,13 @@ public class MainWindow extends AppCompatActivity {
             screenTapper(v);
         else
             updateInfo();
+    }
+
+    private void openFileClicked(View v)
+    {
+        Intent myIntent = new Intent(v.getContext(), ListFileActivity.class);
+        startActivityForResult(myIntent,1);
+       // progress_dialog
     }
 
 }

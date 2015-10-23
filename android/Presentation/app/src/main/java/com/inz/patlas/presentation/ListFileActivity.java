@@ -1,5 +1,6 @@
 package com.inz.patlas.presentation;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,9 +21,12 @@ import java.util.List;
 public class ListFileActivity extends ListActivity {
 
     private String path;
+    private ArrayList<String> names = new ArrayList<>();
+    private ArrayList<Integer> images = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        int img_id=0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_file);
 
@@ -43,17 +47,62 @@ public class ListFileActivity extends ListActivity {
         if (list != null) {
             for (String file : list) {
                 if (!file.startsWith(".")) {
-                    values.add(file);
+
+                    //TODO check if file is supported
+                    if((img_id = SupportedFiles.checkFileSupport(file))>=0) {
+                        values.add(file);
+                        names.add(file);
+                        int img = 0;
+                        switch(img_id)
+                        {
+                            case 0:
+                                img = R.mipmap.catalog_b_25;
+                                break;
+                            case 1:
+                            case 2:
+                                img = R.mipmap.ppt_bl_20;
+                                break;
+                            case 3:
+                                img = R.mipmap.pdf_bl_20;
+                                break;
+
+                        }
+                        images.add(img);
+
+                    }
                 }
             }
         }
+        if(names.isEmpty())
+            names.add("No supported files detected");
+
         Collections.sort(values);
 
         // Put the data into the list
-        ArrayAdapter adapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_2, android.R.id.text1, values);
-        setListAdapter(adapter);
+//        ArrayAdapter adapter = new ArrayAdapter(this,
+//                android.R.layout.simple_list_item_2, android.R.id.text1, values);
+
+        FileListAdapter my_adapter = new FileListAdapter(this,names,images);
+        setListAdapter(my_adapter);
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("file_path", intent.getStringExtra("file_path"));
+                returnIntent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+                setResult(RESULT_OK, returnIntent);
+                finish();
+
+            }
+        }
+    }
+
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -68,9 +117,15 @@ public class ListFileActivity extends ListActivity {
         if (new File(filename).isDirectory()) {
             Intent intent = new Intent(this, ListFileActivity.class);
             intent.putExtra("path", filename);
-            startActivity(intent);
+            startActivityForResult(intent, 1);
         } else {
-            Toast.makeText(this, filename + " is not a directory", Toast.LENGTH_LONG).show();
+           // Toast.makeText(this, filename + " is not a directory", Toast.LENGTH_LONG).show();
+
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("file_path",filename);
+            returnIntent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+            setResult(RESULT_OK, returnIntent);
+            finish();
             //tutaj mamy już lokalizacje pliku -> TODO sprawdzic czy plik ma dobre zozszerenie
         }
     }
