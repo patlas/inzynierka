@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Presentation</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_list_file">ListFileActivity</string>
+
+    <string name="toast_no_wifi">No WIFI connection established, first connect to proper network. \nTap screen to open settings.</string>
+    <string name="wifi_label_info"><b><u>WIFI connection status:</u></b></string>
+    <string name="wifi_label_addr">Obtained IP address:</string>
+    <string name="wifi_label_netaddr">Network address:</string>
+    <string name="wifi_label_netmask">Network mask:</string>
+    <string name="none">NONE</string>
+</resources>

@@ -1,0 +1,23 @@
+package com.inz.patlas.presentation.stream;
+
+public class ActionKey {
+	
+	int key = -1;
+	
+	public ActionKey(String skey){
+		int index=0;
+		for(String k : ControllCommands.KEY_TAB){
+			if(skey.equalsIgnoreCase(k)){
+				key = index;
+			}
+			index++;
+		}
+	}
+	
+	
+	
+	public int getKey(){
+		return key;
+	}
+	
+}
