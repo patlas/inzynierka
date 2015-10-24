@@ -60,10 +60,10 @@ public class ListFileActivity extends ListActivity {
                                 break;
                             case 1:
                             case 2:
-                                img = R.mipmap.ppt_bl_20;
+                                img = R.mipmap.ppt_24;
                                 break;
                             case 3:
-                                img = R.mipmap.pdf_bl_20;
+                                img = R.mipmap.pdf_24;
                                 break;
 
                         }
@@ -73,8 +73,10 @@ public class ListFileActivity extends ListActivity {
                 }
             }
         }
-        if(names.isEmpty())
+        if(names.isEmpty()) {
             names.add("No supported files detected");
+            images.add(R.mipmap.no_file_w_32);
+        }
 
         Collections.sort(values);
 

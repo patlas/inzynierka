@@ -39,6 +39,8 @@ public class MainWindow extends AppCompatActivity {
         net_tv = (TextView) findViewById(R.id.net_tv);
         open_btn = (Button) findViewById(R.id.open_btn);
 
+        open_btn.getBackground().setAlpha(150);
+
         if(checkConnectionStatus(this) != 0)
         {
             Toast wifi_info = Toast.makeText(this, R.string.toast_no_wifi, Toast.LENGTH_LONG);
@@ -57,7 +59,12 @@ public class MainWindow extends AppCompatActivity {
         open_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFileClicked(v);
+                if(IS_CONNECTED == false){
+                   // Toast wifi_info = Toast.makeText(this, R.string.toast_no_wifi, Toast.LENGTH_LONG);
+
+                }
+                else
+                    openFileClicked(v);
             }
         });
 

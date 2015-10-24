@@ -10,5 +10,10 @@
     <string name="wifi_label_netmask">Network mask:</string>
     <string name="none">NONE</string>
 
+    <string name="about_title"><b>About application:</b></string>
+    <string name="about_text">Main application target is wireless control of displayed presentation.
+        \nIt is part of Engineering Thesis prepared by <b>Patryk Łaś</b> </string>
+    <string name="copyright">&#169; Copyright by <b>Patryk Łaś</b> (PatLas)</string>
+
     <string name="button_open">Open file</string>
 </resources>
