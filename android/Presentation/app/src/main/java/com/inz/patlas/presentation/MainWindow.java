@@ -15,6 +15,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.inz.patlas.presentation.stream.ControllCommands;
+import com.inz.patlas.presentation.stream.FileStreamer;
+import com.inz.patlas.presentation.stream.Messanger;
+import com.inz.patlas.presentation.stream.QueueStruct;
+
+import java.io.File;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class MainWindow extends AppCompatActivity {
 
     public TextView         addr_tv = null;
@@ -23,6 +32,10 @@ public class MainWindow extends AppCompatActivity {
     public Button           open_btn = null;
     public ProgressDialog   progress_dialog = null;
     public String           fName = null;
+    public Messanger        messanger = null;
+
+    public LinkedBlockingQueue recQueue = new LinkedBlockingQueue<>();
+    public LinkedBlockingQueue<QueueStruct>  transQueue = new LinkedBlockingQueue<>();
 
     private boolean IS_CONNECTED = false;
 
@@ -59,8 +72,8 @@ public class MainWindow extends AppCompatActivity {
         open_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(IS_CONNECTED == false){
-                   // Toast wifi_info = Toast.makeText(this, R.string.toast_no_wifi, Toast.LENGTH_LONG);
+                if(!IS_CONNECTED){
+                    Toast.makeText(MainWindow.this, R.string.btn_not_connected, Toast.LENGTH_LONG).show();
 
                 }
                 else
@@ -112,6 +125,13 @@ public class MainWindow extends AppCompatActivity {
             if(resultCode == Activity.RESULT_OK){
                 fName = data.getStringExtra("file_path");
                 Toast.makeText(this, "File name is: " + fName , Toast.LENGTH_LONG).show();
+
+                //TODO - start stream file
+                File fd = new File(fName);
+                sendFile(messanger, fd);
+
+                progress_dialog = ProgressDialog.show(this, "Streaming...", "File +name+ is streaming.", true);
+
             }
         }
     }
@@ -203,9 +223,71 @@ public class MainWindow extends AppCompatActivity {
 
     private void openFileClicked(View v)
     {
-        Intent myIntent = new Intent(v.getContext(), ListFileActivity.class);
-        startActivityForResult(myIntent,1);
-       // progress_dialog
+//        messanger = new Messanger(null, recQueue, transQueue);
+//        (new Thread(messanger)).start();
+//
+//        Intent myIntent = new Intent(v.getContext(), ListFileActivity.class);
+//        startActivityForResult(myIntent, 1);
+
+
+        Intent myIntent = new Intent(v.getContext(), PPTControll.class);
+        startActivityForResult(myIntent, 1);
+
+    }
+
+
+
+
+    private /*boolean*/void sendFile(Messanger m, File fd){
+        m.sendCommand(ControllCommands.F_STREAM);
+        if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_SIZE)){
+            System.out.println("Ask for size");
+            m.sendCommand(Integer.toString((int)fd.length()));
+
+        }
+
+        if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_HASH)){
+            System.out.println("Ask for hash");
+            m.sendCommand(FileStreamer.getHash(fd.getAbsolutePath()));
+        }
+
+        if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_TYPE)){
+            System.out.println("Ask for type");
+            String[] ext = fd.getAbsolutePath().toLowerCase().split("\\.");
+            String extention = ext[ext.length-1];
+            m.sendCommand(extention);
+
+        }
+
+        m.streamFile(fd);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while(messanger.streamDone != true){};
+                messanger.streamDone = false;
+                messanger.sendCommand(ControllCommands.F_DONE);
+                String stramSucces = messanger.recvCommand();
+                System.out.println("Stream done with: " + stramSucces);
+
+                if(stramSucces.equalsIgnoreCase(ControllCommands.F_RECEIVED))
+                {
+                    //return true;
+                }
+                else if(stramSucces.equalsIgnoreCase(ControllCommands.F_ERROR))
+                {
+                    //return false;
+                }
+                else
+                {
+                    //return false;
+                }
+
+                progress_dialog.dismiss();
+
+            }
+        }).start();
+
     }
 
 }

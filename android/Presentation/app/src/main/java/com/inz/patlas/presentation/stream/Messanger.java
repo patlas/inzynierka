@@ -36,7 +36,7 @@ public class Messanger implements Runnable {
     public void run(){
         // TODO - add interrupt mechanism to stop task in case of server/client error
         try {
-            tcpcomm = new TCPCommunication("192.168.1.9", 12345);
+            tcpcomm = new TCPCommunication("192.168.1.4", 12345);
         }catch(IOException io){
             Log.d("EXCEPTION",io.getMessage() );
         }
