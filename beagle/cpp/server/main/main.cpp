@@ -94,6 +94,7 @@ void server_restart(void *param)
     //TODO - zabić messangera i stworzyć nowy obiekt???
     TCPCommunication *tcpptr = (TCPCommunication *) param;
     TCPCommunicationError_t error_code;
+
     if( (error_code=tcpptr->catchNewConnection()) == NO_ERROR)
     {
         cout<<"New connection established"<<endl;
@@ -355,6 +356,32 @@ void ddown_page(void *param)
     execute_command(exec_command,PROG_PDF_ALIAS);
 }
 
+void dexit(void *param)
+{
+    cout<<endl<<endl<<"dexit"<<endl;
+
+    exec_command = "Alt+F4";
+	
+	cout<<"Command: "<<exec_command<<endl;
+
+    execute_command(exec_command,PROG_PDF_ALIAS);
+
+    //server_restart(nullptr);
+}
+
+void pexit(void *param)
+{
+    cout<<endl<<endl<<"pexit"<<endl;
+
+    exec_command = "Escape";
+	
+	cout<<"Command: "<<exec_command<<endl;
+
+    execute_command(exec_command,PROG_PPT_ALIAS);
+
+    //server_restart(nullptr);
+}
+
 
 int main(void){
 
@@ -378,13 +405,15 @@ int main(void){
     invoker.insert_function(F_PNEXTE,       &pnext_effect);
     invoker.insert_function(F_PPREVE,       &pprev_effect);
     invoker.insert_function(F_PFIRST,       &pfirst_page);
-    
+    invoker.insert_function(F_PEXIT,        &pexit);
+   
     invoker.insert_function(F_DPUP,         &dup_page);
     invoker.insert_function(F_DPDOWN,       &ddown_page);
     invoker.insert_function(F_DNEXT,        &dnext_page);
     invoker.insert_function(F_DPREV,        &dprev_page);
     invoker.insert_function(F_DROTATE,      &drotate_page);
     invoker.insert_function(F_DFULL,        &dfull_page);
+    invoker.insert_function(F_DEXIT,        &dexit);
 
 	if(tcpcomm.startServer() == NO_ERROR)
 	{

@@ -33,6 +33,7 @@ static std::string PROG_PDF_ALIAS="qpdfview";
 #define F_PNEXTE        "F_PNEXTE"
 #define F_PPREVE        "F_PPREVE"
 #define F_PFIRST        "F_PFIRST"
+#define F_PEXIT         "F_PEXIT"
 
 #define F_DPUP          "F_DPUP"
 #define F_DPDOWN        "F_DPDOWN"
@@ -40,6 +41,7 @@ static std::string PROG_PDF_ALIAS="qpdfview";
 #define F_DROTATE       "F_DROTATE"
 #define F_DNEXT         "F_DNEXT"
 #define F_DPREV         "F_DPREV"
+#define F_DEXIT         "F_DEXIT"
 
 
 

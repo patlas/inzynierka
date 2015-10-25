@@ -112,8 +112,10 @@ TCPCommunicationError_t TCPCommunication::startServer()
 
 TCPCommunicationError_t TCPCommunication::catchNewConnection()
 {
+    setBlockingSocketOption(true,socket_desc);
 	if(!listenSocket()) return LISTEN_ERROR;
 	if(!acceptConnection()) return ACCEPT_ERROR;
+    setBlockingSocketOption(false,socket_cli);
 
 	return NO_ERROR;
 }
