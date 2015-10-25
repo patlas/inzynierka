@@ -160,6 +160,15 @@ public class Messanger implements Runnable {
 //                    }
                 }
             }
+
+            if(Thread.currentThread().isInterrupted())
+            {
+                try {
+                    tcpcomm.streamSocket.close();
+                }catch (IOException ie){}
+                return;
+            }
+
         }
     }
     

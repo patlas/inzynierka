@@ -14,6 +14,9 @@ public class SupportedFiles {
 
     public static int checkFileSupport(String fName)
     {
+        if(fName==null)
+            return -1;
+
         int index = 0;
         for(String ext : SUPPORTED_FILE)
         {

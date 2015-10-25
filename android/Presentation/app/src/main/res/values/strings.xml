@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_list_file">ListFileActivity</string>
     <string name="title_activity_pptcontroll">PPTControll</string>
+    <string name="title_activity_pdfcontroll">PDFControll</string>
 
     <string name="toast_no_wifi">No WIFI connection established, first connect to proper network. \nTap screen to open settings.</string>
     <string name="wifi_label_info"><b>WIFI connection status:</b></string>
@@ -22,6 +23,13 @@
     <string name="effect_mode_on"><b>Effect mode enabled</b></string>
     <string name="effect_mode_off"><b>Effect mode disabled</b></string>
 
+    <string name="full_screen_on"><b>Full screen mode enabled</b></string>
+    <string name="full_screen_off"><b>Full screen mode disabled</b></string>
+
     <string name="ppt_viewer_info">Choose one of available presentation mode: presenting effect by effect or slide by slide.
                                     \nTap left/right edge or use proper swipe gesture to change current slide or effect to previous/next one.</string>
+
+    <string name="pdf_viewer_info">Swipe left/right gesture to change current page.
+                                    \nScroll up/down to scroll pdf file view.</string>
+
 </resources>

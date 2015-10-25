@@ -1,24 +1,20 @@
 package com.inz.patlas.presentation;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.inz.patlas.presentation.stream.ControllCommands;
-import com.inz.patlas.presentation.stream.Messanger;
 
-public class PPTControll extends AppCompatActivity {
+public class PDFControll extends AppCompatActivity {
 
-    private float x1,x2;
-    static final int MIN_DISTANCE = 150;
+    private float x1,x2,y1,y2;
+    static final int MIN_X_DISTANCE = 100;
+    static final int MIN_Y_DISTANCE = 100;
     public Switch effect_sw = null;
     public TextView effect_tv = null;
 
@@ -26,7 +22,7 @@ public class PPTControll extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ppt_controll);
+        setContentView(R.layout.activity_pdf_controll);
 
         effect_sw = (Switch) findViewById(R.id.effect_sw);
         effect_tv = (TextView) findViewById(R.id.effect_tv);
@@ -36,10 +32,14 @@ public class PPTControll extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if(!isChecked)
+                if(!isChecked) {
                     effect_tv.setText(R.string.effect_mode_off);
-                else
+                    MainWindow.messanger.sendCommand(ControllCommands.F_DFULL);
+                }
+                else {
                     effect_tv.setText(R.string.effect_mode_on);
+                    MainWindow.messanger.sendCommand(ControllCommands.F_DFULL);
+                }
 
             }
         });
@@ -54,18 +54,18 @@ public class PPTControll extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onStop(){
         super.onStop();
-        //MainWindow.messanger.sendCommand(ControllCommands.F_PEXIT);
+       // MainWindow.messanger.sendCommand(ControllCommands.F_DEXIT);
     }
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        //MainWindow.messanger.sendCommand(ControllCommands.F_PEXIT);
+        //MainWindow.messanger.sendCommand(ControllCommands.F_DEXIT);
     }
-
 
 
     @Override
@@ -75,20 +75,20 @@ public class PPTControll extends AppCompatActivity {
         {
             case MotionEvent.ACTION_DOWN:
                 x1 = event.getX();
+                y1 = event.getY();
                 break;
             case MotionEvent.ACTION_UP:
                 x2 = event.getX();
+                y2 = event.getY();
                 float deltaX = x2 - x1;
+                float deltaY = y2 - y1;
 
-                if (Math.abs(deltaX) > MIN_DISTANCE)
+                if (Math.abs(deltaX) > MIN_X_DISTANCE)
                 {
                     // Left to Right swipe action
                     if (x2 > x1)
                     {
-                        if(!effect_sw.isChecked())
-                            MainWindow.messanger.sendCommand(ControllCommands.F_PPREVP);
-                        else
-                            MainWindow.messanger.sendCommand(ControllCommands.F_PPREVE);
+                        MainWindow.messanger.sendCommand(ControllCommands.F_DPREV);
 
                         //Toast.makeText(this, "Left to Right swipe [Next]", Toast.LENGTH_SHORT).show ();
                     }
@@ -96,18 +96,22 @@ public class PPTControll extends AppCompatActivity {
                     // Right to left swipe action
                     else
                     {
-                        if(!effect_sw.isChecked())
-                            MainWindow.messanger.sendCommand(ControllCommands.F_PNEXTP);
-                        else
-                            MainWindow.messanger.sendCommand(ControllCommands.F_PNEXTE);
+                        MainWindow.messanger.sendCommand(ControllCommands.F_DNEXT);
 
                         //Toast.makeText(this, "Right to Left swipe [Previous]", Toast.LENGTH_SHORT).show ();
                     }
 
                 }
-                else
+                else if (Math.abs(deltaY) > MIN_Y_DISTANCE)
                 {
-                    // consider as something else - a screen tap for example
+                    if (y2>y1)
+                    {
+                        MainWindow.messanger.sendCommand(ControllCommands.F_DPDOWN);
+                    }
+                    else
+                    {
+                        MainWindow.messanger.sendCommand(ControllCommands.F_DPUP);
+                    }
                 }
                 break;
         }

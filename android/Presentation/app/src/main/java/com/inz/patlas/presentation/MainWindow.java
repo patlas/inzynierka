@@ -33,11 +33,13 @@ public class MainWindow extends AppCompatActivity {
     public ProgressDialog   progress_dialog = null;
     public String           fName = null;
     public static Messanger        messanger = null;
+    public Thread messangerThread = null;
 
     public LinkedBlockingQueue recQueue = new LinkedBlockingQueue<>();
     public LinkedBlockingQueue<QueueStruct>  transQueue = new LinkedBlockingQueue<>();
 
     private boolean IS_CONNECTED = false;
+    private boolean IS_STREAMING = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -72,11 +74,10 @@ public class MainWindow extends AppCompatActivity {
         open_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!IS_CONNECTED){
+                if (!IS_CONNECTED) {
                     Toast.makeText(MainWindow.this, R.string.btn_not_connected, Toast.LENGTH_LONG).show();
 
-                }
-                else
+                } else
                     openFileClicked(v);
             }
         });
@@ -98,22 +99,59 @@ public class MainWindow extends AppCompatActivity {
         else
         {
             IS_CONNECTED = true;
+
         }
+
+        if(/*IS_CONNECTED == true && */messanger != null && IS_STREAMING != true){
+            Toast.makeText(this, "COME BACK", Toast.LENGTH_LONG).show();
+
+
+            switch(SupportedFiles.checkFileSupport(fName))
+            {
+                case 0:
+                case 1:
+                    MainWindow.messanger.sendCommand(ControllCommands.F_DEXIT);
+                    break;
+                case 2:
+                    MainWindow.messanger.sendCommand(ControllCommands.F_PEXIT);
+                    break;
+                default:
+                    break;
+            }
+
+            messanger.sendCommand(ControllCommands.RESTART_S);
+            try {
+                Thread.sleep(100);
+            }catch(InterruptedException ie){}
+
+            messangerThread.interrupt();
+            messanger = null;
+            fName = null;
+        }
+
         updateInfo();
 
     }
 
 
-    @Override
-    protected void  onStop()
-    {
-        super.onStop();
-
-    }
+//    @Override
+//    protected void  onStop()
+//    {
+//        super.onStop();
+//        if(messanger != null)
+//            messanger.sendCommand(ControllCommands.RESTART_S);
+//
+//    }
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
+        messanger.sendCommand(ControllCommands.RESTART_S);
+        try {
+            Thread.sleep(100);
+        }catch(InterruptedException ie){}
+
+        messangerThread.interrupt();
         disconnectWifi(this);
     }
 
@@ -224,7 +262,8 @@ public class MainWindow extends AppCompatActivity {
     private void openFileClicked(View v)
     {
         messanger = new Messanger(null, recQueue, transQueue);
-        (new Thread(messanger)).start();
+        messangerThread = new Thread(messanger);
+        messangerThread.start();
 
         Intent myIntent = new Intent(v.getContext(), ListFileActivity.class);
         startActivityForResult(myIntent, 1);
@@ -259,6 +298,8 @@ public class MainWindow extends AppCompatActivity {
 
         }
 
+        IS_STREAMING = true;
+
         m.streamFile(fd);
         new Thread(new Runnable() {
             @Override
@@ -284,8 +325,15 @@ public class MainWindow extends AppCompatActivity {
                 }
 
                 progress_dialog.dismiss();
-                Intent ppt_control_intent = new Intent(MainWindow.this, PPTControll.class);
-                startActivity(ppt_control_intent);
+
+                Intent control_intent;
+                IS_STREAMING = false;
+                if(SupportedFiles.checkFileSupport(fName)>1)
+                    control_intent = new Intent(MainWindow.this, PDFControll.class);
+                else
+                    control_intent = new Intent(MainWindow.this, PPTControll.class);
+
+                startActivity(control_intent);
                 //ppt_control_intent.putExtra("Messanger_obj", messanger);
 
 
