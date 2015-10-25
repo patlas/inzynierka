@@ -19,6 +19,9 @@
 
     <string name="button_open">Open file</string>
 
+    <string name="effect_mode_on"><b>Effect mode enabled</b></string>
+    <string name="effect_mode_off"><b>Effect mode disabled</b></string>
+
     <string name="ppt_viewer_info">Choose one of available presentation mode: presenting effect by effect or slide by slide.
                                     \nTap left/right edge or use proper swipe gesture to change current slide or effect to previous/next one.</string>
 </resources>

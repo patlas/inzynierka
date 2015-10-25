@@ -32,7 +32,7 @@ public class MainWindow extends AppCompatActivity {
     public Button           open_btn = null;
     public ProgressDialog   progress_dialog = null;
     public String           fName = null;
-    public Messanger        messanger = null;
+    public static Messanger        messanger = null;
 
     public LinkedBlockingQueue recQueue = new LinkedBlockingQueue<>();
     public LinkedBlockingQueue<QueueStruct>  transQueue = new LinkedBlockingQueue<>();
@@ -223,15 +223,15 @@ public class MainWindow extends AppCompatActivity {
 
     private void openFileClicked(View v)
     {
-//        messanger = new Messanger(null, recQueue, transQueue);
-//        (new Thread(messanger)).start();
-//
-//        Intent myIntent = new Intent(v.getContext(), ListFileActivity.class);
-//        startActivityForResult(myIntent, 1);
+        messanger = new Messanger(null, recQueue, transQueue);
+        (new Thread(messanger)).start();
 
-
-        Intent myIntent = new Intent(v.getContext(), PPTControll.class);
+        Intent myIntent = new Intent(v.getContext(), ListFileActivity.class);
         startActivityForResult(myIntent, 1);
+
+
+//        Intent myIntent = new Intent(v.getContext(), PPTControll.class);
+//        startActivityForResult(myIntent, 1);
 
     }
 
@@ -284,6 +284,10 @@ public class MainWindow extends AppCompatActivity {
                 }
 
                 progress_dialog.dismiss();
+                Intent ppt_control_intent = new Intent(MainWindow.this, PPTControll.class);
+                startActivity(ppt_control_intent);
+                //ppt_control_intent.putExtra("Messanger_obj", messanger);
+
 
             }
         }).start();

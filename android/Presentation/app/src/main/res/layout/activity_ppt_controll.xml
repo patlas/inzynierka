@@ -44,10 +44,44 @@
                 android:text="@string/ppt_viewer_info"
                 android:id="@+id/ppt_info_tv"
                 android:paddingLeft="10dp"
-                android:gravity="center_vertical|fill_vertical" />
+                android:gravity="center_vertical|fill_vertical"
+                android:textColor="#387fa8" />
         </TableRow>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true">
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/effect_sw"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="false"
+                android:layout_alignParentStart="true"
+                android:height="60dp"
+                android:width="60dp"
+                android:layout_alignParentLeft="true"
+                android:checked="false" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/effect_mode_off"
+                android:id="@+id/effect_tv"
+                android:layout_alignParentBottom="true"
+                android:layout_toRightOf="@+id/effect_sw"
+                android:layout_toEndOf="@+id/effect_sw"
+                android:gravity="center_vertical"
+                android:height="60dp"
+                android:paddingLeft="10dp"
+                android:textColor="#FF387FA8" />
+        </RelativeLayout>
+
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="40dp"
