@@ -1,5 +1,10 @@
 package com.inz.patlas.presentation.stream;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import com.inz.patlas.presentation.MainWindow;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +31,10 @@ public class TCPCommunication {
 		hostName = hn;
 		portNumber = pn;
 		streamSocket = new Socket(hostName, portNumber);
+        if(streamSocket.isConnected())
+        {
+            Log.i("TEST", "IS connected");
+        }
 		outStream = new PrintWriter(streamSocket.getOutputStream(), true);
 		inStream = new BufferedReader(new InputStreamReader(streamSocket.getInputStream()));
                 iStream = streamSocket.getInputStream();

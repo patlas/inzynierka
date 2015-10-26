@@ -9,6 +9,7 @@ import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -105,19 +106,21 @@ public class MainWindow extends AppCompatActivity {
         if(/*IS_CONNECTED == true && */messanger != null && IS_STREAMING != true){
             Toast.makeText(this, "COME BACK", Toast.LENGTH_LONG).show();
 
-
-            switch(SupportedFiles.checkFileSupport(fName))
+            Log.i("FILEXX",""+fName);
+            int f = SupportedFiles.checkFileSupport(fName);
+            switch(f)
             {
                 case 0:
                 case 1:
-                    MainWindow.messanger.sendCommand(ControllCommands.F_DEXIT);
+                    messanger.sendCommand(ControllCommands.F_PEXIT);
                     break;
                 case 2:
-                    MainWindow.messanger.sendCommand(ControllCommands.F_PEXIT);
+                    messanger.sendCommand(ControllCommands.F_DEXIT);
                     break;
                 default:
                     break;
             }
+            Log.i("FILEXX",""+f);
 
             messanger.sendCommand(ControllCommands.RESTART_S);
             try {
@@ -280,18 +283,19 @@ public class MainWindow extends AppCompatActivity {
     private /*boolean*/void sendFile(Messanger m, File fd){
         m.sendCommand(ControllCommands.F_STREAM);
         if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_SIZE)){
-            System.out.println("Ask for size");
+            //Log.d("SEND_FILE", "get size received");
             m.sendCommand(Integer.toString((int)fd.length()));
 
         }
 
         if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_HASH)){
-            System.out.println("Ask for hash");
+            //Log.d("SEND_FILE", "get hash received");
             m.sendCommand(FileStreamer.getHash(fd.getAbsolutePath()));
         }
 
         if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_TYPE)){
-            System.out.println("Ask for type");
+
+            //Log.d("SEND_FILE", "get type received");
             String[] ext = fd.getAbsolutePath().toLowerCase().split("\\.");
             String extention = ext[ext.length-1];
             m.sendCommand(extention);

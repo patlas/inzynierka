@@ -27,7 +27,7 @@ public class SupportedFiles {
                 return 0;
 
             if(x[x.length-1].equals(ext))
-                return index+1;
+                return index;
             index++;
         }
 

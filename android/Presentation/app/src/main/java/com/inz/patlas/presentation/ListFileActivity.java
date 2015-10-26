@@ -31,7 +31,7 @@ public class ListFileActivity extends ListActivity {
         setContentView(R.layout.activity_list_file);
 
         // Use the current directory as title
-        path = "/storage";
+        path = "/";//"/storage";
         if (getIntent().hasExtra("path")) {
             path = getIntent().getStringExtra("path");
         }
