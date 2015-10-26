@@ -164,6 +164,13 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
                         cout<<"T: Wstawiam do kolejki"<<endl;                    
 						cout<<"To taka komenda:"<<command.substr(0, (int)compSize)<<endl;
 
+                        if(command.substr(0, (int)compSize).compare(RESTART_SERV)==0)
+                        {
+                            cout<<"Messanger exit"<<endl;
+                            rMutex->unlock();
+                            return;
+                        }
+
 						command.clear();
 						commandSize = 0;
 					}

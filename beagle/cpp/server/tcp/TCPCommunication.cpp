@@ -6,6 +6,7 @@
  */
 
 #include "TCPCommunication.h"
+#include <iostream>
 
 TCPCommunication::TCPCommunication(){}
 
@@ -113,10 +114,13 @@ TCPCommunicationError_t TCPCommunication::startServer()
 TCPCommunicationError_t TCPCommunication::catchNewConnection()
 {
     setBlockingSocketOption(true,socket_desc);
-	if(!listenSocket()) return LISTEN_ERROR;
+    close(socket_cli);
+    std::cout<<"Accept starts"<<std::endl;
+	//if(!listenSocket()) return LISTEN_ERROR;
 	if(!acceptConnection()) return ACCEPT_ERROR;
     setBlockingSocketOption(false,socket_cli);
 
+    std::cout<<"Accept done"<<std::endl;
 	return NO_ERROR;
 }
 

@@ -63,9 +63,11 @@ void sendCommand(string cmd)
 	QueueStruct_t command_struct;
     command_struct.stream=false;
 	command_struct.command = cmd;
-	
+	cout<<"sendCommand"<<cmd<<endl;
     tMutex.lock();
+    cout<<"sendCommand"<<"po lock"<<endl;
 	tQueue.push(command_struct);
+    cout<<"sendCommand"<<"w kolejce"<<endl;
 	tMutex.unlock();
 
 }
@@ -434,7 +436,15 @@ int main(void){
         if(command.compare(RESTART_SERV)==0)
         {
             cout<<"RESTART SERV???"<<endl;
+            sleep(1);
+            cout<<"RESTARTed"<<endl;
             invoker.invoke(RESTART_SERV,&tcpcomm);
+            cout<<"Server restarted"<<endl;
+            tMutex.unlock();
+            rMutex.unlock();
+            
+            thread mes_thread(Messanger::run,&tcpcomm,&tMutex,&rMutex,&tQueue,&rQueue);
+		    mes_thread.detach();
         }
         else
         {
