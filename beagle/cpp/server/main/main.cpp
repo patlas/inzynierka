@@ -197,6 +197,7 @@ void start_file(void *param)
                 exit(1);
                 break;
         }
+    return;
     }
 
 }
