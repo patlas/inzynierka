@@ -41,6 +41,7 @@ uint16_t pptCurrentPage = 1;
 string exec_command;
 
 
+
 string getCommand()
 {
 	string cmd;
@@ -385,6 +386,14 @@ void pexit(void *param)
     //server_restart(nullptr);
 }
 
+void unknow_error(void *param)
+{
+    cout<<endl<<endl<<"unknow_error"<<endl;
+    sendCommand(U_ERROR);
+    while(getCommand().compare(RESTART_SERV)!=0);
+
+}
+
 
 int main(void){
 
@@ -418,6 +427,8 @@ int main(void){
     invoker.insert_function(F_DFULL,        &dfull_page);
     invoker.insert_function(F_DEXIT,        &dexit);
 
+    invoker.insert_function(U_ERROR,        &unknow_error);
+
 	if(tcpcomm.startServer() == NO_ERROR)
 	{
 		cout<<"Server starts correctly!"<<endl;
@@ -432,10 +443,12 @@ int main(void){
     while(1)
     {
         //maszyna stanu :)
+        cout<<"MAIN: czekam na komende"<<endl;
         command = getCommand();
             cout<<command<<endl;
         if(command.compare(RESTART_SERV)==0)
         {
+HARD_RESET:
             cout<<"RESTART SERV???"<<endl;
             sleep(1);
             cout<<"RESTARTed"<<endl;
@@ -446,6 +459,12 @@ int main(void){
             
             thread mes_thread(Messanger::run,&tcpcomm,&tMutex,&rMutex,&tQueue,&rQueue);
 		    mes_thread.detach();
+        }
+        else if(command.compare(U_ERROR)==0)
+        {
+            invoker.invoke(U_ERROR,&tcpcomm);
+            goto HARD_RESET;
+
         }
         else
         {

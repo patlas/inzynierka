@@ -81,6 +81,12 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 	uint8_t rData[TLV_STRUCT_SIZE];
 	uint64_t commandSize = 0;
 	uint64_t compSize = 0;
+
+	uint64_t commandSize_c = 0;
+	uint64_t compSize_c = 0;
+
+
+    bool u_error_sent = false;
 	uint64_t fsize = 0;
 	string command ;
 	ofstream outfile;
@@ -147,27 +153,55 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
                 printf("Taki typ: %d\n",tempTLV.type);
 				if(tempTLV.type == 0)
 				{
-					//cout<<"Odebralem komende"<<endl;
+
+
+					cout<<"Odebralem komende"<<endl;
+                    printf("RRRRozmiar komendy to: %x\n",tempTLV.length);
+                    printf("compSize_c: %x\n",compSize_c);
+                    printf("commandSize: %x\n",commandSize);
+
+                    //check if recently was not transmit stream -> this command is corrupted
+                    if(fsize < compSize) 
+                    {
+                        fsize = 0;
+                        compSize = 0;
+                        cout<<"Read corrupted packet"<<endl;
+                        if(u_error_sent == false)
+                        {
+                            /* odczekać kilka sekund i po tym czasie zamknąć połączenie, gdy android wykryje U_ERROR też ma się rozłączyć, najlepiej natychmiast*/
+                            rQueue->push(U_ERROR);
+                            u_error_sent == true;
+                        }
+                        //send unknow error command
+                        commandSize = 0;
+                        rMutex->unlock();
+                        continue;
+                    }
+
+
 					//TODO - if tempTLV.type == stream than ommit below and start saving to file
 					if(commandSize == 0)
 					{
-						compSize = tempTLV.length;
+						compSize_c = tempTLV.length;
 						printf("Rozmiar komendy to: %x\n",tempTLV.length);
 					}
 
 					command.append((char*)tempTLV.value);
 					commandSize+=TLV_DATA_SIZE;//sizeof(tempTLV.value);
 
-					if(commandSize >= compSize)
+					if(commandSize >= compSize_c)
 					{
-						rQueue->push(command.substr(0, (int)compSize));
+						rQueue->push(command.substr(0, (int)compSize_c));
                         cout<<"T: Wstawiam do kolejki"<<endl;                    
-						cout<<"To taka komenda:"<<command.substr(0, (int)compSize)<<endl;
+						cout<<"To taka komenda:"<<command.substr(0, (int)compSize_c)<<endl;
+                        u_error_sent = false;
 
-                        if(command.substr(0, (int)compSize).compare(RESTART_SERV)==0)
+                        if(command.substr(0, (int)compSize_c).compare(RESTART_SERV)==0)
                         {
                             cout<<"Messanger exit"<<endl;
                             rMutex->unlock();
+                            commandSize=0;
+                            command.clear();
                             return;
                         }
 
@@ -216,10 +250,17 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 						close(source);
 						close(dest);
                         fsize = 0;
+                        compSize = 0;
                         cout<<"Odebralem plik"<<endl;
 
 					}
 				}
+                else
+                {
+                    commandSize=0;
+                    compSize_c=0; //ewentualnie sprawdzicz czy plik otwarty i go zamknac, zglosic blad pliku
+                }
+
 			}
             /*else if(count<0)
             {
