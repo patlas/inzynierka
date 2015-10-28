@@ -34,7 +34,9 @@ public class ControllCommands {
 	public static String F_DNEXT = "F_DNEXT";
 	public static String F_DPREV = "F_DPREV";
 	public static String F_DEXIT = "F_DEXIT";
-        
+
+
+	public static String U_ERROR = "U_ERROR";
         
 	public static byte PPT = 0;
 	public static byte PPTX = 1;

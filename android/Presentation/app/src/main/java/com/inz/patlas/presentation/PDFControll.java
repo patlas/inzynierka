@@ -27,6 +27,9 @@ public class PDFControll extends AppCompatActivity {
         effect_sw = (Switch) findViewById(R.id.effect_sw);
         effect_tv = (TextView) findViewById(R.id.effect_tv);
 
+//        if(MainWindow.messanger.recvCommand() == ControllCommands.U_ERROR)
+//            finish();
+
         MainWindow.messanger.sendCommand(ControllCommands.F_START);
         effect_sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

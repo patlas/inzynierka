@@ -117,6 +117,9 @@ public class Messanger implements Runnable {
                     {
                         try{
                             receiver.put(command.substring(0, (int)compSize));
+//                            if(command.substring(0, (int)compSize).equals(ControllCommands.U_ERROR){
+//
+//                            }
                         }catch(InterruptedException ie){
                             command.setLength(0);
                             commandSize = 0;
@@ -232,10 +235,12 @@ public class Messanger implements Runnable {
     
     public String recvCommand()
     {
+        //int index = 0;
         while(true)
         {
             if(!receiver.isEmpty())
                 return (String)receiver.poll();
+            //index++;
         }
     }
     

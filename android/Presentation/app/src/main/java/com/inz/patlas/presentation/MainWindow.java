@@ -41,6 +41,8 @@ public class MainWindow extends AppCompatActivity {
 
     private boolean IS_CONNECTED = false;
     private boolean IS_STREAMING = false;
+    private boolean U_ERROR_OCCURE = false;
+    private Thread streamEndThread = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -103,7 +105,8 @@ public class MainWindow extends AppCompatActivity {
 
         }
 
-        if(/*IS_CONNECTED == true && */messanger != null && IS_STREAMING != true){
+
+        if(/*IS_CONNECTED == true && */messanger != null && IS_STREAMING != true ){
             Toast.makeText(this, "COME BACK", Toast.LENGTH_LONG).show();
 
             Log.i("FILEXX",""+fName);
@@ -120,16 +123,20 @@ public class MainWindow extends AppCompatActivity {
                 default:
                     break;
             }
-            Log.i("FILEXX",""+f);
+            Log.i("FILEXX", "" + f);
 
-            messanger.sendCommand(ControllCommands.RESTART_S);
-            try {
-                Thread.sleep(100);
-            }catch(InterruptedException ie){}
+            if (messanger != null) {
 
-            messangerThread.interrupt();
-            messanger = null;
-            fName = null;
+                messanger.sendCommand(ControllCommands.RESTART_S);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                }
+
+                messangerThread.interrupt();
+                messanger = null;
+                fName = null;
+            }
         }
 
         updateInfo();
@@ -305,7 +312,7 @@ public class MainWindow extends AppCompatActivity {
         IS_STREAMING = true;
 
         m.streamFile(fd);
-        new Thread(new Runnable() {
+        streamEndThread = new Thread(new Runnable() {
             @Override
             public void run() {
 
@@ -323,9 +330,23 @@ public class MainWindow extends AppCompatActivity {
                 {
                     //return false;
                 }
-                else
+                else if(stramSucces.equalsIgnoreCase(ControllCommands.U_ERROR))
                 {
                     //return false;
+                    U_ERROR_OCCURE = true;
+                    progress_dialog.dismiss();
+                    IS_STREAMING = false;
+
+                    messanger.sendCommand(ControllCommands.RESTART_S);
+                    try {
+                        Thread.sleep(100);
+                    }catch(InterruptedException ie){}
+
+                    messangerThread.interrupt();
+                    messanger = null;
+                    fName = null;
+
+                    return;
                 }
 
                 progress_dialog.dismiss();
@@ -342,7 +363,8 @@ public class MainWindow extends AppCompatActivity {
 
 
             }
-        }).start();
+        });
+        streamEndThread.start();
 
     }
 
