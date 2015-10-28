@@ -7,6 +7,8 @@ package com.inz.patlas.presentation.stream;
 
 import android.util.Log;
 
+import com.inz.patlas.presentation.MainWindow;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +33,7 @@ public class Messanger implements Runnable {
     private LinkedList<TwoTypeStruct> dataList = new LinkedList();
     private int index = 0;
     public boolean streamDone = false;
+    public int NO_STREAM_ERROR = 0;
     
     @Override 
     public void run(){
@@ -47,6 +50,63 @@ public class Messanger implements Runnable {
         long compSize = 0;
         
         StringBuilder command = new StringBuilder();
+
+        Thread rThread = new Thread(new Runnable() {
+
+            TwoTypeStruct tts_r = null;
+            TLVstruct tlv_r = null;
+            long commandSize_r = 0;
+            long compSize_r = 0;
+            StringBuilder command_r = new StringBuilder();
+
+            @Override
+            public void run() {
+                while(true) {
+                    if ((tts_r = tcpcomm.readRawNonBlocking()).length() != 0) {
+
+                        tlv_r = TTStoTLV(tts_r);
+
+                        if (commandSize_r == 0) {
+                            compSize_r = tlv_r.length;
+                        }
+                        command_r.append(new String(tlv_r.data, Charset.forName("UTF-8")));
+                        commandSize_r += tlv_r.data.length;
+
+                        if (commandSize_r >= compSize_r) {
+                            try {
+                                receiver.put(command_r.substring(0, (int) compSize_r));
+
+                            if(command_r.substring(0, (int)compSize_r).equals(ControllCommands.U_ERROR)){
+                                Log.i("U_ERROR", "Thread_r detect U_ERROR -> stopping stream");
+                                transmitter.clear();
+
+                                streamDone = true;
+                                NO_STREAM_ERROR = -1;
+                            }
+
+
+                            } catch (InterruptedException ie) {
+                                command_r.setLength(0);
+                                commandSize_r = 0;
+                            }
+                            command_r.setLength(0);
+                            commandSize_r = 0;
+                        }
+                    }
+                    if(Thread.currentThread().isInterrupted())
+                    {
+
+                        return;
+                    }
+                }
+
+            }
+        });
+        rThread.start();
+
+
+
+
         while(true)
         {
             if((qs = transmitter.poll()) != null){
@@ -74,62 +134,66 @@ public class Messanger implements Runnable {
                 }
                 else
                 {
+
                     //send stream data (file)
                     byte[] dat = new byte[TLVstruct.TLV_DATA_SIZE];
-                   // if(qs.getData().length > TLVstruct.TLV_DATA_SIZE)
+                    // if(qs.getData().length > TLVstruct.TLV_DATA_SIZE)
                     //    System.arraycopy(qs.getData(), 0, dat, 0, TLVstruct.TLV_DATA_SIZE);
                     //else
-                        System.arraycopy(qs.getData(), 0, dat, 0, TLVstruct.TLV_DATA_SIZE);
-                    
-                    for(long ww = 0; ww<TLVstruct.TLV_DATA_SIZE; ww++)
-                    System.out.println(qs.getData()[(int)ww]);
-                    
-                    byte[] dataToSend =  buildTLVdataHeader(false,dat,qs.getFileSize());
-                    
-                    
-                    
+                    System.arraycopy(qs.getData(), 0, dat, 0, TLVstruct.TLV_DATA_SIZE);
+
+                    for (long ww = 0; ww < TLVstruct.TLV_DATA_SIZE; ww++)
+                        System.out.println(qs.getData()[(int) ww]);
+
+                    byte[] dataToSend = buildTLVdataHeader(false, dat, qs.getFileSize());
+
+
                     tcpcomm.sendByteArray(dataToSend, dataToSend.length);
-                    
-                    System.out.println("Streaming file, size: "+qs.getFileSize()+", packet length: "+dataToSend.length);
+
+                    System.out.println("Streaming file, size: " + qs.getFileSize() + ", packet length: " + dataToSend.length);
+
                     
                     
                 }
                 
             }
-            else
-            {
-                if((tts = tcpcomm.readRawNonBlocking()).length()!=0)
-                {
-                    //TODO - think about dataList -> is it realy necessary?
-                    //dataList.add(tts);  
-                    //System.out.println("Sa jakies dane odebrane");
-                        //tlv = TTStoTLV(dataList.poll());
-                    tlv = TTStoTLV(tts);
-                    
-                    if(commandSize == 0)
-                    {
-                        compSize = tlv.length;
-                    }
-                    command.append(new String(tlv.data,Charset.forName("UTF-8")));
-                    commandSize+=tlv.data.length;
-                    
-                    if(commandSize >= compSize)
-                    {
-                        try{
-                            receiver.put(command.substring(0, (int)compSize));
-//                            if(command.substring(0, (int)compSize).equals(ControllCommands.U_ERROR){
+           // else
+            //{
+//                if((tts = tcpcomm.readRawNonBlocking()).length()!=0)
+//                {
+//                    //TODO - think about dataList -> is it realy necessary?
+//                    //dataList.add(tts);
+//                    //System.out.println("Sa jakies dane odebrane");
+//                        //tlv = TTStoTLV(dataList.poll());
+//                    tlv = TTStoTLV(tts);
 //
-//                            }
-                        }catch(InterruptedException ie){
-                            command.setLength(0);
-                            commandSize = 0;
-                        }
-                        command.setLength(0);
-                        commandSize = 0;              
-                    }
-                }
-                else
-                {
+//                    if(commandSize == 0)
+//                    {
+//                        compSize = tlv.length;
+//                    }
+//                    command.append(new String(tlv.data,Charset.forName("UTF-8")));
+//                    commandSize+=tlv.data.length;
+//
+//                    if(commandSize >= compSize)
+//                    {
+//                        try{
+//                            receiver.put(command.substring(0, (int)compSize));
+//
+////                            if(command.substring(0, (int)compSize).equals(ControllCommands.U_ERROR)){
+////                                NO_STREAM_ERROR = false;
+////                                Log.i("U_ERROR","ERROR DETECTED -> send RESET_S");
+////                            }
+//
+//                        }catch(InterruptedException ie){
+//                            command.setLength(0);
+//                            commandSize = 0;
+//                        }
+//                        command.setLength(0);
+//                        commandSize = 0;
+//                    }
+//                }
+//                else
+//                {
 //                    tlv = TTStoTLV(dataList.poll());
 //                    
 //                    if(tlv.length <= TLVstruct.TLV_DATA_SIZE) // or check type field
@@ -161,14 +225,20 @@ public class Messanger implements Runnable {
 //                        }
                         //TODO - if necessary -> recognize if stream is being send
 //                    }
-                }
-            }
+//                }
+           // }
 
             if(Thread.currentThread().isInterrupted())
             {
+                rThread.interrupt();
+
                 try {
+                    rThread.join();
                     tcpcomm.streamSocket.close();
-                }catch (IOException ie){}
+                }catch (IOException ie){
+
+                }catch (InterruptedException ie){}
+
                 return;
             }
 
@@ -243,6 +313,14 @@ public class Messanger implements Runnable {
             //index++;
         }
     }
+
+    public String recvPeekCommand()
+    {
+            if(!receiver.isEmpty())
+                return (String)receiver.peek();
+
+        return "none";
+    }
     
     
     
@@ -276,6 +354,13 @@ public class Messanger implements Runnable {
                 int sindex =  (int) Math.ceil((double)fileByteArray.length / TLVstruct.TLV_DATA_SIZE);
                 for(int i=0; i<sindex;i++)
                {
+
+                   if(recvPeekCommand().equalsIgnoreCase(ControllCommands.U_ERROR)) {
+                       Log.i("U_ERROR", "streamFile detect U_ERROR -> stopping stream");
+                       streamDone = true;
+                       NO_STREAM_ERROR = -1;
+                       return false;
+                   }
                     QueueStruct fileQS = new QueueStruct();
                     fileQS.setStream(true);
                     fileQS.setFileSize(fd.length());

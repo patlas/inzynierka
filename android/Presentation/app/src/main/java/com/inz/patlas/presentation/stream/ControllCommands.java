@@ -37,6 +37,7 @@ public class ControllCommands {
 
 
 	public static String U_ERROR = "U_ERROR";
+	public static String U_NOERROR = "U_NOERROR";
         
 	public static byte PPT = 0;
 	public static byte PPTX = 1;

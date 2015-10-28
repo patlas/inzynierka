@@ -318,7 +318,20 @@ public class MainWindow extends AppCompatActivity {
 
                 while(messanger.streamDone != true){};
                 messanger.streamDone = false;
-                messanger.sendCommand(ControllCommands.F_DONE);
+
+                while(messanger.NO_STREAM_ERROR ==0){
+                    if(messanger.recvPeekCommand().equalsIgnoreCase(ControllCommands.U_NOERROR)) {
+                        Log.i("U_NOERROR","NO ERROR WHILE TRANSFER");
+                        messanger.recvCommand();
+                        messanger.NO_STREAM_ERROR = 1;
+                    }
+                }
+
+                if(messanger.NO_STREAM_ERROR==1) {
+                    messanger.sendCommand(ControllCommands.F_DONE);
+                }
+
+
                 String stramSucces = messanger.recvCommand();
                 System.out.println("Stream done with: " + stramSucces);
 
@@ -337,7 +350,13 @@ public class MainWindow extends AppCompatActivity {
                     progress_dialog.dismiss();
                     IS_STREAMING = false;
 
+
+                    try {
+                        Thread.sleep(3000);
+                    }catch(InterruptedException ie){}
+
                     messanger.sendCommand(ControllCommands.RESTART_S);
+                    Log.i("RESTART_S","MainWindow: Restart-s was sent");
                     try {
                         Thread.sleep(100);
                     }catch(InterruptedException ie){}
