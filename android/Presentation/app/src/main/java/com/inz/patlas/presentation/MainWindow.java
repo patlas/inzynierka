@@ -176,9 +176,10 @@ public class MainWindow extends AppCompatActivity {
 
                 //TODO - start stream file
                 File fd = new File(fName);
+                progress_dialog = ProgressDialog.show(this, "Streaming...", "File "+fName+" is streaming.", true);
                 sendFile(messanger, fd);
 
-                progress_dialog = ProgressDialog.show(this, "Streaming...", "File +name+ is streaming.", true);
+
 
             }
         }
@@ -358,7 +359,7 @@ public class MainWindow extends AppCompatActivity {
                     messanger.sendCommand(ControllCommands.RESTART_S);
                     Log.i("RESTART_S","MainWindow: Restart-s was sent");
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(700);
                     }catch(InterruptedException ie){}
 
                     messangerThread.interrupt();
@@ -384,6 +385,7 @@ public class MainWindow extends AppCompatActivity {
             }
         });
         streamEndThread.start();
+        //m.streamFile(fd);
 
     }
 
