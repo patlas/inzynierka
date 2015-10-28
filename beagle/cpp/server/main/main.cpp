@@ -40,7 +40,13 @@ char xdo_buff[500];
 uint16_t pptCurrentPage = 1;
 string exec_command;
 
-
+void queuesClear()
+{
+    queue<QueueStruct_t> t;
+    queue<string> r;
+    swap(tQueue,t);
+    swap(rQueue,r);
+}
 
 string getCommand()
 {
@@ -390,7 +396,8 @@ void unknow_error(void *param)
 {
     cout<<endl<<endl<<"unknow_error"<<endl;
     //sendCommand(U_ERROR);
-    while(getCommand().compare(RESTART_SERV)!=0);
+    //while(getCommand().compare(RESTART_SERV)!=0);
+    sleep(4);
 
 }
 
@@ -449,11 +456,12 @@ int main(void){
         if(command.compare(RESTART_SERV)==0)
         {
 HARD_RESET:
-            cout<<"RESTART SERV???"<<endl;
+            cout<<"Server is being restarted in a second..."<<endl;
             sleep(1);
-            cout<<"RESTARTed"<<endl;
+            //cout<<"Server restarted"<<endl;
             invoker.invoke(RESTART_SERV,&tcpcomm);
             cout<<"Server restarted"<<endl;
+            queuesClear();
             tMutex.unlock();
             rMutex.unlock();
             

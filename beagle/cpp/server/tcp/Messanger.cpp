@@ -108,10 +108,10 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 				if(QSt.stream == false)
 				{
 					string cmd = QSt.command;
-                    cout<<"Wysylam takie dane: "<<cmd<<cmd.length()<<endl;
+                    //cout<<"Wysylam takie dane: "<<cmd<<cmd.length()<<endl;
 					uint8_t index =  (uint8_t) ceil(cmd.length() / (float)TLV_DATA_SIZE);
                     //uint8_t index =  (uint8_t) divCeil(cmd.length(),TLV_DATA_SIZE);
-                    cout<<"Dane to tyle pakietow: "<<(int)index<<endl;
+                    //cout<<"Dane to tyle pakietow: "<<(int)index<<endl;
 				   for(uint8_t i=0; i<index;i++)
 				   {
 					   uint8_t end = (i+1)*TLV_DATA_SIZE;
@@ -150,15 +150,15 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 
 				//TLVStruct tempTLV;
 				ArrayToTLV(&tempTLV,rData);
-                printf("Taki typ: %d\n",tempTLV.type);
+                //printf("Taki typ: %d\n",tempTLV.type);
 				if(tempTLV.type == 0)
 				{
 
 
-					cout<<"Odebralem komende"<<endl;
-                    printf("RRRRozmiar komendy to: %x\n",tempTLV.length);
-                    printf("compSize_c: %x\n",compSize_c);
-                    printf("commandSize: %x\n",commandSize);
+					//cout<<"Odebralem komende"<<endl;
+                    //printf("RRRRozmiar komendy to: %x\n",tempTLV.length);
+                    //printf("compSize_c: %x\n",compSize_c);
+                    //printf("commandSize: %x\n",commandSize);
 
                     //check if recently was not transmit stream -> this command is corrupted
                     if(fsize < compSize) 
@@ -170,7 +170,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
                         {
                             /* odczekać kilka sekund i po tym czasie zamknąć połączenie, gdy android wykryje U_ERROR też ma się rozłączyć, najlepiej natychmiast*/
                             sleep(1);
-                            cout<<"ADD TO QUEUE U_ERROR"<<endl;
+                            //cout<<"ADD TO QUEUE U_ERROR"<<endl;
                             rQueue->push(U_ERROR);
 
                             QueueStruct_t command_struct;
@@ -178,7 +178,8 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 	                        command_struct.command = U_ERROR;
 	                        
                             tMutex->lock();
-                            cout<<"Insert in tQueue U_ERROR"<<endl;
+                            //cout<<"Insert in tQueue U_ERROR"<<endl;
+                            cout<<"ADD TO QUEUE U_ERROR"<<endl;
 	                        tQueue->push(command_struct);
 	                        tMutex->unlock();
 
@@ -207,7 +208,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					if(commandSize == 0)
 					{
 						compSize_c = tempTLV.length;
-						printf("Rozmiar komendy to: %x\n",tempTLV.length);
+						//printf("Rozmiar komendy to: %x\n",tempTLV.length);
 					}
 
 					command.append((char*)tempTLV.value);
