@@ -169,13 +169,37 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
                         if(u_error_sent == false)
                         {
                             /* odczekać kilka sekund i po tym czasie zamknąć połączenie, gdy android wykryje U_ERROR też ma się rozłączyć, najlepiej natychmiast*/
+                            sleep(1);
+                            cout<<"ADD TO QUEUE U_ERROR"<<endl;
                             rQueue->push(U_ERROR);
+
+                            QueueStruct_t command_struct;
+                            command_struct.stream=false;
+	                        command_struct.command = U_ERROR;
+	                        
+                            tMutex->lock();
+                            cout<<"Insert in tQueue U_ERROR"<<endl;
+	                        tQueue->push(command_struct);
+	                        tMutex->unlock();
+
+
+
                             u_error_sent == true;
                         }
                         //send unknow error command
                         commandSize = 0;
                         rMutex->unlock();
                         continue;
+                    }
+
+
+                    if(commandSize > 40 || tempTLV.length>40)
+                    {
+                        compSize = 0;
+                        commandSize = 0;
+                        rMutex->unlock();
+                        continue;
+
                     }
 
 
@@ -252,6 +276,17 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
                         fsize = 0;
                         compSize = 0;
                         cout<<"Odebralem plik"<<endl;
+
+                        QueueStruct_t command_struct;
+                        command_struct.stream=false;
+                        command_struct.command = U_NOERROR;
+                        
+                        tMutex->lock();
+                        cout<<"Insert in tQueue U_NOERROR"<<endl;
+                        tQueue->push(command_struct);
+                        tMutex->unlock();
+                        
+                        
 
 					}
 				}

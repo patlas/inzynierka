@@ -25,6 +25,7 @@ static std::string PROG_PDF_ALIAS="qpdfview";
 #define GET_TYPE        "GET_TYPE"
 
 #define U_ERROR         "U_ERROR"
+#define U_NOERROR       "U_NOERROR"
 
 #define F_RECEIVED      "F_RECEIVED"
 #define F_DONE          "F_DONE"

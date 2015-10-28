@@ -389,7 +389,7 @@ void pexit(void *param)
 void unknow_error(void *param)
 {
     cout<<endl<<endl<<"unknow_error"<<endl;
-    sendCommand(U_ERROR);
+    //sendCommand(U_ERROR);
     while(getCommand().compare(RESTART_SERV)!=0);
 
 }
