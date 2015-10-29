@@ -7,6 +7,7 @@
 #include <iostream>
 #include <thread>
 #include <unistd.h>
+#include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/sendfile.h>
 #include <sys/stat.h>
@@ -80,19 +81,27 @@ void sendCommand(string cmd)
 }
 
 
+void sigchld_handler(int sig)
+{
+    int status;
+    while(waitpid(-1,&status,WNOHANG) != -1);
+}
+
+
 
 
 
 void execute_command(string cmd, string prog)
 {
-    if(vfork()==0)
-    {
+    //if(vfork()==0)
+    //{
 		SHELL(cmd.c_str(),prog.c_str()); // wyrzucić przed forka
 		printf("TUTAJ: %s",xdo_buff);
 		system(xdo_buff);
+        return;
 		//exit(1);
-	}
-
+	//}
+    //return;
 }
 
 
@@ -408,6 +417,16 @@ int main(void){
 	Messanger messanger = Messanger(&tcpcomm, &tMutex, &rMutex, &tQueue, &rQueue);
     Invoker invoker;
     string command;
+
+
+    struct sigaction signal_action;
+    memset(&signal_action, 0, sizeof(signal_action));
+    //signal_action.sa_handler = sigchld_handler;
+    //sigaction(SIGCHLD, &signal_action, NULL);
+    signal_action.sa_handler = SIG_DFL;
+    signal_action.sa_flags = SA_NOCLDWAIT;
+    sigaction(SIGCHLD, &signal_action,NULL);
+
 
 //    invoker.insert_function("testowa",&test);
 //    int xxx = 2;

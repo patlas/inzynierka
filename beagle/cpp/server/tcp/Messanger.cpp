@@ -240,8 +240,10 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
                     cout<<"Dlugosc streama: "<<tempTLV.length<<endl;
                     //for(int c =0; c<8;c++)
                     //    printf("%d\n",(uint8_t)(tempTLV.length>>(c*8)));
-                    for(int c=0; c<20;c++)
-                        printf("%d\n",(uint8_t)rData[c]);
+//                    for(int c=0; c<20;c++)
+//                        printf("%d\n",(uint8_t)rData[c]);
+
+                    usleep(1);
 
 					//TODO - save stream to file
 					if(fsize == 0)
