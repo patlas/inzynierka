@@ -19,6 +19,8 @@ public class ControllCommands {
         public static String F_RECEIVED = "F_RECEIVED";
 	public static String F_ERROR = "F_ERROR";
         public static String RESTART_S = "RESTART_S";
+        public static String U_ERROR = "U_ERROR";
+        public static String U_NOERROR = "U_NOERROR";
         public static String F_START = "F_START";
         public static String F_PNEXTP = "F_PNEXTP";
 	public static String F_PPREVP = "F_PPREVP";

@@ -32,7 +32,7 @@ import viewer.PPTfileViewer;
 public class MainGui extends javax.swing.JFrame {
     
     static int PORT = 12345;
-    static String ADDRESS = "192.168.1.3";/*"127.0.0.1";*/
+    static String ADDRESS = "192.168.1.24";/*"127.0.0.1";*/
     
     public String fName = null;
     private ProgressDialog pd = null;
@@ -44,6 +44,7 @@ public class MainGui extends javax.swing.JFrame {
     private Thread progressThread = null;
     public LinkedBlockingQueue receiver = new LinkedBlockingQueue();
     public LinkedBlockingQueue<QueueStruct> transmitter = new LinkedBlockingQueue<>();
+    public Thread messangerThread = null;
     
     private PDFfileViewer pdf = null;
     /**
@@ -422,21 +423,7 @@ public class MainGui extends javax.swing.JFrame {
 
     private void mConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mConnectActionPerformed
 
-/*
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        int width = gd.getDisplayMode().getWidth();
-        int height = gd.getDisplayMode().getHeight();
-        pd = new ProgressDialog();
-        pd.setSize((int) Math.round(width*0.3), (int) Math.round(height*0.1));
-        pd.pProgressBar.setValue(70);
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                pd.setVisible(true);
-            }
-        });
 
-        //pd.setSize(WIDTH, WIDTH);
- */ 
         if(mConnect.getText().equalsIgnoreCase("connect")){
             if(tcpcomm == null){
                 try{
@@ -447,15 +434,23 @@ public class MainGui extends javax.swing.JFrame {
                     
                 }
                 
+                receiver.clear();
+                transmitter.clear();
                 messanger = new Messanger(tcpcomm,receiver,transmitter);
-                (new Thread(messanger)).start();
+                messangerThread = new Thread(messanger);
+                messangerThread.start();
             }
             if(tcpcomm.isConnected()){
                 mConnect.setText("Disconnect");
                 mOpenFile.setEnabled(true);
+                
             }
         }
         else{
+            messanger.sendCommand(ControllCommands.RESTART_S);
+            try{
+                Thread.sleep(100);
+            }catch(InterruptedException ie){}
             while(!tcpcomm.disconnect());
             tcpcomm = null;
             mConnect.setText("Connect");
@@ -617,29 +612,43 @@ public class MainGui extends javax.swing.JFrame {
     
     private boolean sendFile(Messanger m, File fd){
         m.sendCommand("F_STREAM");
-        if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_SIZE)){
+        String tmpCmd = null;
+        if((tmpCmd=m.recvCommand()).equalsIgnoreCase(ControllCommands.GET_SIZE)){
             System.out.println("Ask for size");        
             m.sendCommand(Integer.toString((int)fd.length()));
             
         }
+        else
+            System.out.println("Receiverd wrong command: " + tmpCmd + " instead of GET_SIZE");
+       
         
-        if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_HASH)){
+        if((tmpCmd=m.recvCommand()).equalsIgnoreCase(ControllCommands.GET_HASH)){
             System.out.println("Ask for hash");        
             m.sendCommand(FileStreamer.getHash(fd.getAbsolutePath()));      
         }
+        else
+            System.out.println("Receiverd wrong command: " + tmpCmd + " instead of GET_HASH");
         
-        if(m.recvCommand().equalsIgnoreCase(ControllCommands.GET_TYPE)){
+        if((tmpCmd=m.recvCommand()).equalsIgnoreCase(ControllCommands.GET_TYPE)){
             System.out.println("Ask for type");    
             String[] ext = fd.getAbsolutePath().toLowerCase().split("\\.");
             String extention = ext[ext.length-1];       
             m.sendCommand(extention); 
 
         }
+        else
+            System.out.println("Receiverd wrong command: " + tmpCmd + " instead of GET_TYPE");
                         
         m.streamFile(fd);
         while(m.streamDone != true){};
         m.streamDone = false;
-        m.sendCommand(ControllCommands.F_DONE);
+        
+        if(messanger.recvCommand().equalsIgnoreCase(ControllCommands.U_NOERROR)) {
+            System.out.println("U_NOERROR"+" NO ERROR WHILE TRANSFER");
+            //messanger.NO_STREAM_ERROR = 1;           
+            messanger.sendCommand(ControllCommands.F_DONE);
+        }
+
         String stramSucces = m.recvCommand();
         System.out.println("Stream done with: "+stramSucces);
         
@@ -651,8 +660,36 @@ public class MainGui extends javax.swing.JFrame {
         {
             return false;
         }
-        else
+        
+        else if(stramSucces.equalsIgnoreCase(ControllCommands.U_ERROR))
         {
+            //return false;
+            //U_ERROR_OCCURE = true;
+            //progress_dialog.dismiss();
+            //IS_STREAMING = false;
+
+
+            try {
+                Thread.sleep(3000);
+            }catch(InterruptedException ie){}
+
+            messanger.sendCommand(ControllCommands.RESTART_S);
+            try {
+                Thread.sleep(700);
+            }catch(InterruptedException ie){}
+
+            messangerThread.interrupt();
+            messanger = null;
+            fName = null;
+
+            return false;
+        }
+        else if(stramSucces.equalsIgnoreCase(ControllCommands.U_NOERROR))
+        {
+            return true;
+        }
+        
+        else{
             return false;
         }
     }
@@ -706,9 +743,9 @@ public class MainGui extends javax.swing.JFrame {
     private javax.swing.Box.Filler filler2;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenuItem mConnect;
+    public static javax.swing.JMenuItem mConnect;
     private javax.swing.JMenuItem mExit;
-    private javax.swing.JMenuItem mOpenFile;
+    public static javax.swing.JMenuItem mOpenFile;
     private javax.swing.JPopupMenu.Separator mSeparator;
     private javax.swing.JMenu menuAbout;
     private javax.swing.JMenu menuEdit;
