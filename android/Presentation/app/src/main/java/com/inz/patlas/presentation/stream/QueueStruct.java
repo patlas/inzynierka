@@ -12,7 +12,7 @@ package com.inz.patlas.presentation.stream;
 public class QueueStruct {
     private boolean stream;
     private String command;
-    private byte[] data = new byte[20];
+    private byte[] data = new byte[TLVstruct.TLV_STRUCT_SIZE]; //20
     private long fileSize = 0;
     
     public boolean isStream(){

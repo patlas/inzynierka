@@ -11,8 +11,8 @@ package com.inz.patlas.presentation.stream;
  */
 public class TLVstruct 
 {
-    public static int TLV_DATA_SIZE = 11;
-    public static int TLV_STRUCT_SIZE = 20;
+    public static int TLV_DATA_SIZE = 51; //11
+    public static int TLV_STRUCT_SIZE = 60; //20
     public byte type;
     public long length;
     public byte[] data = new byte[TLV_DATA_SIZE];

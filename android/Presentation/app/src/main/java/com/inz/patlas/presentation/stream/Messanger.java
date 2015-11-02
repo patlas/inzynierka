@@ -40,7 +40,7 @@ public class Messanger implements Runnable {
     public void run(){
         // TODO - add interrupt mechanism to stop task in case of server/client error
         try {
-            tcpcomm = new TCPCommunication(MainWindow.GATEWAY_ADDR, PORT);
+            tcpcomm = new TCPCommunication(/*MainWindow.GATEWAY_ADDR*/ "192.168.1.7", PORT);
         }catch(IOException io){
             Log.d("EXCEPTION",io.getMessage() );
         }
