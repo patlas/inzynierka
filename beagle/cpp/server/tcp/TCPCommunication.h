@@ -21,8 +21,8 @@
 #include <fcntl.h>
 #include <signal.h>
 
-#define TLV_STRUCT_SIZE	60//TODO -> rezise //20
-#define TLV_DATA_SIZE	51//TODO -> rezise //11
+#define TLV_STRUCT_SIZE	120//60//TODO -> rezise //20
+#define TLV_DATA_SIZE	111//51//TODO -> rezise //11
 
 typedef enum {
 	NO_ERROR = 0,
