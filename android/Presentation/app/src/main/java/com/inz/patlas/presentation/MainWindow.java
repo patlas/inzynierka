@@ -44,6 +44,8 @@ public class MainWindow extends AppCompatActivity {
     private boolean U_ERROR_OCCURE = false;
     private Thread streamEndThread = null;
 
+    public static String GATEWAY_ADDR = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -221,6 +223,9 @@ public class MainWindow extends AppCompatActivity {
 
         int servIp = hostIp & netMask;
         serverAddr = intIPtoString(servIp);
+
+        int gatIp = dhcp.gateway;
+        GATEWAY_ADDR = intIPtoString(gatIp);
 
         String[] ret = {hostIpAddr,networkMask,serverAddr};
 

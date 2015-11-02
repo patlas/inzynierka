@@ -34,12 +34,13 @@ public class Messanger implements Runnable {
     private int index = 0;
     public boolean streamDone = false;
     public int NO_STREAM_ERROR = 0;
+    public static int PORT = 12345;
     
     @Override 
     public void run(){
         // TODO - add interrupt mechanism to stop task in case of server/client error
         try {
-            tcpcomm = new TCPCommunication("192.168.1.4", 12345);
+            tcpcomm = new TCPCommunication(MainWindow.GATEWAY_ADDR, PORT);
         }catch(IOException io){
             Log.d("EXCEPTION",io.getMessage() );
         }
