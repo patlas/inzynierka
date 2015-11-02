@@ -21,8 +21,8 @@
 #include <fcntl.h>
 #include <signal.h>
 
-#define TLV_STRUCT_SIZE	20
-#define TLV_DATA_SIZE	11
+#define TLV_STRUCT_SIZE	60//TODO -> rezise //20
+#define TLV_DATA_SIZE	51//TODO -> rezise //11
 
 typedef enum {
 	NO_ERROR = 0,
@@ -38,7 +38,7 @@ typedef enum {
 typedef struct {
 	uint8_t type;
 	uint64_t length;
-	uint8_t value[11];
+	uint8_t value[TLV_DATA_SIZE];
 }TLVStruct;
 #pragma pack(pop)
 

@@ -29,7 +29,7 @@ using namespace std;
 typedef struct {
 	bool stream;
     string command;
-    uint8_t data[20];
+    uint8_t data[TLV_STRUCT_SIZE];// TODO -> resizing //20
     uint64_t fileSize;
 }QueueStruct_t;
 #pragma pack(pop)
