@@ -7,6 +7,7 @@ package gui;
 
 import javax.swing.ImageIcon;
 import javax.swing.JProgressBar;
+import javax.swing.JRootPane;
 
 /**
  *
@@ -14,7 +15,7 @@ import javax.swing.JProgressBar;
  */
 public class ProgressDialog extends javax.swing.JFrame {
 
- 
+ Thread t = null;
     /**
      * Creates new form ProgressDialog
      */
@@ -25,6 +26,10 @@ public class ProgressDialog extends javax.swing.JFrame {
         pProgressBar.setValue(30);
         pProgressBar.setVisible(true);
         pProgressBar.setIndeterminate(true);
+        
+        
+        //setUndecorated(true);
+        //getRootPane().setWindowDecorationStyle(JRootPane.NONE);
     }
 
     /**
@@ -47,6 +52,7 @@ public class ProgressDialog extends javax.swing.JFrame {
         getContentPane().setLayout(new java.awt.CardLayout());
 
         pProgressBar.setValue(30);
+        pProgressBar.setIndeterminate(true);
         pProgressBar.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 pProgressBarStateChanged(evt);
@@ -60,49 +66,32 @@ public class ProgressDialog extends javax.swing.JFrame {
 
     private void pProgressBarStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_pProgressBarStateChanged
         // TODO add your handling code here:
-        JProgressBar comp = (JProgressBar) evt.getSource();
-        if(comp.getValue()==100){
-            Thread.currentThread().interrupt();
-            comp.setValue(10);
 
-        }
     }//GEN-LAST:event_pProgressBarStateChanged
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ProgressDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ProgressDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ProgressDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ProgressDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    public void start() {
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
+        
+        t = new Thread(new Runnable() {
             public void run() {
-                new ProgressDialog().setVisible(true);
+                
+                pProgressBar.setVisible(true);
+                pProgressBar.setIndeterminate(true);
+                while(!Thread.currentThread().isInterrupted());
+                return;
             }
         });
+        t.start();
     }
 
+    public void exit(){
+        t.interrupt();
+    }
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JProgressBar pProgressBar;
     // End of variables declaration//GEN-END:variables

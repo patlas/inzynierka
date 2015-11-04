@@ -133,8 +133,8 @@ public class Messanger implements Runnable {
                     //else
                         System.arraycopy(qs.getData(), 0, dat, 0, TLVstruct.TLV_DATA_SIZE);
                     
-                    for(long ww = 0; ww<TLVstruct.TLV_DATA_SIZE; ww++)
-                    System.out.println(qs.getData()[(int)ww]);
+                    //for(long ww = 0; ww<TLVstruct.TLV_DATA_SIZE; ww++)
+                    //System.out.println(qs.getData()[(int)ww]);
                     
                     byte[] dataToSend =  buildTLVdataHeader(false,dat,qs.getFileSize());
                     

@@ -12,7 +12,7 @@ package tcp.stream;
 public class QueueStruct {
     private boolean stream;
     private String command;
-    private byte[] data = new byte[20];
+    private byte[] data = new byte[TLVstruct.TLV_STRUCT_SIZE];
     private long fileSize = 0;
     
     public boolean isStream(){

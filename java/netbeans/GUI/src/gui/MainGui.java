@@ -32,7 +32,7 @@ import viewer.PPTfileViewer;
 public class MainGui extends javax.swing.JFrame {
     
     static int PORT = 12345;
-    static String ADDRESS = "192.168.1.24";/*"127.0.0.1";*/
+    static String ADDRESS = "192.168.1.7";/*"127.0.0.1";*/
     
     public String fName = null;
     private ProgressDialog pd = null;
@@ -45,6 +45,7 @@ public class MainGui extends javax.swing.JFrame {
     public LinkedBlockingQueue receiver = new LinkedBlockingQueue();
     public LinkedBlockingQueue<QueueStruct> transmitter = new LinkedBlockingQueue<>();
     public Thread messangerThread = null;
+    public boolean chartAutoChage = true;
     
     private PDFfileViewer pdf = null;
     /**
@@ -60,7 +61,7 @@ public class MainGui extends javax.swing.JFrame {
         mOpenFile.setEnabled(false);
         
         pdf = new PDFfileViewer(pdfPane, null, null);
-        pdf.viewPDF();
+        //pdf.viewPDF();
         //pdf.setKeyBindings();
         //tymczasowo tutal listener bo później po rozpoznaniu pliku z TCPobjectem
 //        pdf.setScrollBarListener(messanger); //usunac
@@ -108,14 +109,6 @@ public class MainGui extends javax.swing.JFrame {
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 10), new java.awt.Dimension(0, 5), new java.awt.Dimension(32767, 10));
         pptSlideNrTxt = new javax.swing.JTextField();
         pdfPane = new javax.swing.JPanel();
-        pdfScrollPane = new javax.swing.JScrollPane();
-        pdfRotateBtn = new javax.swing.JButton();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-        pdfNextBtn = new javax.swing.JButton();
-        pdfPageNrTxt = new javax.swing.JTextField();
-        pdfPrevBtn = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
         moviePane = new javax.swing.JPanel();
         topMenuBar = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
@@ -129,6 +122,12 @@ public class MainGui extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("MainFrame"); // NOI18N
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
+
+        tpCharts.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tpChartsStateChanged(evt);
+            }
+        });
 
         pptPreviewLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         pptPreviewLabel.setText("PREVIEW UNAVELIABLE IN EFFECTS MODE");
@@ -178,13 +177,13 @@ public class MainGui extends javax.swing.JFrame {
                     .addComponent(pptPreviewLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(pptPaneLayout.createSequentialGroup()
                         .addComponent(pptEffectsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
                         .addComponent(pptPrevBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pptSlideNrTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pptNextBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE))
                     .addComponent(filler1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -192,7 +191,7 @@ public class MainGui extends javax.swing.JFrame {
             pptPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pptPaneLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pptPreviewLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+                .addComponent(pptPreviewLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pptPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(pptNextBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -205,71 +204,15 @@ public class MainGui extends javax.swing.JFrame {
 
         tpCharts.addTab("Presentation", new javax.swing.ImageIcon(getClass().getResource("/gui/icons/ppt-20.png")), pptPane, "Start PowerPoint presentation"); // NOI18N
 
-        pdfRotateBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icons/left_arrow_16x16.png"))); // NOI18N
-        pdfRotateBtn.setText("jButton2");
-
-        pdfNextBtn.setText("jButton1");
-
-        pdfPageNrTxt.setText("jTextField1");
-        pdfPageNrTxt.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                pdfPageNrTxtInputMethodTextChanged(evt);
-            }
-        });
-
-        pdfPrevBtn.setText("jButton3");
-
-        jButton1.setText("jButton1");
-
-        jLabel1.setText("jLabel1");
-
         javax.swing.GroupLayout pdfPaneLayout = new javax.swing.GroupLayout(pdfPane);
         pdfPane.setLayout(pdfPaneLayout);
         pdfPaneLayout.setHorizontalGroup(
             pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pdfPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pdfPaneLayout.createSequentialGroup()
-                        .addGap(56, 56, 56)
-                        .addComponent(filler2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(pdfPaneLayout.createSequentialGroup()
-                        .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(pdfScrollPane)
-                            .addGroup(pdfPaneLayout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(pdfPrevBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-                                .addComponent(pdfRotateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(pdfPageNrTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(pdfNextBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10)))
-                        .addContainerGap())))
+            .addGap(0, 437, Short.MAX_VALUE)
         );
         pdfPaneLayout.setVerticalGroup(
             pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pdfPaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pdfScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(pdfPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(pdfRotateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(pdfNextBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(pdfPageNrTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(pdfPrevBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGap(0, 380, Short.MAX_VALUE)
         );
 
         tpCharts.addTab("PDF", new javax.swing.ImageIcon(getClass().getResource("/gui/icons/pdf-20.png")), pdfPane, "View pdf file"); // NOI18N
@@ -278,11 +221,11 @@ public class MainGui extends javax.swing.JFrame {
         moviePane.setLayout(moviePaneLayout);
         moviePaneLayout.setHorizontalGroup(
             moviePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 438, Short.MAX_VALUE)
+            .addGap(0, 437, Short.MAX_VALUE)
         );
         moviePaneLayout.setVerticalGroup(
             moviePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 322, Short.MAX_VALUE)
+            .addGap(0, 380, Short.MAX_VALUE)
         );
 
         tpCharts.addTab("Movie", new javax.swing.ImageIcon(getClass().getResource("/gui/icons/mov-20.png")), moviePane, "Stream movie"); // NOI18N
@@ -332,6 +275,11 @@ public class MainGui extends javax.swing.JFrame {
         topMenuBar.add(menuEdit);
 
         menuAbout.setText("About");
+        menuAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuAboutActionPerformed(evt);
+            }
+        });
         topMenuBar.add(menuAbout);
 
         setJMenuBar(topMenuBar);
@@ -371,23 +319,37 @@ public class MainGui extends javax.swing.JFrame {
           System.out.println(selectedFile.getName()+ " " + fName);
           
           //file transfer
+         Thread dialThread = new Thread(new Runnable(){
+             @Override
+             public void run(){
+                 createDialog();
+                 while(!Thread.currentThread().isInterrupted());
+                 System.out.println("EXIT TRANSFER");
+                    return;
+             }
+         }); 
           if(tcpcomm != null){
-
+              
             if(sendFile(messanger,selectedFile)){
                 //progressThread.interrupt();
+                
                 System.out.println("Plik wysłano pomyślnie");
                 messanger.sendCommand(ControllCommands.F_START);
+                pdf.viewPDF(fName);
+                
             }
             else{
                 //błąd transmisji pliku!!!!
                 System.out.println("Bład wysyłanai pliku");
             }
           }
+          //destroyDialog();
+          dialThread.interrupt();
           
-          
-          
+          chartAutoChage = true;
           if(fName.toLowerCase().endsWith(".ppt") || fName.toLowerCase().endsWith(".pptx"))
           {
+              tpCharts.setSelectedIndex(0);
             pptViewer = new PPTfileViewer(fName);
             pptEffectsCombo.setEnabled(true);
             pptNextBtn.setEnabled(true);
@@ -401,11 +363,12 @@ public class MainGui extends javax.swing.JFrame {
           else if(fName.toLowerCase().endsWith(".pdf"))
           {
               //bing pdf keys
+              tpCharts.setSelectedIndex(1);
               pdf.setScrollBarListener(messanger);
               pdf.setButtonListeners(messanger);
               
           }
-
+          chartAutoChage = false;
         }
     }//GEN-LAST:event_mOpenFileActionPerformed
 
@@ -417,8 +380,24 @@ public class MainGui extends javax.swing.JFrame {
             pd.pProgressBar.setValue(100);
             pd.dispatchEvent(new WindowEvent(pd, WindowEvent.WINDOW_CLOSING));
         }*/
+        
+        //createDialog();
+        if(messanger != null){
+            if(fName.toLowerCase().endsWith("pdf"))
+                messanger.sendCommand(ControllCommands.F_DEXIT);
+            else //if(fName.toLowerCase().endsWith("ppt") ||)
+                messanger.sendCommand(ControllCommands.F_PEXIT);
+            
+            
+            messanger.sendCommand(ControllCommands.RESTART_S);
+            try {
+                Thread.sleep(1000);
+            }catch(InterruptedException ie){}
 
- 
+            messangerThread.interrupt();
+        }
+        System.exit(0);
+
     }//GEN-LAST:event_mExitActionPerformed
 
     private void mConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mConnectActionPerformed
@@ -595,9 +574,28 @@ public class MainGui extends javax.swing.JFrame {
         
     }//GEN-LAST:event_pptSlideNrTxtActionPerformed
 
-    private void pdfPageNrTxtInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_pdfPageNrTxtInputMethodTextChanged
+    private void menuAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAboutActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_pdfPageNrTxtInputMethodTextChanged
+        
+    }//GEN-LAST:event_menuAboutActionPerformed
+
+    private void tpChartsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tpChartsStateChanged
+        if(messanger != null && chartAutoChage == false){
+            if(fName.toLowerCase().endsWith("pdf"))
+                messanger.sendCommand(ControllCommands.F_DEXIT);
+            else //if(fName.toLowerCase().endsWith("ppt") ||)
+                messanger.sendCommand(ControllCommands.F_PEXIT);
+            
+            
+            messanger.sendCommand(ControllCommands.RESTART_S);
+            try {
+                Thread.sleep(1000);
+            }catch(InterruptedException ie){}
+
+            messangerThread.interrupt();
+            messanger = null;
+        }
+    }//GEN-LAST:event_tpChartsStateChanged
 
     
     public void createDialog(){
@@ -605,7 +603,17 @@ public class MainGui extends javax.swing.JFrame {
         int width = gd.getDisplayMode().getWidth();
         int height = gd.getDisplayMode().getHeight();
         pd = new ProgressDialog();
-        pd.setSize((int) Math.round(width*0.3), (int) Math.round(height*0.1));
+        //pd.setSize((int) Math.round(width*0.3), (int) Math.round(height*0.1));
+        pd.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        pd.setVisible(true);
+        //pd.start();
+    }
+    
+    public void destroyDialog(){
+        //pd.exit();
+        pd.setVisible(false);
+        pd.dispose();
     }
     
     
@@ -658,7 +666,7 @@ public class MainGui extends javax.swing.JFrame {
         }
         else if(stramSucces.equalsIgnoreCase(ControllCommands.F_ERROR))
         {
-            return false;
+            return true;//false;
         }
         
         else if(stramSucces.equalsIgnoreCase(ControllCommands.U_ERROR))
@@ -734,15 +742,13 @@ public class MainGui extends javax.swing.JFrame {
                 MainGui GUI = new MainGui();
                 GUI.setVisible(true);
                 GUI.setExtendedState(GUI.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+                GUI.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
-    private javax.swing.Box.Filler filler2;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
     public static javax.swing.JMenuItem mConnect;
     private javax.swing.JMenuItem mExit;
     public static javax.swing.JMenuItem mOpenFile;
@@ -751,12 +757,7 @@ public class MainGui extends javax.swing.JFrame {
     private javax.swing.JMenu menuEdit;
     private javax.swing.JMenu menuFile;
     public javax.swing.JPanel moviePane;
-    private javax.swing.JButton pdfNextBtn;
-    private javax.swing.JTextField pdfPageNrTxt;
     public javax.swing.JPanel pdfPane;
-    private javax.swing.JButton pdfPrevBtn;
-    private javax.swing.JButton pdfRotateBtn;
-    public javax.swing.JScrollPane pdfScrollPane;
     public javax.swing.JComboBox pptEffectsCombo;
     public javax.swing.JButton pptNextBtn;
     public javax.swing.JPanel pptPane;

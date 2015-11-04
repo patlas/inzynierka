@@ -52,6 +52,8 @@ public class PDFfileViewer {
     public static boolean is_moved_up = false;
     public static boolean is_moved_down = false;
     
+    public String filePath = null;
+    
     public PDFfileViewer(JPanel pane, JScrollPane sp, Messanger m)
     {
         pdfPane = pane;
@@ -59,8 +61,8 @@ public class PDFfileViewer {
         messanger = m;
     }
     
-    public void viewPDF(){
-        String filePath = "stmEncoder.pdf";
+    public void viewPDF(String path){
+        filePath = path;//"stmEncoder.pdf";
 
         // build a controller
         controller = new SwingController();

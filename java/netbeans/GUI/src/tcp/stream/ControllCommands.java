@@ -27,6 +27,7 @@ public class ControllCommands {
         public static String F_PNEXTE = "F_PNEXTE";
 	public static String F_PPREVE = "F_PPREVE";
         public static String F_PFIRST = "F_PFIRST";
+        public static String F_PEXIT = "F_PEXIT";
         
         public static String F_DPUP = "F_DPUP";
         public static String F_DPDOWN = "F_DPDOWN";
@@ -34,6 +35,7 @@ public class ControllCommands {
         public static String F_DROTATE = "F_DROTATE";
         public static String F_DNEXT = "F_DNEXT";
         public static String F_DPREV = "F_DPREV";
+        public static String F_DEXIT = "F_DEXIT";
         
         
 	public static byte PPT = 0;
