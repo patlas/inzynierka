@@ -79,6 +79,10 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 {
 	QueueStruct_t QSt;
 	uint8_t rData[TLV_STRUCT_SIZE];
+    
+    uint8_t buffOUT[5*TLV_DATA_SIZE];
+    uint16_t wIndex = 0;
+
 	uint64_t commandSize = 0;
 	uint64_t compSize = 0;
 
@@ -194,7 +198,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
                     }
 
 
-                    if(commandSize > 40 || tempTLV.length>40)
+                    if(commandSize > 2*TLV_DATA_SIZE || tempTLV.length>2*TLV_DATA_SIZE)
                     {
                         compSize = 0;
                         commandSize = 0;
@@ -258,9 +262,18 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 					if(fsize < compSize)
 					{
 						fsize+=TLV_DATA_SIZE;
-                        printf("fsize: %d\n",fsize);;
+                        
+                        cout<<"fsize: "<<fsize<<endl;
 
-						outfile.write((char*)tempTLV.value,TLV_DATA_SIZE);
+                        memcpy(&buffOUT[wIndex],tempTLV.value,TLV_DATA_SIZE);
+                        wIndex+=TLV_DATA_SIZE;
+
+                        if(wIndex == (5*TLV_DATA_SIZE) || fsize >= compSize)
+                        {
+                            outfile.write((char*)&buffOUT[0],5*TLV_DATA_SIZE);                           
+                            if(fsize>=compSize) cout<<"W ostatniej iteracji zapisano:"<<wIndex<<endl;
+                            wIndex = 0;
+                        }
                         //cout<<tempTLV.value[0]<<"rozmiar:"<<fsize<<endl;
 					}
 					if(fsize >= compSize)
