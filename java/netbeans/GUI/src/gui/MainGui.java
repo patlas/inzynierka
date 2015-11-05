@@ -319,15 +319,15 @@ public class MainGui extends javax.swing.JFrame {
           System.out.println(selectedFile.getName()+ " " + fName);
           
           //file transfer
-         Thread dialThread = new Thread(new Runnable(){
-             @Override
-             public void run(){
-                 createDialog();
-                 while(!Thread.currentThread().isInterrupted());
-                 System.out.println("EXIT TRANSFER");
-                    return;
-             }
-         }); 
+//         Thread dialThread = new Thread(new Runnable(){
+//             @Override
+//             public void run(){
+//                 createDialog();
+//                 while(!Thread.currentThread().isInterrupted());
+//                 System.out.println("EXIT TRANSFER");
+//                    return;
+//             }
+//         }); 
           if(tcpcomm != null){
               
             if(sendFile(messanger,selectedFile)){
@@ -335,7 +335,7 @@ public class MainGui extends javax.swing.JFrame {
                 
                 System.out.println("Plik wysłano pomyślnie");
                 messanger.sendCommand(ControllCommands.F_START);
-                pdf.viewPDF(fName);
+                
                 
             }
             else{
@@ -344,7 +344,7 @@ public class MainGui extends javax.swing.JFrame {
             }
           }
           //destroyDialog();
-          dialThread.interrupt();
+//          dialThread.interrupt();
           
           chartAutoChage = true;
           if(fName.toLowerCase().endsWith(".ppt") || fName.toLowerCase().endsWith(".pptx"))
@@ -363,6 +363,7 @@ public class MainGui extends javax.swing.JFrame {
           else if(fName.toLowerCase().endsWith(".pdf"))
           {
               //bing pdf keys
+              pdf.viewPDF(fName);
               tpCharts.setSelectedIndex(1);
               pdf.setScrollBarListener(messanger);
               pdf.setButtonListeners(messanger);
@@ -593,7 +594,10 @@ public class MainGui extends javax.swing.JFrame {
             }catch(InterruptedException ie){}
 
             messangerThread.interrupt();
+            
             messanger = null;
+            mConnect.setText("Connect");
+            mOpenFile.setEnabled(false);
         }
     }//GEN-LAST:event_tpChartsStateChanged
 

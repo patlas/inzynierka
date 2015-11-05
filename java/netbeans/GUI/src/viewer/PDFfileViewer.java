@@ -62,6 +62,7 @@ public class PDFfileViewer {
     }
     
     public void viewPDF(String path){
+        
         filePath = path;//"stmEncoder.pdf";
 
         // build a controller
