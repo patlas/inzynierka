@@ -312,7 +312,7 @@ void dnext_page(void *param)
 {
     cout<<endl<<endl<<"dnext_page"<<endl;
 
-    exec_command = "Right";
+    exec_command = "space";
 	
 	cout<<"Command: "<<exec_command<<endl;
 
@@ -323,7 +323,7 @@ void dprev_page(void *param)
 {
     cout<<endl<<endl<<"dprev_page"<<endl;
 
-    exec_command = "Left";
+    exec_command = "BackSpace";
 	
 	cout<<"Command: "<<exec_command<<endl;
 
