@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <fstream>
+#include <cstdio>
 #include <map>
 
 
@@ -112,6 +113,9 @@ void server_restart(void *param)
     //TODO - zabić messangera i stworzyć nowy obiekt???
     TCPCommunication *tcpptr = (TCPCommunication *) param;
     TCPCommunicationError_t error_code;
+
+    //remove all recently created files
+    system("exec rm -r ramDisk/*");
 
     if( (error_code=tcpptr->catchNewConnection()) == NO_ERROR)
     {
@@ -242,6 +246,7 @@ void pnext_page(void *param)
 	cout<<"Command: "<<exec_command<<endl;
 	pptCurrentPage++;
 
+    //exec_command = "Alt_L+Page_Up";
     execute_command(exec_command,PROG_PPT_ALIAS);
    
 }
@@ -345,7 +350,7 @@ void drotate_page(void *param)
 {
     cout<<endl<<endl<<"drotate_page"<<endl;
 
-    exec_command = "Ctrl+Left";
+    exec_command = "Ctrl+Right";
 	
 	cout<<"Command: "<<exec_command<<endl;
 

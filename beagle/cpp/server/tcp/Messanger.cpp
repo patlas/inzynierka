@@ -256,7 +256,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
                         cout<<"Rozmiar pliku to: "<<tempTLV.length<<endl;
 
 						if(outfile.is_open()) outfile.close();
-						outfile.open("temp.raw", ofstream::binary | ofstream::out);
+						outfile.open(TEMP_NAME_RAW, ofstream::binary | ofstream::out);
 
 					}
 					if(fsize < compSize)
@@ -281,7 +281,7 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 						//zrobic flush i zapisać do pliku
 						outfile.flush();
 						outfile.close();
-						int source = open("temp.raw", O_RDONLY, 0);
+						int source = open(TEMP_NAME_RAW, O_RDONLY, 0);
 						int dest = open(TEMP_NAME, O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
                         
                         printf("compSize before save: %d\n",compSize);
