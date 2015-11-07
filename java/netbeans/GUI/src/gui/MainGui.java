@@ -426,13 +426,24 @@ public class MainGui extends javax.swing.JFrame {
                 
             }
         }
-        else{
-            messanger.sendCommand(ControllCommands.RESTART_S);
+        else{           
+            if(fName.toLowerCase().endsWith("pdf")){
+                if(messanger != null)
+                    messanger.sendCommand(ControllCommands.F_DEXIT);
+            }
+            else {//if(fName.toLowerCase().endsWith("ppt") ||){
+                if(messanger != null)
+                    messanger.sendCommand(ControllCommands.F_PEXIT);
+            }
+            if(messanger != null)
+                messanger.sendCommand(ControllCommands.RESTART_S);
             try{
                 Thread.sleep(100);
             }catch(InterruptedException ie){}
-            while(!tcpcomm.disconnect());
+            if(tcpcomm.isConnected())
+                while(!tcpcomm.disconnect());
             tcpcomm = null;
+            messanger = null;
             mConnect.setText("Connect");
             mOpenFile.setEnabled(false);
         }
@@ -598,6 +609,9 @@ public class MainGui extends javax.swing.JFrame {
             messanger = null;
             mConnect.setText("Connect");
             mOpenFile.setEnabled(false);
+            mConnect.revalidate();
+            mOpenFile.revalidate();
+            topMenuBar.revalidate();
         }
     }//GEN-LAST:event_tpChartsStateChanged
 

@@ -49,8 +49,9 @@ public class PDFfileViewer {
     private Messanger messanger = null;
     
     public SwingController controller = null;
-    public static boolean is_moved_up = false;
-    public static boolean is_moved_down = false;
+    public static byte is_moved_up = 1;
+    public static byte is_moved_down = 0;
+    public static int lastPosition = 0;
     
     public String filePath = null;
     
@@ -247,8 +248,8 @@ public class PDFfileViewer {
                         dp++;
                         controller.goToDeltaPage(dp);
                         messanger.sendCommand(ControllCommands.F_DNEXT);
-                        PDFfileViewer.is_moved_up = false;
-                        PDFfileViewer.is_moved_down = false;
+//                        PDFfileViewer.is_moved_up = false;
+//                        PDFfileViewer.is_moved_down = false;
                     }
                     return;
                 }
@@ -280,8 +281,8 @@ public class PDFfileViewer {
             public void actionPerformed(ActionEvent e)
             {
                 messanger.sendCommand(ControllCommands.F_DNEXT);
-                PDFfileViewer.is_moved_up = false;
-                PDFfileViewer.is_moved_down = false;
+//                PDFfileViewer.is_moved_up = false;
+//                PDFfileViewer.is_moved_down = false;
 
             }
         }); 
@@ -291,8 +292,8 @@ public class PDFfileViewer {
             public void actionPerformed(ActionEvent e)
             {
                 messanger.sendCommand(ControllCommands.F_DPREV);
-                PDFfileViewer.is_moved_up = false;
-                PDFfileViewer.is_moved_down = false;
+//                PDFfileViewer.is_moved_up = false;
+//                PDFfileViewer.is_moved_down = false;
             }
         }); 
         
@@ -341,6 +342,7 @@ class MyScrollBarListener implements AdjustmentListener {
     }
 
     int cur = evt.getValue();
+    
     JScrollBar sb = (JScrollBar)(evt.getSource());
     int max = sb.getMaximum();
     System.out.println("SCROLL: "+cur);
@@ -365,29 +367,63 @@ class MyScrollBarListener implements AdjustmentListener {
 //                    System.out.println("1 ");
 //                } 
      
-     if(per<0.5 && PDFfileViewer.is_moved_up==false)
-     {
-         messanger.sendCommand(ControllCommands.F_DPUP);
-         PDFfileViewer.is_moved_up = true;
-     }
+//     if(per<0.5 && per>0.2 && PDFfileViewer.is_moved_up==false)
+//     {
+//         messanger.sendCommand(ControllCommands.F_DPUP);
+//         PDFfileViewer.is_moved_up = true;
+//     }
+//     
+//     if(per>=0.5 && PDFfileViewer.is_moved_down==false)
+//     {
+//         messanger.sendCommand(ControllCommands.F_DPDOWN);
+//         PDFfileViewer.is_moved_down = true;
+//     }
+//     
+//     
+//    if(per == 0)
+//    {
+//        sb.setValue(sb.getUnitIncrement());
+//        System.out.println("NEw page");
+//        PDFfileViewer.is_moved_down = false;
+//        PDFfileViewer.is_moved_up = false;
+//        
+//        return;
+//    }
      
-     if(per>=0.5 && PDFfileViewer.is_moved_down==false)
-     {
-         messanger.sendCommand(ControllCommands.F_DPDOWN);
-         PDFfileViewer.is_moved_down = true;
-     }
-     
-     
+//     if( (cur - PDFfileViewer.lastPosition) > 0)
+//     {
+         //moved down
+        if(per<0.6 && PDFfileViewer.is_moved_up<1)
+        {
+            messanger.sendCommand(ControllCommands.F_DPUP);
+            PDFfileViewer.is_moved_up++;
+            PDFfileViewer.is_moved_down--;
+        }
+
+        if(per>0.6 && PDFfileViewer.is_moved_down<1)
+        {
+            messanger.sendCommand(ControllCommands.F_DPDOWN);
+            PDFfileViewer.is_moved_up--;
+            PDFfileViewer.is_moved_down++;
+        }
+         
+//     }
+//     else
+//     {
+//         //moved up
+//     }
+        
     if(per == 0)
     {
         sb.setValue(sb.getUnitIncrement());
         System.out.println("NEw page");
-        PDFfileViewer.is_moved_down = false;
-        PDFfileViewer.is_moved_up = false;
+        PDFfileViewer.is_moved_down = 0;
+        PDFfileViewer.is_moved_up = 1;
         
         return;
     }
-                
+    
+    PDFfileViewer.lastPosition = cur;
     
   }
 }
