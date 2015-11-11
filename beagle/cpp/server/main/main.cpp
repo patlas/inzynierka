@@ -61,6 +61,9 @@ string getCommand()
 				cmd = rQueue.front();
 				rQueue.pop();
 			}
+			//else{
+			//	cmd = "NULL";
+			//}
 			rMutex.unlock();
 		}
 	}
@@ -115,7 +118,10 @@ void server_restart(void *param)
     TCPCommunicationError_t error_code;
 
     //remove all recently created files
-    system("exec rm -r ramDisk/*");
+    string com = "exec rm -r ";
+    com+=TEMP_DIR;
+    com+="*";
+    system(com.c_str());
 
     if( (error_code=tcpptr->catchNewConnection()) == NO_ERROR)
     {
@@ -501,6 +507,7 @@ HARD_RESET:
         else
         {
             invoker.invoke(command);
+	    //sleep(1);
             //cout<<command<<endl;
 
         }

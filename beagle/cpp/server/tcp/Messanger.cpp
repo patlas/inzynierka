@@ -282,9 +282,9 @@ void Messanger::run(TCPCommunication *tcpcomm, mutex *tMutex, mutex *rMutex, que
 						outfile.flush();
 						outfile.close();
 						int source = open(TEMP_NAME_RAW, O_RDONLY, 0);
-						int dest = open(TEMP_NAME, O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0644);
+						int dest = open(TEMP_NAME, O_WRONLY | O_CREAT /*| O_TRUNC/**/, 0777);
                         
-                        printf("compSize before save: %d\n",compSize);
+                        cout<<"compSize before save: "<<compSize<<endl;
 						while(sendfile(dest, source, 0, compSize)!= compSize);
 
 						close(source);

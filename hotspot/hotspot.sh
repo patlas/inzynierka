@@ -11,5 +11,10 @@ then
 fi
 
 hostapd -B /etc/hostapd/hostapd.conf
+sleep 2
+mkdir ~/Desktop/ramDisk
+mount -t tmpfs -o size=50m tmpfs ~/Desktop/ramDisk
+sleep 2
+lxterminal -e ./serv
 
 #killall dnsmasq

@@ -53,8 +53,9 @@ static std::string PROG_PDF_ALIAS="qpdfview";
 
 
 //RAW FILE TEMP NAME
-#define TEMP_NAME       "ramDisk/tempfile.raw"
-#define TEMP_NAME_RAW   "ramDisk/temp.raw"
+#define TEMP_DIR	"/root/Desktop/ramDisk/"
+#define TEMP_NAME       "/root/Desktop/ramDisk/tempfile.raw"
+#define TEMP_NAME_RAW   "/root/Desktop/ramDisk/temp.raw"
 
 #define PPT_FILE_INDEX  0
 #define PPTX_FILE_INDEX 1
@@ -64,10 +65,10 @@ static std::string PROG_PDF_ALIAS="qpdfview";
 
 #define EXTENSION_TAB_SIZE  4
 static std::string file_name_tab[EXTENSION_TAB_SIZE] = {
-    "ramDisk/plik.ppt",
-    "ramDisk/plik.pptx",
-    "ramDisk/plik.pdf",
-    "ramDisk/plik.txt"
+    "/root/Desktop/ramDisk/plik.ppt",
+    "/root/Desktop/ramDisk/plik.pptx",
+    "/root/Desktop/ramDisk/plik.pdf",
+    "/root/Desktop/ramDisk/plik.txt"
 };
 
 static std::string extension_tab[EXTENSION_TAB_SIZE] = {
