@@ -32,7 +32,7 @@ import viewer.PPTfileViewer;
 public class MainGui extends javax.swing.JFrame {
     
     static int PORT = 12345;
-    static String ADDRESS = "192.168.1.7";/*"127.0.0.1";*/
+    static String ADDRESS = "192.168.1.9";/*"127.0.0.1";*/
     
     public String fName = null;
     private ProgressDialog pd = null;
@@ -330,6 +330,8 @@ public class MainGui extends javax.swing.JFrame {
 //         }); 
           if(tcpcomm != null){
               
+              if(tcpcomm.isConnected() == false)
+                  System.out.println("NOT CONNECTED SOCKET");
             if(sendFile(messanger,selectedFile)){
                 //progressThread.interrupt();
                 
@@ -426,22 +428,24 @@ public class MainGui extends javax.swing.JFrame {
                 
             }
         }
-        else{           
-            if(fName.toLowerCase().endsWith("pdf")){
-                if(messanger != null)
-                    messanger.sendCommand(ControllCommands.F_DEXIT);
-            }
-            else {//if(fName.toLowerCase().endsWith("ppt") ||){
-                if(messanger != null)
-                    messanger.sendCommand(ControllCommands.F_PEXIT);
+        else{
+            if(fName != null){
+                if(fName.toLowerCase().endsWith("pdf")){
+                    if(messanger != null)
+                        messanger.sendCommand(ControllCommands.F_DEXIT);
+                }
+                else {//if(fName.toLowerCase().endsWith("ppt") ||){
+                    if(messanger != null)
+                        messanger.sendCommand(ControllCommands.F_PEXIT);
+                }
             }
             if(messanger != null)
                 messanger.sendCommand(ControllCommands.RESTART_S);
             try{
                 Thread.sleep(100);
             }catch(InterruptedException ie){}
-            if(tcpcomm.isConnected())
-                while(!tcpcomm.disconnect());
+//            if(tcpcomm.isConnected())
+//                while(!tcpcomm.disconnect());
             tcpcomm = null;
             messanger = null;
             mConnect.setText("Connect");
@@ -605,7 +609,8 @@ public class MainGui extends javax.swing.JFrame {
             }catch(InterruptedException ie){}
 
             messangerThread.interrupt();
-            
+            tcpcomm.disconnect();
+            tcpcomm = null;
             messanger = null;
             mConnect.setText("Connect");
             mOpenFile.setEnabled(false);
@@ -637,7 +642,7 @@ public class MainGui extends javax.swing.JFrame {
     
     
     private boolean sendFile(Messanger m, File fd){
-        m.sendCommand("F_STREAM");
+        boolean xxx = m.sendCommand("F_STREAM");
         String tmpCmd = null;
         if((tmpCmd=m.recvCommand()).equalsIgnoreCase(ControllCommands.GET_SIZE)){
             System.out.println("Ask for size");        

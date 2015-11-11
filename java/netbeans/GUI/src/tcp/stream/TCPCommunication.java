@@ -25,9 +25,14 @@ public class TCPCommunication {
 	public TCPCommunication(String hn, int pn) throws UnknownHostException, IOException{
 		hostName = hn;
 		portNumber = pn;
-		streamSocket = new Socket(hostName, portNumber);
+                do{
+                    streamSocket = new Socket(hostName, portNumber);
+                }while(!streamSocket.isConnected());
+                
+                //streamSocket.setSoLinger(true, 60);
 		outStream = new PrintWriter(streamSocket.getOutputStream(), true);
 		inStream = new BufferedReader(new InputStreamReader(streamSocket.getInputStream()));
+                
                 iStream = streamSocket.getInputStream();
                 oStream = streamSocket.getOutputStream();
 	}

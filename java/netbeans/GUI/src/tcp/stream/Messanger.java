@@ -122,7 +122,9 @@ public class Messanger implements Runnable {
                    }
                    
                    System.out.println("Send command: "+qs.getCommand()+" in interation: "+index+" and length: "+qs.getCommand().length());
-
+                   
+                   if(qs.getCommand().equalsIgnoreCase(ControllCommands.RESTART_S))
+                       Thread.currentThread().interrupt();
                 }
                 else
                 {
