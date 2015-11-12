@@ -44,7 +44,7 @@ public class MainWindow extends AppCompatActivity {
     private boolean U_ERROR_OCCURE = false;
     private Thread streamEndThread = null;
 
-    public static String GATEWAY_ADDR = null;
+    public static String GATEWAY_ADDR = "192.168.2.2";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -115,11 +115,11 @@ public class MainWindow extends AppCompatActivity {
             int f = SupportedFiles.checkFileSupport(fName);
             switch(f)
             {
-                case 0:
                 case 1:
+                case 2:
                     messanger.sendCommand(ControllCommands.F_PEXIT);
                     break;
-                case 2:
+                case 3:
                     messanger.sendCommand(ControllCommands.F_DEXIT);
                     break;
                 default:
@@ -157,7 +157,13 @@ public class MainWindow extends AppCompatActivity {
     @Override
     protected void onDestroy()
     {
-        super.onDestroy();
+        if(fName != null) {
+            if (fName.toLowerCase().endsWith("pdf"))
+                messanger.sendCommand(ControllCommands.F_DEXIT);
+            else //if(fName.toLowerCase().endsWith("ppt") ||)
+                messanger.sendCommand(ControllCommands.F_PEXIT);
+        }
+
         messanger.sendCommand(ControllCommands.RESTART_S);
         try {
             Thread.sleep(100);
@@ -165,6 +171,8 @@ public class MainWindow extends AppCompatActivity {
 
         messangerThread.interrupt();
         disconnectWifi(this);
+        super.onDestroy();
+
     }
 
 
@@ -225,7 +233,7 @@ public class MainWindow extends AppCompatActivity {
         serverAddr = intIPtoString(servIp);
 
         int gatIp = dhcp.gateway;
-        GATEWAY_ADDR = intIPtoString(gatIp);
+        //GATEWAY_ADDR = intIPtoString(gatIp);
 
         String[] ret = {hostIpAddr,networkMask,serverAddr};
 

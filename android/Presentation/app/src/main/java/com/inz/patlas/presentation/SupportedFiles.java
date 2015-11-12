@@ -17,7 +17,7 @@ public class SupportedFiles {
         if(fName==null)
             return -1;
 
-        int index = 0;
+        int index = 1;
         for(String ext : SUPPORTED_FILE)
         {
             String[] e = fName.toLowerCase().split("/");
