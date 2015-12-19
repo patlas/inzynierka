@@ -44,7 +44,7 @@ public class MainWindow extends AppCompatActivity {
     private boolean U_ERROR_OCCURE = false;
     private Thread streamEndThread = null;
 
-    public static String GATEWAY_ADDR = "192.168.2.2";
+    public static String GATEWAY_ADDR = "192.168.1.200";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
